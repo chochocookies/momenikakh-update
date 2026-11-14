@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Momenikah – Undangan digital untuk semua momen</title>
+<meta name="description" content="Buat undangan digital yang indah untuk pernikahan, walimatul urs, tunangan, khitanan, aqiqah, dan ulang tahun. Bagikan lewat WhatsApp dalam satu tautan.">
+<meta name="theme-color" content="#BE185D">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23BE185D'/%3E%3Cg fill='none' stroke-width='4.6' stroke-linecap='round'%3E%3Ccircle cx='23.5' cy='32' r='13' stroke='%23FFF8F3'/%3E%3Ccircle cx='40.5' cy='32' r='13' stroke='%23F2D08A'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{--bg:#FFF8F3;--fg:#2B1B22;--muted:#6B5A62;--line:#E9D9D2;--rose:#BE185D;--rose-l:#FCE7F3;--gold:#B8893B;--soft:#FBEEE6;
+--serif:"Cormorant Garamond",Georgia,serif;--sans:"Plus Jakarta Sans",system-ui,sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1A1115;--fg:#FBEFE8;--muted:#B9A5AE;--line:#3A2830;--rose:#F27AB0;--soft:#24171D;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1A1115;--fg:#FBEFE8;--muted:#B9A5AE;--line:#3A2830;--rose:#F27AB0;--soft:#24171D;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.65 var(--sans);overflow-x:hidden}
+a{color:inherit}h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.05;margin:0;letter-spacing:-.01em}
+:focus-visible{outline:3px solid var(--rose);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;border-radius:999px;font:600 15px var(--sans);text-decoration:none;border:1.5px solid var(--rose);background:var(--rose);color:#FFF8F3;cursor:pointer;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}.btn.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font:600 27px var(--serif)}.logo svg{width:36px;height:36px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+/* hero */
+.hero{min-height:calc(100svh - 68px);display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:24px;padding:28px 0 56px}
+.hero h1{font-size:clamp(2.7rem,6.4vw,5.4rem);max-width:11ch}
+.hero h1 .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}.hero h1 .w i{display:inline-block;font-style:normal}
+.hero p.lead{font-size:1.125rem;color:var(--muted);max-width:44ch;margin:22px 0 30px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}.note{font-size:14px;color:var(--muted);margin-top:18px}
+.stage{position:relative;display:grid;place-items:center;min-height:560px}
+.rings{position:absolute;width:min(560px,118%);left:50%;top:50%;translate:-50% -50%;fill:none;stroke-linecap:round;overflow:visible}
+.js .rA,.js .rB{stroke-dasharray:1;stroke-dashoffset:1}.js .rArc,.js .rH{opacity:0}
+.phone{position:relative;width:min(290px,68vw);aspect-ratio:9/18.4;border-radius:38px;border:9px solid #2B1B22;background:#FFF8F3;box-shadow:0 30px 60px -28px rgba(43,27,34,.55);overflow:hidden;color:#2B1B22;isolation:isolate}
+.js .phone{opacity:0}
+.scr{position:absolute;inset:0;padding:22px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.env{position:relative;width:208px;height:140px;margin-top:150px}
+.env .body{position:absolute;inset:0;background:#F6E3D6;border-radius:6px;z-index:3;clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%)}
+.env .back{position:absolute;inset:0;background:#EBCDBB;border-radius:6px;z-index:1}
+.env .flap{position:absolute;left:0;right:0;top:0;height:76px;background:#E3BFA9;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;z-index:4;backface-visibility:visible}
+.env .seal{position:absolute;left:50%;top:60px;width:24px;height:24px;translate:-50% 0;border-radius:50%;background:var(--rose);z-index:5}
+.js .card{clip-path:inset(0 0 70px 0)}.card{position:absolute;left:12px;right:12px;top:14px;height:196px;background:#fff;border-radius:6px;z-index:2;padding:16px 10px;border:1px solid #EBD9CF}
+.card small{display:block;font-size:11px;color:#6B5A62}.card b{display:block;font:600 27px/1.05 var(--serif);margin:8px 0 4px}.card em{font:500 italic 16px var(--serif);color:#BE185D}
+.cd{display:flex;justify-content:center;gap:6px;margin-top:14px}.cd div{width:42px;padding:6px 0;background:#FCE7F3;border-radius:8px}.cd b{display:block;margin:0;font:600 15px/1 var(--sans)}.cd span{display:block;font:400 9px var(--sans);color:#6B5A62;margin-top:3px}
+/* story */
+.story{padding:40px 0 70px;border-top:1px solid var(--line)}
+.story h2,.styles h2,.events h2,.feat h2{font-size:clamp(2.1rem,4.4vw,3.4rem)}
+.story .cols{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:34px}
+.steps{list-style:none;margin:0;padding:0}.steps li{min-height:62vh;display:flex;flex-direction:column;justify-content:center;opacity:.35;transition:opacity .4s}
+.steps li.on{opacity:1}.steps h3{font-size:2.2rem}.steps p{color:var(--muted);max-width:38ch;margin:10px 0 0}
+.pin{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);align-self:start;display:grid;place-items:center;height:calc(100svh - 110px);max-height:620px}
+.pin .phone{height:100%;width:auto;max-width:100%}.pin .scr{opacity:0}.pin .scr.on{opacity:1}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%}.tiles i{display:block;height:74px;border-radius:10px;font:600 11px/74px var(--sans);font-style:normal;color:#2B1B22}
+.fld{width:100%;text-align:left;margin:6px 0}.fld small{font-size:10px;color:#6B5A62}.fld div{height:34px;border:1px solid #E0CCC2;border-radius:8px;padding:0 10px;font:500 13px/32px var(--sans);background:#fff}
+.bub{background:#DCF8C6;border-radius:12px 12px 2px 12px;padding:10px 12px;text-align:left;font-size:12.5px;width:100%;color:#1f2d22}.bub u{color:#0b5cad;word-break:break-all}
+/* styles */
+.styles{padding:70px 0;background:var(--soft)}.styles .cols{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:center;margin-top:30px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}.chips button{min-height:46px;padding:0 20px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);font:500 15px var(--sans);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.sd{color:var(--muted);margin:18px 0 0;max-width:40ch}
+.pv{--pb:#FBF5EC;--pi:#4A1F2B;--pa:#B8893B;position:relative;margin-inline:auto;width:min(380px,100%);aspect-ratio:4/5;border-radius:14px;background:var(--pb);color:var(--pi);display:grid;place-content:center;text-align:center;overflow:hidden;box-shadow:0 24px 50px -30px rgba(43,27,34,.5)}
+.pv small{font-size:12px}.pv b{display:block;font:600 clamp(2.2rem,6vw,3.2rem)/1 var(--serif);margin:10px 0}.pv em{font:500 italic 20px var(--serif);color:var(--pa)}
+.pv>*{position:relative;z-index:2}.pv .m{position:absolute;z-index:1;pointer-events:none;opacity:0}
+.fr{inset:16px;border:1.5px solid var(--pa);border-radius:4px}.fr2{inset:24px;border:1px solid var(--pa)}
+.pt{left:0;width:12px;height:18px;border-radius:70% 0 70% 0;background:var(--pa);top:-24px}.sh{top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent)}
+.ln{left:16%;right:16%;top:22%;height:1.5px;background:var(--pa);transform-origin:0 50%}.ln2{top:78%}
+.wv{left:-10%;right:-10%;bottom:0;height:46px;background:var(--pa);border-radius:50% 50% 0 0/100% 100% 0 0}
+.st{right:12%;bottom:12%;width:78px;height:78px;border:2px solid var(--pa);border-radius:50%;display:grid;place-items:center;font:600 10px/1.2 var(--sans);color:var(--pa);transform:rotate(-14deg)}
+/* events + features */
+.events{padding:80px 0 30px}.row{display:grid;grid-template-columns:minmax(180px,.5fr) 1fr;gap:20px;padding:22px 0;border-top:1px solid var(--line);align-items:baseline}
+.row:last-child{border-bottom:1px solid var(--line)}.row h3{font-size:clamp(1.7rem,3.4vw,2.5rem)}.row p{margin:0;color:var(--muted);max-width:56ch}
+.list{margin-top:30px}
+.feat{padding:70px 0}.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:34px 28px;margin-top:34px}
+.fg h3{font:600 1.35rem var(--sans);display:flex;align-items:center;gap:10px}.fg h3::before{content:"";width:14px;height:14px;border:2px solid var(--gold);border-radius:50%;flex:none}.fg p{margin:8px 0 0;color:var(--muted)}
+.end{padding:90px 0;text-align:center;background:var(--soft)}.end h2{font-size:clamp(2.4rem,5.4vw,4.2rem)}.end .btn{margin-top:26px}
+footer{padding:26px 0;font-size:14px;color:var(--muted);text-align:center}
+@media (max-width:860px){.hero{grid-template-columns:1fr;min-height:0;padding-top:12px}.stage{min-height:520px}.story .cols,.styles .cols{grid-template-columns:1fr}
+.pin{order:-1;top:calc(env(safe-area-inset-top,0px) + 70px);height:min(52svh,430px);z-index:5;background:var(--bg)}.pin .phone{width:auto;height:100%}.steps li{min-height:44vh}
+.fg{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr;gap:6px}}
+@media (max-width:520px){.fg{grid-template-columns:1fr}.logo{font-size:24px}}
+.sr{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<a class="sr" href="#isi">Lewati ke isi</a>
+<header><div class="wrap">
+ <a class="logo" href="#top" aria-label="Momenikah, beranda">
+  <svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke-width="3" stroke-linecap="round"><circle cx="24" cy="32" r="14" stroke="#BE185D"/><circle cx="40" cy="32" r="14" stroke="#B8893B"/><path d="M28.4 45.1A14 14 0 0 0 34.9 41" stroke="#BE185D"/></g><path transform="translate(32 31.6) scale(.8) translate(-32 -33.4)" d="M32 38C27.5 34.6 27.2 31.2 29 29.8C30.3 28.8 31.6 29.4 32 30.6C32.4 29.4 33.7 28.8 35 29.8C36.8 31.2 36.5 34.6 32 38Z" fill="#BE185D"/></svg>
+  <span>Momenikah</span></a>
+ <a class="btn" href="https://momenikah.online/register">Buat undangan</a>
+</div></header>
+
+<main id="isi">
+<section class="wrap hero" id="top">
+ <div>
+  <h1 aria-label="Satu link untuk semua momen nikahmu."><span aria-hidden="true" id="ht">Satu link untuk semua momen nikahmu.</span></h1>
+  <p class="lead">Buat undangan digital yang indah, bagikan lewat WhatsApp, dan biarkan tamu membuka cerita kalian dari ponsel masing-masing.</p>
+  <div class="cta"><a class="btn" href="https://momenikah.online/register">Buat undangan</a><a class="btn ghost" href="#gaya">Lihat semua template</a></div>
+  <p class="note">Tanpa unduh aplikasi. Cukup satu tautan.</p>
+ </div>
+ <div class="stage" aria-hidden="true">
+  <svg class="rings" viewBox="0 0 400 260"><g stroke-width="2.4">
+   <circle class="rA" cx="150" cy="130" r="100" pathLength="1" stroke="#BE185D"/><circle class="rB" cx="250" cy="130" r="100" pathLength="1" stroke="#B8893B"/>
+   <path class="rArc" d="M167.4 228.5A100 100 0 0 0 226.6 194.3" stroke="#BE185D"/></g>
+   <g class="rH"><path transform="translate(200 126) scale(5) translate(-32 -33.4)" d="M32 38C27.5 34.6 27.2 31.2 29 29.8C30.3 28.8 31.6 29.4 32 30.6C32.4 29.4 33.7 28.8 35 29.8C36.8 31.2 36.5 34.6 32 38Z" fill="#BE185D" stroke="none"/></g></svg>
+  <div class="phone" id="hp"><div class="scr" style="justify-content:flex-start">
+   <div class="env" id="env"><div class="back"></div><div class="card"><small>Undangan Pernikahan</small><b>Nanda &amp; Rahmat</b><em>14 Maret 2027</em>
+    <div class="cd"><div><b id="d">0</b><span>hari</span></div><div><b id="h">0</b><span>jam</span></div><div><b id="m">0</b><span>menit</span></div><div><b id="s">0</b><span>detik</span></div></div></div>
+    <div class="body"></div><div class="flap"></div><div class="seal"></div></div>
+   <div style="margin-top:auto;font-size:11px;color:#6B5A62">Kepada Yth. Tamu Undangan</div>
+  </div></div>
+ </div>
+</section>
+
+<section class="story" aria-labelledby="st-h"><div class="wrap">
+ <h2 id="st-h">Dari ide sampai terkirim, tiga langkah.</h2>
+ <div class="cols">
+  <ol class="steps" id="steps">
+   <li class="on"><h3>Pilih template</h3><p>Coba semua gaya dengan data contoh sebelum memutuskan.</p></li>
+   <li><h3>Isi cerita kalian</h3><p>Nama, tanggal, lokasi, foto, kisah cinta, dan musik latar.</p></li>
+   <li><h3>Bagikan lewat WhatsApp</h3><p>Kirim satu tautan. Tamu langsung membuka undangan di ponselnya.</p></li>
+  </ol>
+  <div class="pin" aria-hidden="true"><div class="phone" style="opacity:1"><div id="scrs">
+   <div class="scr on"><div class="tiles"><i style="background:#FBF5EC">Classic</i><i style="background:#FCEEF1">Floral</i><i style="background:#1E1A1C;color:#F3E7C9">Gold</i><i style="background:#FFF1E0">Beach</i><i style="background:#fff;border:1px solid #eee">Minimal</i><i style="background:#E8D8BC">Rustic</i></div></div>
+   <div class="scr"><div class="fld"><small>Nama pasangan</small><div>Nanda &amp; Rahmat</div></div><div class="fld"><small>Tanggal</small><div>14 Maret 2027</div></div><div class="fld"><small>Lokasi</small><div>Gedung Serbaguna</div></div></div>
+   <div class="scr"><div class="bub">Kepada Yth. Bapak/Ibu, kami mengundang Anda ke pernikahan kami:<br><u>momenikah.online/u/nanda-rahmat</u></div></div>
+  </div></div></div>
+ </div>
+</div></section>
+
+<section class="styles" id="gaya"><div class="wrap">
+ <h2>Enam gaya, satu cerita yang sama.</h2>
+ <div class="cols">
+  <div><div class="chips" id="chips"></div><p class="sd" id="sd"></p></div>
+  <div class="pv" id="pv" aria-live="polite">
+   <i class="m fr"></i><i class="m fr fr2"></i><i class="m sh"></i><i class="m ln"></i><i class="m ln ln2"></i><i class="m wv"></i><i class="m st">SIMPAN<br>TANGGALNYA</i>
+   <i class="m pt"></i><i class="m pt"></i><i class="m pt"></i><i class="m pt"></i><i class="m pt"></i>
+   <small>Undangan Pernikahan</small><b>Nanda &amp; Rahmat</b><em>14 Maret 2027</em>
+  </div>
+ </div>
+</div></section>
+
+<section class="events"><div class="wrap">
+ <h2>Untuk setiap momen bahagiamu.</h2>
+ <div class="list">
+  <div class="row"><h3>Pernikahan</h3><p>Kisah cinta, akad dan resepsi, amplop digital dalam satu undangan.</p></div>
+  <div class="row"><h3>Walimatul Urs</h3><p>Salam dan doa yang kamu pilih sendiri, lengkap dengan catatan tempat.</p></div>
+  <div class="row"><h3>Tunangan</h3><p>Dua keluarga, satu hari lamaran, rundown yang jelas.</p></div>
+  <div class="row"><h3>Khitanan</h3><p>Sederhana dan hangat untuk syukuran keluarga.</p></div>
+  <div class="row"><h3>Aqiqah</h3><p>Nama dan cerita kelahiran si kecil, dibagikan ke kerabat.</p></div>
+  <div class="row"><h3>Ulang Tahun</h3><p>Perayaan dengan galeri perjalanan umur dan RSVP.</p></div>
+ </div>
+</div></section>
+
+<section class="feat"><div class="wrap">
+ <h2>Yang ada di dalam undanganmu.</h2>
+ <div class="fg">
+  <div><h3>Kisah cinta</h3><p>Ceritakan pertemuan sampai lamaran dalam garis waktu.</p></div>
+  <div><h3>Galeri foto</h3><p>Tampilkan foto prewedding yang tetap ringan dibuka di ponsel.</p></div>
+  <div><h3>Musik latar</h3><p>Pasang lagu pilihan sebagai pengiring undangan.</p></div>
+  <div><h3>Lokasi acara</h3><p>Tamu membuka peta menuju tempat akad dan resepsi.</p></div>
+  <div><h3>Amplop digital</h3><p>Cantumkan rekening atau e-wallet, tamu menyalinnya dengan satu ketukan.</p></div>
+  <div><h3>Hitung mundur</h3><p>Hitungan menuju hari bahagia, tampil langsung di halaman utama.</p></div>
+ </div>
+</div></section>
+
+<section class="end"><div class="wrap"><h2>Mulai dari satu template.</h2><a class="btn" href="https://momenikah.online/register">Buat undangan</a></div></section>
+</main>
+<footer><div class="wrap">© 2026 Momenikah. Semua data di halaman ini hanya contoh.</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+if(!window.gsap){document.documentElement.classList.remove('js');return}
+gsap.registerPlugin(ScrollTrigger);
+/* pecah judul per kata */
+const ht=$('#ht');ht.innerHTML=ht.textContent.split(' ').map(w=>`<span class="w"><i>${w}</i></span> `).join('');
+/* hitung mundur contoh */
+const target=new Date('2027-03-14T10:00:00+07:00');
+function tick(){let t=Math.max(0,target-Date.now())/1000;
+ $('#d').textContent=Math.floor(t/86400);$('#h').textContent=Math.floor(t%86400/3600);$('#m').textContent=Math.floor(t%3600/60);$('#s').textContent=Math.floor(t%60)}
+tick();setInterval(tick,1000);
+/* gaya template */
+const T=[['Classic Elegant','#FBF5EC','#4A1F2B','#B8893B','Bingkai ganda yang muncul perlahan.'],['Floral Garden','#FCEEF1','#3D4A3A','#7A9A7E','Kelopak bunga berjatuhan.'],['Modern Minimal','#FFFFFF','#111111','#BE185D','Garis yang terbentang.'],['Luxury Gold','#1E1A1C','#F3E7C9','#D4A94A','Kilau emas menyapu layar.'],['Beach Sunset','#FFF1E0','#0F5C63','#F26B5B','Ombak yang bergerak pelan.'],['Rustic Vintage','#E8D8BC','#4A3322','#8A5A36','Cap “Simpan tanggalnya”.']];
+const pv=$('#pv'),chips=$('#chips'),sd=$('#sd'),M=s=>pv.querySelectorAll(s);let ci=-1;
+T.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t[0];b.setAttribute('aria-pressed','false');b.onclick=()=>pick(i,true);chips.append(b)});
+const motif=[()=>{gsap.fromTo(M('.fr'),{autoAlpha:0,scale:1.08},{autoAlpha:1,scale:1,duration:1.1,stagger:.25,ease:'power2.out'})},
+()=>{M('.pt').forEach((p,k)=>gsap.fromTo(p,{autoAlpha:.9,y:-10,x:20+k*60,rotate:0},{y:430,x:'+=30',rotate:200,duration:3.4+k*.4,repeat:-1,delay:k*.5,ease:'none'}))},
+()=>{gsap.fromTo(M('.ln'),{autoAlpha:1,scaleX:0},{scaleX:1,duration:1.1,stagger:.2,ease:'power3.inOut'})},
+()=>{gsap.fromTo(M('.sh'),{autoAlpha:1,x:0},{x:'520%',duration:1.8,repeat:-1,repeatDelay:.9,ease:'power1.inOut'})},
+()=>{gsap.fromTo(M('.wv'),{autoAlpha:.55,x:-20},{x:20,duration:2.2,repeat:-1,yoyo:true,ease:'sine.inOut'})},
+()=>{gsap.fromTo(M('.st'),{autoAlpha:0,scale:2.2,rotate:-14},{autoAlpha:.9,scale:1,rotate:-14,duration:.55,ease:'back.out(2)'})}];
+function pick(i,anim){if(i===ci)return;ci=i;const t=T[i];
+ $$('#chips button').forEach((b,k)=>b.setAttribute('aria-pressed',k===i));sd.textContent=t[4];
+ gsap.killTweensOf(M('.m'));gsap.set(M('.m'),{autoAlpha:0,x:0,y:0,scale:1,rotate:0});
+ gsap.to(pv,{'--pb':t[1],'--pi':t[2],'--pa':t[3],duration:anim?.6:0});
+ if(matchMedia('(prefers-reduced-motion:reduce)').matches){gsap.set(M(['.fr','.pt','.ln','.sh','.wv','.st'][i]),{autoAlpha:i===1?.9:i===4?.55:1,y:i===1?60:0,scaleX:1});return}
+ gsap.delayedCall(anim?.15:0,motif[i]);
+}
+/* motif: 0 classic, 1 floral, 2 minimal, 3 gold, 4 beach, 5 rustic */
+pick(0,false);
+/* cerita 3 langkah */
+const scrs=$$('#scrs .scr'),steps=$$('#steps li');let cur=0;
+function show(i){if(i===cur)return;scrs[cur].classList.remove('on');steps[cur].classList.remove('on');cur=i;scrs[i].classList.add('on');steps[i].classList.add('on');
+ gsap.fromTo(scrs[i],{autoAlpha:0,y:24},{autoAlpha:1,y:0,duration:.5,ease:'power2.out'});gsap.to(scrs.filter((_,k)=>k!==i),{autoAlpha:0,duration:.25})}
+gsap.set(scrs,{autoAlpha:0});gsap.set(scrs[0],{autoAlpha:1});
+steps.forEach((li,i)=>ScrollTrigger.create({trigger:li,start:'top 55%',end:'bottom 55%',onToggle:s=>s.isActive&&show(i)}));
+/* intro hero */
+const mm=gsap.matchMedia();
+mm.add('(prefers-reduced-motion:no-preference)',()=>{
+ const tl=gsap.timeline({defaults:{ease:'power2.inOut'}});
+ tl.to('.rA',{strokeDashoffset:0,duration:1.1})
+  .fromTo('.rB',{x:90},{x:0,strokeDashoffset:0,duration:1.2},.25)
+  .to('.rArc',{opacity:1,duration:.2},1.35)
+  .fromTo('.rH',{opacity:0,scale:.2,svgOrigin:'200 126'},{opacity:1,scale:1,duration:.7,ease:'back.out(2.4)'},1.35)
+  .from('.hero h1 .w i',{yPercent:110,duration:.9,stagger:.09,ease:'power3.out'},1)
+  .from('.hero .lead,.hero .cta,.hero .note',{autoAlpha:0,y:16,duration:.7,stagger:.1,ease:'power2.out'},1.7)
+  .to('.rings',{opacity:.32,duration:1},2.1)
+  .fromTo('#hp',{autoAlpha:0,y:70,rotate:3},{autoAlpha:1,y:0,rotate:0,duration:1,ease:'power3.out'},1.4)
+  .fromTo('#env .flap',{rotationX:0,transformPerspective:600},{rotationX:178,duration:.9,ease:'power2.inOut'},2.5)
+  .set('#env .flap',{zIndex:0},2.9).to('#env .seal',{autoAlpha:0,duration:.3},2.5)
+  .to('#env .card',{y:-62,clipPath:'inset(0px 0px 0px 0px)',duration:.9,ease:'power3.out'},2.9)
+  .to('#env .body,#env .back',{autoAlpha:.0,duration:.6},3.6);
+ if(matchMedia('(pointer:fine)').matches){const px=gsap.quickTo('.rings',{x:0,duration:1,ease:'power3'}),py=gsap.quickTo('.rings',{y:0,duration:1,ease:'power3'}),hx=gsap.quickTo('#hp',{x:0,duration:.9,ease:'power3'});
+  const mv=e=>{const a=e.clientX/innerWidth-.5,b=e.clientY/innerHeight-.5;px(a*-34);py(b*-24);hx(a*14)};addEventListener('pointermove',mv);return()=>removeEventListener('pointermove',mv)}
+});
+mm.add('(prefers-reduced-motion:reduce)',()=>{gsap.set(['.rA','.rB'],{strokeDashoffset:0});gsap.set(['.rArc','.rH','#hp'],{opacity:1});gsap.set('.rings',{opacity:.32});
+ gsap.set('#env .flap',{rotationX:178,zIndex:0});gsap.set('#env .seal',{autoAlpha:0});gsap.set('#env .card',{y:-62,clipPath:'inset(0px 0px 0px 0px)'});gsap.set('#env .body,#env .back',{autoAlpha:0})});
+addEventListener('load',()=>ScrollTrigger.refresh());
+})();
+</script>
+</body>
+</html>

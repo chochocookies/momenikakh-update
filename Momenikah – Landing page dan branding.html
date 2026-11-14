@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Momenikah – Undangan pernikahan digital</title>
+<meta name="description" content="Buat undangan pernikahan digital, bagikan lewat WhatsApp, dan biarkan tamu membuka cerita kalian.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF8F3;--ink:#2B1B22;--mu:#6B5A62;--ro:#BE185D;--on:#fff;--r1:#FCE7F3;--ln:#EBD9DF;--sf:'Plus Jakarta Sans',system-ui,sans-serif;--sr:'Cormorant Garamond',Georgia,serif;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1B1217;--ink:#F6E9EE;--mu:#B9A5AE;--ro:#F472B6;--on:#2B1B22;--r1:#3A1F2C;--ln:#3B2A32;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#1B1217;--ink:#F6E9EE;--mu:#B9A5AE;--ro:#F472B6;--on:#2B1B22;--r1:#3A1F2C;--ln:#3B2A32;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.65 var(--sf)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ro);outline-offset:3px}
+.w{max-width:1120px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--sr);font-weight:600;line-height:1.05;margin:0}
+h1{font-size:clamp(2.9rem,8.5vw,5.4rem);letter-spacing:-.01em}
+h2{font-size:clamp(2.1rem,5vw,3.3rem)}
+p{margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;border-radius:999px;background:var(--ro);color:var(--on);font:700 1rem var(--sf);text-decoration:none;border:0;cursor:pointer;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.g{background:none;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.lg{display:inline-flex;align-items:center;gap:10px;font:600 1.8rem/1 var(--sr);text-decoration:none}
+.lg svg{width:38px;height:36px}.r1{fill:none;stroke:currentColor;stroke-width:2.4}.r2{fill:none;stroke:var(--ro);stroke-width:2.4}.hh{fill:var(--ro)}
+.hero{display:grid;gap:44px;padding:20px 20px 80px;align-items:center}
+.lead{font-size:1.2rem;max-width:34ch;color:var(--mu);margin-top:22px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin:30px 0 16px}
+.note{font-size:.875rem;color:var(--mu)}
+.demo{display:flex;flex-direction:column;align-items:center;gap:20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:400px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ln);background:none;color:var(--ink);font:600 .875rem var(--sf);cursor:pointer}
+.chip i{width:12px;height:12px;border-radius:50%;background:var(--c)}
+.chip[aria-pressed=true]{border-color:var(--ro);background:var(--r1)}
+.sec{padding:76px 0}
+.sec>.w>h2{max-width:16ch}
+.sub{color:var(--mu);max-width:46ch;margin-top:14px}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:44px 24px;margin-top:48px}
+.gc{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.gc h3{font-size:1.7rem;margin-top:14px}
+.gc p{color:var(--mu);font-size:.9375rem;max-width:24ch;margin-bottom:8px}
+ol{list-style:none;counter-reset:s;padding:0;margin:48px 0 0;display:grid;gap:32px}
+ol li{counter-increment:s;border-top:1px solid var(--ln);padding-top:18px}
+ol li::before{content:counter(s);font:600 3.4rem/1 var(--sr);color:var(--ro);display:block;margin-bottom:8px}
+ol b{display:block;font:600 1.6rem/1.15 var(--sr);margin-bottom:6px}
+ol span{color:var(--mu)}
+.fl{margin-top:44px;border-top:1px solid var(--ln)}
+.fl div{padding:20px 0;border-bottom:1px solid var(--ln)}
+.fl b{display:block;font:600 1.7rem/1.1 var(--sr)}
+.fl span{color:var(--mu)}
+.bd{background:#2B1B22;color:#FFF8F3}
+.bd .sub{color:#D8C4CC}
+.bd .lg{font-size:2.8rem;margin-bottom:22px}.bd .lg svg{width:58px;height:54px}.bd .r1{stroke:#FFF8F3}.bd .r2{stroke:#F472B6}.bd .hh{fill:#F472B6}
+.bg2{display:grid;gap:48px}
+.sw{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sw div{min-height:92px;border-radius:12px;padding:10px;font-size:.875rem;line-height:1.3;display:flex;flex-direction:column;justify-content:flex-end}
+.sw b{font-weight:700}
+.spec{margin-top:20px;display:grid;gap:8px}
+.spec p:first-child{font:600 2.6rem/1 var(--sr)}
+.spec p:last-child{font:500 1.15rem var(--sf)}
+.vo{margin-top:26px;padding:0;list-style:none;display:grid;gap:6px;counter-reset:none}
+.vo li{border:0;padding:0;counter-increment:none}.vo li::before{content:none}
+.fin{text-align:center}.fin h2{margin:0 auto 26px;max-width:14ch}
+footer{padding:36px 0 48px;border-top:1px solid var(--ln);color:var(--mu);font-size:.875rem}
+footer .w{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+@media(min-width:860px){.hero{grid-template-columns:1.1fr .9fr;padding-top:56px}ol,.fl{grid-template-columns:repeat(3,1fr);gap:32px}.fl{grid-template-columns:1fr 1fr;column-gap:56px}.bg2{grid-template-columns:1fr 1fr}.sec{padding:104px 0}}
+
+/* ---------- Phone preview (em-based; font-size sets the scale) ---------- */
+.ph{position:relative;width:17em;aspect-ratio:9/18;border-radius:2.1em;border:.4em solid #1c1417;overflow:hidden;background:var(--pb);color:var(--pt);font-family:var(--sf);line-height:1.35;box-shadow:0 2em 4em -1.6em rgba(43,27,34,.5);isolation:isolate}
+.in,.cv,.fx{position:absolute;inset:0}
+.in{z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.7em;padding:2em 1.4em}
+.in>*{opacity:0;transform:translateY(1em);transition:opacity .6s calc(.7s + var(--i)*.14s),transform .6s calc(.7s + var(--i)*.14s)}
+.op .in>*{opacity:1;transform:none}
+.cv{z-index:2;background:var(--pb);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9em;text-align:center;padding:2em;transition:transform 1s cubic-bezier(.7,0,.2,1)}
+.op .cv{transform:translateY(-101%)}
+.fx{z-index:3;pointer-events:none}
+.ph p{font-size:.875em}
+.nm{font:var(--pw,600) 2.3em/1 var(--pf);color:var(--pa)}
+.bo{font:700 .9em var(--sf);background:var(--pa);color:var(--po);border:0;border-radius:999px;padding:0 1.4em;min-height:2.75em;display:inline-flex;align-items:center;cursor:pointer}
+.cd{display:flex;gap:.5em}
+.cd span{display:flex;flex-direction:column;align-items:center;min-width:3.6em;padding:.5em .3em;border:1px solid var(--pa);border-radius:.6em;font-size:.875em}
+.cd b{font:600 1.6em/1 var(--pf)}
+.gf{border:1px dashed var(--pa);padding:.4em 1em;border-radius:999px}
+.t-classic{--pb:#FBF5EC;--pt:#4A1F2B;--pa:#7B1E3A;--po:#fff;--pf:var(--sr)}
+.t-classic .fx{inset:.7em;border-radius:1.5em;box-shadow:inset 0 0 0 1px var(--pa),inset 0 0 0 .35em #FBF5EC,inset 0 0 0 calc(.35em + 1px) var(--pa);animation:fi 2s both}
+.t-beach{--pb:linear-gradient(#FFE6CF,#FFC9A8 60%,#9FDAD6);--pt:#5A2E2A;--pa:#B83A28;--po:#fff;--pf:var(--sr)}
+.t-beach .fx::before,.t-beach .fx::after{content:"";position:absolute;left:0;bottom:0;width:calc(100% + 2em);height:1.2em;background:radial-gradient(circle at 50% 100%,#5FB9B5 0 .95em,#0000 1em) 0 100%/2em 1.1em repeat-x;animation:wv 5s linear infinite}
+.t-beach .fx::after{bottom:-.35em;background:radial-gradient(circle at 50% 100%,#ffffffb0 0 .95em,#0000 1em) 0 100%/2em 1.1em repeat-x;animation-duration:8s;animation-direction:reverse}
+.t-floral{--pb:linear-gradient(#FFF3F5,#EEF4E8);--pt:#44503D;--pa:#A8456A;--po:#fff;--pf:var(--sr)}
+.t-floral s{position:absolute;top:-1.2em;width:.7em;height:1em;background:#F4B6C6;border-radius:100% 0;opacity:.85;animation:pt linear infinite}
+.t-lux{--pb:#15110D;--pt:#F1E3C0;--pa:#D4AF37;--po:#15110D;--pf:var(--sr)}
+.t-lux .fx::before{content:"";position:absolute;inset:.6em;border:1px solid #D4AF3799;border-radius:1.5em}
+.t-lux .fx::after{content:"";position:absolute;top:-10%;bottom:-10%;left:0;width:35%;background:linear-gradient(100deg,#0000,#FFE9A066,#0000);transform:translateX(-150%) skewX(-18deg);animation:sw 4.2s ease-in-out infinite}
+.t-min{--pb:#fff;--pt:#111;--pa:#BE185D;--po:#fff;--pf:var(--sf);--pw:800}
+.t-min .nm{color:var(--pt);letter-spacing:-.03em}
+.t-min .fx::before,.t-min .fx::after{content:"";position:absolute;left:1.4em;right:1.4em;top:3em;height:2px;background:#111;transform-origin:left;animation:ln 1.4s .3s cubic-bezier(.7,0,.2,1) both}
+.t-min .fx::after{top:auto;bottom:3em;transform-origin:right}
+.t-rus{--pb:#E9D8BC;--pt:#4B3621;--pa:#8A4B2A;--po:#fff;--pf:var(--sr)}
+.t-rus .fx{background:radial-gradient(#4B362622 1px,#0000 1.3px) 0 0/5px 5px}
+.t-rus .fx::after{content:"Simpan tanggalnya";position:absolute;right:1em;top:20%;border:2px solid var(--pa);color:var(--pa);padding:.2em .6em;border-radius:.3em;font:700 .875em var(--sf);transform:rotate(-12deg) scale(1.7);opacity:0}
+.t-rus.gc .t-rus .fx::after{opacity:.9;transform:rotate(-12deg)}
+@keyframes fi{from{opacity:0}}
+@keyframes wv{to{transform:translateX(-2em)}}
+@keyframes pt{to{transform:translate(2.5em,38em) rotate(400deg)}}
+@keyframes sw{60%,100%{transform:translateX(420%) skewX(-18deg)}}
+@keyframes ln{from{transform:scaleX(0)}}
+@keyframes st{to{opacity:.9;transform:rotate(-12deg) scale(1)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important;transition-delay:0s!important}html{scroll-behavior:auto}.t-rus .fx::after{opacity:.9;transform:rotate(-12deg)}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="lg" viewBox="0 0 40 38"><circle class="r1" cx="15" cy="24" r="10"/><circle class="r2" cx="25" cy="24" r="10"/><path class="hh" d="M20 12.5S14 9.5 14 6c0-2.8 3.6-3.3 6-.4 2.4-2.9 6-2.4 6 .4 0 3.500-6 6.500-6 6.500z"/></symbol></svg>
+
+<header class="w"><nav aria-label="Utama">
+<a class="lg" href="#top" aria-label="Momenikah, ke atas"><svg aria-hidden="true"><use href="#lg"/></svg>Momenikah</a>
+<a class="btn" href="https://momenikah.online/register">Buat undangan</a>
+</nav></header>
+
+<main id="top">
+<section class="w hero">
+<div>
+<h1>Satu link untuk semua momen nikahmu.</h1>
+<p class="lead">Buat undangan digital yang indah, bagikan lewat WhatsApp, dan biarkan tamu membuka cerita kalian dari ponsel masing-masing.</p>
+<div class="cta"><a class="btn" href="https://momenikah.online/register">Buat undangan</a><a class="btn g" href="#gaya">Lihat semua template</a></div>
+<p class="note">Tanpa unduh aplikasi. Cukup satu tautan.</p>
+</div>
+<div class="demo">
+<div id="hero" role="group" aria-label="Contoh undangan"></div>
+<div class="chips" id="chips" role="group" aria-label="Pilih template contoh"></div>
+<button class="btn g" id="re" type="button">Putar ulang pembukaan</button>
+</div>
+</section>
+
+<section class="sec" id="gaya"><div class="w">
+<h2>Enam gaya, satu cerita yang sama.</h2>
+<p class="sub">Setiap template punya suasana dan gerak sendiri. Pilih yang paling mirip dengan hari bahagiamu, isi datanya, selesai.</p>
+<div class="gal" id="gal"></div>
+</div></section>
+
+<section class="sec"><div class="w">
+<h2>Dari ide sampai terkirim, tiga langkah.</h2>
+<ol>
+<li><b>Pilih template</b><span>Coba semua gaya dengan data contoh sebelum memutuskan.</span></li>
+<li><b>Isi cerita kalian</b><span>Nama, tanggal, lokasi, foto, kisah cinta, dan musik latar.</span></li>
+<li><b>Bagikan lewat WhatsApp</b><span>Kirim satu tautan. Tamu langsung membuka undangan di ponselnya.</span></li>
+</ol>
+</div></section>
+
+<section class="sec"><div class="w">
+<h2>Yang ada di dalam undanganmu.</h2>
+<div class="fl">
+<div><b>Kisah cinta</b><span>Ceritakan pertemuan sampai lamaran dalam garis waktu.</span></div>
+<div><b>Galeri foto</b><span>Tampilkan foto prewedding yang tetap ringan dibuka di ponsel.</span></div>
+<div><b>Musik latar</b><span>Pasang lagu pilihan sebagai pengiring undangan.</span></div>
+<div><b>Lokasi acara</b><span>Tamu membuka peta menuju tempat akad dan resepsi.</span></div>
+<div><b>Amplop digital</b><span>Cantumkan rekening atau e-wallet, tamu menyalinnya dengan satu ketukan.</span></div>
+<div><b>Hitung mundur</b><span>Hitungan menuju hari bahagia, tampil langsung di halaman utama.</span></div>
+</div>
+</div></section>
+
+<section class="sec bd"><div class="w bg2">
+<div>
+<span class="lg"><svg aria-hidden="true"><use href="#lg"/></svg>Momenikah</span>
+<h2>Satu link untuk semua momen nikahmu.</h2>
+<p class="sub">Momen dan nikah, disatukan seperti dua cincin yang saling mengait. Panduan identitas ini masih usulan dan menunggu persetujuan pemilik.</p>
+<ul class="vo"><li>Hangat, bukan formal yang kaku.</li><li>Jelas: satu tombol, satu tujuan.</li><li>Romantis tanpa berlebihan.</li></ul>
+</div>
+<div>
+<div class="sw" id="sw"></div>
+<div class="spec"><p>Cormorant Garamond</p><p>Plus Jakarta Sans untuk teks dan tombol.</p></div>
+</div>
+</div></section>
+
+<section class="sec fin"><div class="w">
+<h2>Mulai dari satu template.</h2>
+<a class="btn" href="https://momenikah.online/register">Buat undangan</a>
+</div></section>
+</main>
+
+<footer><div class="w"><span class="lg" style="font-size:1.4rem"><svg aria-hidden="true" style="width:30px;height:28px"><use href="#lg"/></svg>Momenikah</span><span>© 2026 Momenikah. Semua data di halaman ini hanya contoh.</span></div></footer>
+
+<script>
+const T=[
+{k:'classic',n:'Classic Elegant',d:'Formal dengan bingkai ganda dan huruf serif yang tenang.',c:'#7B1E3A'},
+{k:'beach',n:'Beach Sunset',d:'Langit senja dan ombak yang bergerak pelan.',c:'#B83A28'},
+{k:'floral',n:'Floral Garden',d:'Kelopak bunga jatuh lembut di atas warna blush.',c:'#A8456A'},
+{k:'lux',n:'Luxury Gold',d:'Latar gelap dengan kilau emas yang menyapu layar.',c:'#D4AF37'},
+{k:'min',n:'Modern Minimal',d:'Garis tipis dan tipografi tebal yang bersih.',c:'#111111'},
+{k:'rus',n:'Rustic Vintage',d:'Kertas kraft hangat dengan cap tanggal.',c:'#8A4B2A'}];
+const $=s=>document.querySelector(s),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const ph=(t,big)=>{const b=big?'button':'span';return `<div class="ph t-${t.k}"${big?'':' aria-hidden="true"'} style="font-size:${big?16:9}px"><div class="in"><p style="--i:0">Undangan pernikahan</p><h3 class="nm" style="--i:1">Raka &amp; Sinta</h3><p style="--i:2">Minggu, 14 Maret 2027</p><div class="cd" style="--i:3"><span><b data-d>0</b>hari</span><span><b data-h>0</b>jam</span><span><b data-m>0</b>menit</span></div><p style="--i:4">Akad pukul 09.00 WIB<br>Gedung Mawar, lokasi contoh</p><p class="gf" style="--i:5">Amplop digital</p></div><div class="cv"><p>The Wedding of</p><h3 class="nm">Raka &amp; Sinta</h3><p>14 · 03 · 2027</p><${b} class="bo"${big?' type="button"':''}>Buka undangan</${b}></div><div class="fx">${t.k=='floral'?Array.from({length:9},(_,i)=>`<s style="left:${i*11+2}%;animation-duration:${6+i%4*1.5}s;animation-delay:-${i*1.3}s"></s>`).join(''):''}</div></div>`};
+const tg=new Date('2027-03-14T09:00:00+07:00');
+function tick(){const s=Math.max(0,(tg-Date.now())/1e3|0),v=[s/86400|0,s%86400/3600|0,s%3600/60|0];['d','h','m'].forEach((k,i)=>document.querySelectorAll('[data-'+k+']').forEach(e=>e.textContent=v[i]))}
+let cur=0,tm;
+const open=()=>{const p=$('#hero .ph');p&&p.classList.add('op')};
+function set(i){cur=i;clearTimeout(tm);$('#hero').innerHTML=ph(T[i],1);$('#hero').setAttribute('aria-label','Contoh undangan: '+T[i].n);
+document.querySelectorAll('.chip').forEach((c,j)=>c.setAttribute('aria-pressed',j==i));
+$('#hero .bo').onclick=open;tick();tm=setTimeout(open,RM?100:1500)}
+$('#chips').innerHTML=T.map((t,i)=>`<button class="chip" type="button" style="--c:${t.c}" data-i="${i}"><i></i>${t.n}</button>`).join('');
+$('#chips').onclick=e=>{const b=e.target.closest('.chip');b&&set(+b.dataset.i)};
+$('#re').onclick=()=>set(cur);
+$('#gal').innerHTML=T.map((t,i)=>`<div class="gc">${ph(t)}<h3>${t.n}</h3><p>${t.d}</p><button class="btn g" type="button" data-i="${i}" aria-label="Coba ${t.n}">Coba template</button></div>`).join('');
+$('#gal').onclick=e=>{const b=e.target.closest('button');if(b){set(+b.dataset.i);$('#top').scrollIntoView({behavior:RM?'auto':'smooth'})}};
+$('#sw').innerHTML=[['Rose','#BE185D','#fff'],['Rose lembut','#FCE7F3','#2B1B22'],['Tinta','#2B1B22','#fff'],['Gading','#FFF8F3','#2B1B22'],['Emas premium','#B8893B','#fff'],['Abu hangat','#6B5A62','#fff']].map(s=>`<div style="background:${s[1]};color:${s[2]}"><b>${s[0]}</b>${s[1]}</div>`).join('');
+set(0);setInterval(tick,30000);
+</script>
+</body>
+</html>

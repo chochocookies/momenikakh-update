@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git add:*)", "Bash(git commit:*)",
+      "Bash(php artisan test:*)", "Bash(php artisan route:list:*)", "Bash(php artisan migrate)", "Bash(php artisan migrate:rollback:*)",
+      "Bash(php artisan make:*)", "Bash(php artisan templates:*)",
+      "Bash(./vendor/bin/pest:*)", "Bash(./vendor/bin/pint:*)", "Bash(./vendor/bin/phpstan:*)",
+      "Bash(composer test)", "Bash(composer audit)", "Bash(npm run build)", "Bash(npm run lint)", "Bash(npm audit)", "Bash(npx playwright test:*)"
+    ],
+    "ask": ["Bash(composer require:*)", "Bash(npm install:*)", "Bash(git push:*)", "Bash(php artisan migrate:status)"],
+    "deny": [
+      "Read(./.env)", "Read(./.env.*)", "Read(./storage/logs/**)", "Read(./storage/app/**)", "Read(./**/*.sql)", "Read(./**/*.sqlite)",
+      "Bash(php artisan migrate:fresh:*)", "Bash(php artisan db:wipe:*)", "Bash(php artisan migrate:reset:*)",
+      "Bash(git push --force:*)", "Bash(git reset --hard:*)", "Bash(rm -rf:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write", "hooks": [ { "type": "command", "command": "[ -x ./vendor/bin/pint ] && ./vendor/bin/pint --dirty -q || true" } ] }
+    ]
+  }
+}
