@@ -1,0 +1,5 @@
+[
+ {"@context":"https://schema.org","@type":"Organization","name":"Momenikah","url":"https://momenikah.online","logo":"https://momenikah.online/android-chrome-512.png"},
+ {"@context":"https://schema.org","@type":"WebSite","name":"Momenikah","url":"https://momenikah.online","inLanguage":"id-ID"},
+ {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Momenikah","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Pembuat undangan digital untuk pernikahan, walimatul urs, tunangan, khitanan, aqiqah, dan ulang tahun."}
+]

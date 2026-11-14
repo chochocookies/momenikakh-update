@@ -1,0 +1,4 @@
+# Jangan Disallow: pratinjau WhatsApp/sosial perlu mengambil halaman.
+# Pengindeksan dicegah lewat <meta robots noindex> + header X-Robots-Tag, bukan robots.txt.
+User-agent: *
+Allow: /

@@ -8,12 +8,12 @@ Momenikah = *momen* + *nikah*. Hangat, elegan, romantis, tenang, premium tanpa j
 ## Token
 | Token | Nilai | Pakai |
 |---|---|---|
-| rose-600 | `#BE185D` | aksi utama (kontras 5,9 : 1 di ivory) |
+| rose-600 | `#BE185D` | aksi utama (kontras 5,7 : 1 di ivory) |
 | rose-100 | `#FCE7F3` | lencana, hover |
 | ink | `#2B1B22` | teks |
 | muted | `#6B5A62` | teks sekunder |
 | ivory | `#FFF8F3` | permukaan |
-| gold | `#B8893B` | aksen premium/cincin |
+| gold | `#B8893B` | aksen premium/cincin (kontras 3,0 : 1: dekorasi dan teks besar saja, bukan teks isi) |
 Huruf: **Cormorant Garamond** (judul, wordmark) + **Plus Jakarta Sans** (UI, tombol). Skala 12/14/16/18/20/24/30/36/48/60; jarak kelipatan 4; radius 8/12/999.
 
 ## Logo
@@ -39,7 +39,7 @@ Salin ke `public/` dan pasang:
 Catatan: `site.webmanifest` merujuk `/android-chrome-*.png` dan `/maskable-512.png` di akar `public/`.
 
 ## Sosial
-`brand/social/og-default.png` 1200×630 (sumber `og-default.svg`).
+`brand/social/`: `og-default.png` dan satu OG per jenis acara (1200×630), `avatar-400.png`. SEO: `brand/seo/`.
 
 ## Gerak merek
 Satu momen utama di landing: dua cincin menggambar diri lalu saling mengait (stroke draw + geser), diikuti hati muncul. Selebihnya tenang. Hanya `transform`/`opacity`; hormati `prefers-reduced-motion`.
