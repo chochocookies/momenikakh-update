@@ -1,5 +1,6 @@
 ---
-description: Buat template undangan baru dari kerangka
-argument-hint: <slug-template>
+description: Membuat template undangan baru (contoh: /new-template soft-rose)
 ---
-Muat skill `template-authoring` dan `gsap-motion`. Jalankan `php artisan make:template $ARGUMENTS`, isi `manifest.php` (jenis acara yang didukung, bagian, palet, tingkat gerak), tulis `theme.css` dan `theme.js` hanya berupa token + animasi, dan override bagian hanya bila perlu. Jalankan `php artisan templates:audit` dan tes render untuk setiap jenis acara yang didukung.
+Slug: $ARGUMENTS (kebab-case). Gunakan skill `template-authoring` dan `docs/TEMPLATE_SPEC.md`.
+Tanyakan hanya yang belum jelas: suasana, jenis acara yang didukung, palet warna (2 sampai 4), daftar aset ornamen yang tersedia, tier (free atau premium).
+Lalu: `php artisan template:make $ARGUMENTS`, isi manifest, token, susun section dari `_shared`, tambahkan ornamen, `php artisan template:lint $ARGUMENTS`, periksa pratinjau di 360, 768, 1280 px untuk semua palet dan mode kurangi gerakan. Jangan menyentuh template lain.

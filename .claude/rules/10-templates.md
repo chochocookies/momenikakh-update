@@ -1,15 +1,14 @@
 ---
 paths:
-  - "resources/views/templates/**"
+  - "resources/templates/**"
+  - "app/Services/Templates/**"
 ---
-
-# Invitation templates
-
-Six templates: classic-elegant, beach-sunset, floral-garden, luxury-gold, modern-minimal, rustic-vintage. Each has `cover`, `index`, `sections/*`, `partials/*`.
-
-- Read only real columns. These do NOT exist: `story`, `phone`, `email`, `couple_name`, `wedding_date` (and about 20 more read by classic-elegant). Real ones include `love_story`, `groom_father`, `bride_father`, `event_maps_url`, `music_url`, `gift_settings`, `gallery_photos`.
-- Classic Elegant is the fallback template and shows sample data today (P0-03).
-- Pass user data to JavaScript only through `data-*` attributes or `@js()`. Never put `{{ }}` inside `onclick` or a JavaScript string (P0-04).
-- Do not add the Tailwind Play CDN, a new CDN script or a new font. Images need `loading="lazy"`, `decoding="async"`, `width`, `height`. Audio needs `preload="none"`.
-- A template change must also consider the other five templates, the preview sample data in `TemplateController`, and a check at 360 px.
-- Before structural work run `node AI_CONTEXT/cline/show.mjs debt DEBT-01` and `adr ADR-016`.
+# Aturan template
+- Satu template = satu folder `resources/templates/{slug}/` yang berdiri sendiri. Isi minimal: `manifest.json`, `index.blade.php`, `cover.blade.php`, `theme.css`. Opsional: `theme.js`, `sections/` (hanya override), `assets/`.
+- `slug` unik, huruf kecil dan tanda hubung. Jangan ganti slug setelah ada undangan yang memakainya.
+- Template hanya menerima `$invitation` (`InvitationViewModel`). Nama tamu ditampilkan lewat slot `<span data-guest>Tamu Undangan</span>` yang diisi `core.js`. Jangan memakai model, query, `auth()`, atau `request()`.
+- Semua section yang umum memakai komponen dari `_shared`. Override section hanya bila tampilannya memang berbeda, dan tetap mengikuti kontrak variabel di `docs/TEMPLATE_SPEC.md`.
+- Warna, font, dan jarak diambil dari variabel CSS tema (`--t-*`) yang didefinisikan di `theme.css`. Jangan menulis warna heksadesimal di luar blok token.
+- Ornamen dekoratif: `alt=""` dan `aria-hidden="true"`, `pointer-events: none`, dan tidak menutupi teks atau tombol. Paling banyak 3 ornamen per section.
+- Bobot: CSS tema ≤ 30 KB, JS tema ≤ 20 KB (gzip), aset gambar total ≤ 400 KB per template. Jalankan `php artisan template:lint {slug}` sebelum PR.
+- Setiap template wajib punya sample data yang membuat semua section tampil, gambar `thumb.webp` (600×1200) dan `preview.webp`.

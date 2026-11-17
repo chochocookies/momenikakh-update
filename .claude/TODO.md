@@ -5,41 +5,41 @@ Status: `[ ]` belum · `[~]` dikerjakan · `[x]` selesai (bukti ada) · `[!]` me
 ## FND — Fondasi (M0)
 | St | ID | Tugas | Dep | Selesai bila | Uk |
 |---|---|---|---|---|---|
-| [ ] | FND-01 | Buat repo `momenikah`, proteksi cabang `main`, `.gitignore`, `.editorconfig`, salin `.claude/` | – | repo ada; PR wajib review | S |
-| [ ] | FND-02 | Pasang Laravel 13 (PHP 8.3+), MySQL + Redis via Docker Compose | FND-01 | `php artisan about` benar; `composer test` hijau | M |
-| [ ] | FND-03 | Pint, Larastan (naik bertahap), Pest, GitHub Actions (lint, stan, test, build) | FND-02 | PR merah bila salah satu gagal | M |
-| [ ] | FND-04 | Struktur `app/Domain/*` + Pest arch tests (Domain ↛ Http/Livewire/Filament) | FND-02 | arch test hijau dan gagal bila dilanggar | M |
-| [ ] | FND-05 | Tiga domain lokal (`momenikah.test`, `app.`, `undangan.`), `config/surfaces.php`, `routes/{marketing,app,public}.php` | FND-02 | ketiganya menampilkan halaman uji berbeda | S |
-| [ ] | FND-06 | Staging + skrip deploy tanpa downtime + cadangan DB harian + Sentry | FND-03, DEC-02 | deploy via tag; pemulihan cadangan diuji | L |
-| [ ] | FND-07 | Autentikasi (daftar, masuk, reset, verifikasi email) dengan starter kit Livewire resmi + throttle | FND-02 | tes auth hijau; throttle login terbukti | M |
-| [ ] | FND-08 | Middleware header keamanan + CSP per permukaan | FND-05 | tidak ada temuan merah di scanner header (staging) | M |
-| [ ] | FND-09 | `THIRD_PARTY.md`: lisensi GSAP (cek gsap.com), font OFL, paket, versi terpasang | FND-02 | file ada; GSAP dinyatakan boleh untuk produk komersial atau diganti | S |
+| [x] | FND-01 | Buat repo `momenikah`, proteksi cabang `main`, `.gitignore`, `.editorconfig`, salin `.claude/` | – | repo ada; PR wajib review | S |
+| [x] | FND-02 | Pasang Laravel 13 (PHP 8.3+), MySQL + Redis via Docker Compose | FND-01 | `php artisan about` benar; `composer test` hijau | M |
+| [x] | FND-03 | Pint, Larastan (naik bertahap), Pest, GitHub Actions (lint, stan, test, build) | FND-02 | PR merah bila salah satu gagal | M |
+| [x] | FND-04 | Struktur `app/Domain/*` + Pest arch tests (Domain ↛ Http/Livewire/Filament) | FND-02 | arch test hijau dan gagal bila dilanggar | M |
+| [x] | FND-05 | Tiga domain lokal (`momenikah.test`, `app.`, `undangan.`), `config/surfaces.php`, `routes/{marketing,app,public}.php` | FND-02 | ketiganya menampilkan halaman uji berbeda | S |
+| [x] | FND-06 | Staging + skrip deploy tanpa downtime + cadangan DB harian + Sentry | FND-03, DEC-02 | deploy via tag; pemulihan cadangan diuji | L |
+| [x] | FND-07 | Autentikasi (daftar, masuk, reset, verifikasi email) dengan starter kit Livewire resmi + throttle | FND-02 | tes auth hijau; throttle login terbukti | M |
+| [x] | FND-08 | Middleware header keamanan + CSP per permukaan | FND-05 | tidak ada temuan merah di scanner header (staging) | M |
+| [x] | FND-09 | `THIRD_PARTY.md`: lisensi GSAP (cek gsap.com), font OFL, paket, versi terpasang | FND-02 | file ada; GSAP dinyatakan boleh untuk produk komersial atau diganti | S |
 
 ## DS — Design system (M0/M4)
 | St | ID | Tugas | Dep | Selesai bila | Uk |
 |---|---|---|---|---|---|
-| [ ] | DS-01 | Token merek ke Tailwind 4 `@theme` (`tokens.css`): warna, huruf, skala, radius | FND-02 | `/styleguide` menampilkan token | M |
-| [ ] | DS-02 | Font self-host (Cormorant Garamond, Plus Jakarta Sans), subset latin, `font-display: swap` | DS-01 | 0 permintaan ke fonts.googleapis.com | S |
-| [ ] | DS-03 | Komponen Blade: button, field, input, select, textarea, card, badge, modal, toast, tabs, empty-state | DS-01 | semua tampil di `/styleguide` pada 360/768/1280 | L |
-| [ ] | DS-04 | Satu set ikon SVG inline | DS-01 | tanpa emoji sebagai ikon | S |
-| [ ] | DS-05 | Pasang `brand/` ke `public/` + `<x-seo.head>` (favicon, manifest, theme-color) | DS-01, DEC-10 | favicon tampil; manifest valid | S |
-| [ ] | DS-06 | Tiga layout (pemasaran, aplikasi, publik) | DS-03 | tiap permukaan memakai layout sendiri | M |
-| [ ] | DS-07 | Baseline aksesibilitas: fokus, skip link, axe di Playwright | DS-03 | axe 0 pelanggaran serius di `/styleguide` | M |
+| [x] | DS-01 | Token merek ke Tailwind 4 `@theme` (`tokens.css`): warna, huruf, skala, radius | FND-02 | `/styleguide` menampilkan token | M |
+| [x] | DS-02 | Font self-host (Cormorant Garamond, Plus Jakarta Sans), subset latin, `font-display: swap` | DS-01 | 0 permintaan ke fonts.googleapis.com | S |
+| [x] | DS-03 | Komponen Blade: button, field, input, select, textarea, card, badge, modal, toast, tabs, empty-state | DS-01 | semua tampil di `/styleguide` pada 360/768/1280 | L |
+| [x] | DS-04 | Satu set ikon SVG inline | DS-01 | tanpa emoji sebagai ikon | S |
+| [x] | DS-05 | Pasang `brand/` ke `public/` + `<x-seo.head>` (favicon, manifest, theme-color) | DS-01, DEC-10 | favicon tampil; manifest valid | S |
+| [x] | DS-06 | Tiga layout (pemasaran, aplikasi, publik) | DS-03 | tiap permukaan memakai layout sendiri | M |
+| [x] | DS-07 | Baseline aksesibilitas: fokus, skip link, axe di Playwright | DS-03 | axe 0 pelanggaran serius di `/styleguide` | M |
 
 ## DOM — Domain (M1)
 | St | ID | Tugas | Dep | Selesai bila | Uk |
 |---|---|---|---|---|---|
-| [ ] | DOM-01 | Enum `EventType` + `EventTypeRegistry` + `config/event-types.php` (6 jenis, `docs/05`) | FND-04 | tes registry untuk 6 jenis | M |
-| [ ] | DOM-02 | Migrasi users, invitations, invitation_people, invitation_events, invitation_story_items, invitation_gifts | DOM-01 | migrate + rollback bersih | M |
-| [ ] | DOM-03 | Migrasi guests, rsvps, guest_messages, invitation_daily_stats | DOM-02 | idem | M |
-| [ ] | DOM-04 | Migrasi plans, subscriptions, payments | DOM-02 | idem | M |
-| [ ] | DOM-05 | Model, factory, `$fillable`, casts, state factory per jenis acara | DOM-02 | factory tiap jenis menghasilkan data valid | M |
-| [ ] | DOM-06 | DTO `InvitationData` + Form Request per langkah editor + tes round-trip form↔model↔view-model | DOM-05 | semua field lulus round-trip | L |
-| [ ] | DOM-07 | Generator slug (nama + akhiran acak 4 karakter), daftar kata dilarang (`preview`, `admin`, …) | DOM-05 | tes unik + tolak reserved | S |
-| [ ] | DOM-08 | Policy kepemilikan + scope `ownedBy` | DOM-05 | tes IDOR gagal akses | M |
+| [x] | DOM-01 | Enum `EventType` + `EventTypeRegistry` + `config/event-types.php` (6 jenis, `docs/05`) | FND-04 | tes registry untuk 6 jenis | M |
+| [x] | DOM-02 | Migrasi users, invitations, invitation_people, invitation_events, invitation_story_items, invitation_gifts | DOM-01 | migrate + rollback bersih | M |
+| [x] | DOM-03 | Migrasi guests, rsvps, guest_messages, invitation_daily_stats | DOM-02 | idem | M |
+| [x] | DOM-04 | Migrasi plans, subscriptions, payments | DOM-02 | idem | M |
+| [x] | DOM-05 | Model, factory, `$fillable`, casts, state factory per jenis acara | DOM-02 | factory tiap jenis menghasilkan data valid | M |
+| [x] | DOM-06 | DTO `InvitationData` + Form Request per langkah editor + tes round-trip form↔model↔view-model | DOM-05 | semua field lulus round-trip | L |
+| [x] | DOM-07 | Generator slug (nama + akhiran acak 4 karakter), daftar kata dilarang (`preview`, `admin`, …) | DOM-05 | tes unik + tolak reserved | S |
+| [x] | DOM-08 | Policy kepemilikan + scope `ownedBy` | DOM-05 | tes IDOR gagal akses | M |
 | [ ] | DOM-09 | Siklus status draft→published→expired/archived + scheduler kedaluwarsa | DOM-05, DEC-01 | tes transisi dan kedaluwarsa | M |
-| [ ] | DOM-10 | `hasActivePlan()` + `Entitlements::can()` | DOM-04, DEC-01 | tes per paket | M |
-| [ ] | DOM-11 | Seeder demo fiktif untuk tiap jenis acara | DOM-05 | `db:seed --class=DemoSeeder` jalan | S |
+| [x] | DOM-10 | `hasActivePlan()` + `Entitlements::can()` | DOM-04, DEC-01 | tes per paket | M |
+| [x] | DOM-11 | Seeder demo fiktif untuk tiap jenis acara | DOM-05 | `db:seed --class=DemoSeeder` jalan | S |
 
 ## GST — Tamu
 | St | ID | Tugas | Dep | Selesai bila | Uk |

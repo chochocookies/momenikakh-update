@@ -1,11 +1,19 @@
 ---
 name: feature-development
-description: Implement a TODO task that adds behavior end to end (migration, model, DTO, Form Request, policy, Livewire/controller, views, tests, docs). Use for any feature task.
+description: Alur membangun fitur Momenikah dari rencana, tes, implementasi, sampai verifikasi. Gunakan untuk tugas fitur apa pun di TODO.
 ---
-# feature-development
-Urutan: **migrasi (aditif) → model/factory → DTO + Form Request → Policy → Action/service → Livewire/controller → Blade → JS**.
-- Rencana pendek: data (kolom, `$fillable`, casts), input (aturan tiap field), otorisasi (policy tiap aksi tulis), rute (satu nama per halaman), tampilan (bagian template yang terdampak), tes.
-- Tulis tes gagal dulu, termasuk tes round-trip untuk setiap field persisten (form → model → view-model → HTML).
-- Perubahan yang menyentuh template: ikuti `template-authoring`; yang menyentuh jenis acara: `event-types`.
-- Jangan membuat logika di Blade; letakkan di Action/ViewModel.
-- Selesai: `/finish-task`.
+# Skill: feature-development
+## Alur
+1. **Pahami tugas**: `task.mjs show ID`, baca kriteria "Selesai bila" dan dependensi. Masuk Plan Mode.
+2. **Rencana singkat**: berkas yang disentuh, model data, rute, komponen, tes, dampak ke dokumen. Cari kode yang sudah ada sebelum menulis baru (komponen UI, service, registry).
+3. **Kontrak dulu**: bila menyentuh data undangan, mulai dari `EventTypeDefinition` lalu form, model, `InvitationViewModel`, template. Satu perubahan di satu lapisan wajib tercermin di lapisan lain (tes kontrak F8-02).
+4. **Tes dulu atau bersamaan**: feature test untuk perilaku, unit test untuk aturan. Tes keamanan bila ada input pengguna.
+5. **Implementasi kecil**: Form Request untuk validasi, Policy untuk akses, service untuk logika, controller tipis, komponen Blade untuk UI.
+6. **Verifikasi**: `composer check`, `npm run build`, periksa UI di 360/768/1280 px dan mode kurangi gerakan.
+7. **Tutup**: `/review-diff`, `/finish-task`.
+## Daftar periksa
+- Tidak ada Eloquent atau `request()` di template. Output di-escape.
+- Tidak ada warna, font, atau ukuran hardcode. Teks pengguna dalam bahasa Indonesia.
+- Batas paket lewat `PlanGate`, bukan `if` tersebar.
+- Tidak menambah dependensi tanpa alasan tertulis (lisensi, ukuran, pemeliharaan).
+- Tidak ada klaim palsu di UI. Keadaan kosong dan galat ditangani dengan pesan sopan.

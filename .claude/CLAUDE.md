@@ -1,33 +1,53 @@
-# Momenikah — aturan kerja (selalu aktif)
+# Momenikah: aturan kerja (selalu aktif)
 
-Platform undangan digital Indonesia: pernikahan, walimatul urs, tunangan, khitanan, aqiqah, ulang tahun. Proyek **baru dari nol**. Satu-satunya sumber konteks adalah folder `.claude/` ini; tidak ada `AI_CONTEXT/`.
+## Produk
+Momenikah adalah platform undangan digital berbahasa Indonesia. Pemilik acara memilih template, mengisi data, lalu membagikan satu tautan lewat WhatsApp. Tamu membuka undangan dari ponsel tanpa aplikasi.
+- `momenikah.online`: situs pemasaran + dashboard pembuat undangan + admin.
+- `share.momenikah.online`: halaman undangan untuk tamu (domain terpisah, cookie terpisah, `noindex`).
+- Tagline: **Satu link untuk semua momen nikahmu.** Nama ditulis `Momenikah` (satu kata) di teks yang dilihat pengguna.
+- Jenis acara: pernikahan (dibangun lebih dulu), lalu walimatul urs, khitanan, aqiqah, ulang tahun, tunangan. Semuanya memakai satu mesin (lihat `docs/EVENT_TYPES.md`).
+- Proyek ini **greenfield**. Tidak ada kode atau dokumen warisan yang wajib dirujuk.
 
-## Mulai setiap tugas
-1. Baca `.claude/docs/00-produk.md` dan `.claude/docs/09-keputusan.md` sekali per sesi. Baca dokumen lain sesuai tugas (peta di `.claude/README.md`).
-2. Cari tugas di `.claude/TODO.md` (tabel, ID unik). Periksa kolom `Dep` dan keputusan terbuka (`DEC-nn`).
-3. Pakai skill yang cocok di `.claude/skills/<nama>/SKILL.md`. Untuk pekerjaan merek, landing page, atau template, muat `brand-identity` dan `gsap-motion` lebih dulu.
+## Stack ringkas (detail: `docs/TECH_STACK.md`)
+PHP 8.3+, Laravel 13, MySQL 8, Blade + Livewire 4 + Alpine, Tailwind CSS 4, Vite, Filament 5 (admin), Pest 4, GSAP 3 (landing dan efek premium), Redis (cache/antrian, bisa menyusul), penyimpanan S3-kompatibel + CDN.
 
-## Aturan keras
-- Jangan baca, cetak, atau tulis `.env`, kunci, token, kata sandi, atau data pribadi asli. Data contoh selalu fiktif.
-- Jangan putuskan `DEC-nn` yang masih terbuka. Berhenti dan tanya pemilik. ADR berstatus `Usulan` bukan keputusan; jangan menulisnya sebagai "diputuskan".
-- Satu ID tugas per perubahan. Tanpa edit di luar lingkup. Dependensi baru (composer/npm) hanya dengan alasan tertulis di `docs/09-keputusan.md` atau PR.
-- Jangan klaim sesuatu berfungsi sebelum dijalankan. Tandai `[x]` hanya bila semua kriteria "Selesai bila" terbukti (tes, tangkapan layar, atau keluaran perintah).
-- Migrasi harus aditif dan bisa di-rollback. Jangan jalankan `migrate:fresh`, `db:wipe`, atau SQL destruktif.
-- Landing page dan katalog hanya mengklaim fitur yang sudah ada. Tanpa rating, ulasan, jumlah pengguna, atau harga buatan (lihat `brand-identity`).
-- Tidak ada JS/CSS/HTML buatan pengguna di undangan publik (ADR-012).
+## Peta folder (detail: `docs/ARCHITECTURE.md`)
+```
+app/Enums, Models, Policies, Services/{Templates,Invitations,Billing,Seo}, EventTypes/
+app/Http/Controllers/{Marketing,Dashboard,Share,Webhook}
+resources/templates/_shared/   section, ornamen, core.js dipakai semua template
+resources/templates/{slug}/    SATU template = SATU folder (manifest.json, index, cover, theme.css, theme.js, assets)
+resources/views/{marketing,dashboard,auth,layouts,components}
+resources/css/tokens.css       satu-satunya sumber token desain
+resources/js/{landing,app}.js
+.claude/                       aturan, skill, perintah, dokumen, brand kit (sumber kebenaran)
+```
 
-## Arsitektur singkat (rincian: `docs/02-arsitektur.md`, `docs/03-struktur-folder.md`)
-Satu aplikasi Laravel 13, tiga permukaan berbasis domain: `momenikah.online` (pemasaran), `app.momenikah.online` (dasbor + `/admin`), `undangan.momenikah.online` (undangan publik, tanpa cookie sesi).
-Template = folder mandiri di `resources/templates/<slug>/` + `manifest.php`. Template hanya membaca `InvitationViewModel`, tidak pernah Eloquent. Jenis acara = konfigurasi (`EventTypeRegistry`), bukan fork template.
+## Aturan emas (jangan dilanggar)
+1. Template hanya membaca `InvitationViewModel`. Template tidak boleh memakai Eloquent, query, atau `request()` secara langsung.
+2. Output Blade selalu di-escape dengan `{{ }}`. `{!! !!}` hanya untuk SVG lokal tepercaya atau HTML hasil purifier. Nama tamu (`?to=`) tidak dirender di server (supaya halaman bisa di-cache penuh). `core.js` menulisnya ke slot `[data-guest]` dengan `textContent`, tidak pernah dengan `innerHTML`.
+3. Tanpa CDN saat runtime (Tailwind, font, jQuery, ikon). Semua lewat npm dan Vite, font di-host sendiri.
+4. Tanpa warna, font, atau ukuran hardcode di komponen. Pakai token dari `resources/css/tokens.css`.
+5. Animasi hanya `transform` dan `opacity`, dan semuanya menghormati `prefers-reduced-motion`.
+6. Skema database hanya berubah lewat migrasi baru. Migrasi yang sudah digabung tidak diedit.
+7. Jangan membaca atau menulis `.env`, kunci, atau token. Jangan mencetak rahasia ke log, tes, atau dokumen.
+8. Jangan menaruh klaim palsu di UI atau SEO: testimoni, rating, jumlah pengguna, atau harga yang belum diputuskan (`docs/DECISIONS.md`).
+9. Keputusan berstatus `Proposed` belum final. Jangan menulisnya sebagai fakta. Tanyakan pemilik.
+10. Satu tugas = satu cabang = satu PR kecil. Jangan campur refaktor dengan fitur.
 
-## Cara kerja
-- **Mode Plan** (Shift+Tab dua kali): baca saja. Hasilkan catatan 5 baris (ID tugas, dependensi, risiko, rencana, keputusan yang dibutuhkan), daftar file, daftar tes.
-- **Mode Act**: kerjakan hanya rencana yang disetujui. Tes gagal dulu, implementasi, tes hijau, lalu `/finish-task`.
-- Pembaruan dokumen satu perubahan dengan kode: status di `TODO.md`, `docs/10-changelog.md`, dan `docs/09-keputusan.md` bila ada keputusan.
-- Akhiri sesi dengan `/handoff`.
+## Alur kerja
+1. `/next-task` melihat tugas berikutnya yang siap (semua dependensinya selesai).
+2. `/start-task <ID>` membaca tugas, skill, dan aturan terkait, lalu membuat rencana (Plan Mode) sebelum menulis kode.
+3. Kerjakan kecil-kecil, tulis tes lebih dulu atau bersamaan.
+4. `/review-diff` memeriksa diff terhadap aturan emas. `/finish-task` menjalankan `composer check`, menandai tugas selesai, dan memperbarui `CHANGELOG.md`.
+5. `/handoff` menulis ringkasan pekerjaan untuk sesi berikutnya.
+Pelacak tugas: `node .claude/scripts/task.mjs next|show|list|status|start|done|estimate|check`.
+
+## Definition of Done
+Kode lolos `composer check` (Pint, Larastan, Pest) dan `npm run build`. Ada tes untuk perilaku baru. UI diperiksa di 360, 768, dan 1280 px dengan mode kurangi gerakan. Tidak ada rahasia di diff. Dokumen yang terdampak diperbarui. Kriteria "Selesai bila" di `docs/TODO.md` terpenuhi.
 
 ## Bahasa
-Balas dalam bahasa pengguna (Indonesia). Teks antarmuka: Indonesia, sapaan "kamu/kalian", kalimat pendek. Kode, nama kelas, dan komentar teknis: Inggris. Merek ditulis `Momenikah` (satu kata).
+Kode, nama variabel, commit, dan komentar teknis dalam bahasa Inggris. Teks yang dilihat pengguna dalam bahasa Indonesia (kamu/kalian, kalimat pendek, nada hangat dan tenang, tanpa kata hiperbola). Dokumen di `.claude/docs` dalam bahasa Indonesia.
 
-## Perintah
-`/next-task` `/start-task <ID>` `/finish-task` `/review-diff` `/handoff` `/new-template <slug>` `/new-event-type <kunci>`
+## Dokumen (baca saat relevan, jangan dimuat semua sekaligus)
+`docs/PRODUCT.md` `TECH_STACK.md` `ARCHITECTURE.md` `TEMPLATE_SPEC.md` `DATA_MODEL.md` `EVENT_TYPES.md` `SEO.md` `BRAND.md` `LANDING.md` `DECISIONS.md` `ROADMAP.md` `TODO.md`

@@ -1,0 +1,8 @@
+# This directory will contain GitHub Actions workflow files
+# CI workflow will be created in Task 3.4
+
+mkdir app\Domain app\Livewire app\Filament
+type nul > app\Domain\.gitkeep
+type nul > app\Livewire\.gitkeep
+type nul > app\Filament\.gitkeep
+

@@ -1,7 +1,13 @@
 ---
-paths: ["database/**", "app/Domain/**/Models/**"]
+paths:
+  - "database/**"
+  - "app/Models/**"
+  - "app/Enums/**"
 ---
-- Migrasi aditif, ada `down()` yang berfungsi, indeks untuk kolom filter/foreign key.
-- Semua kolom yang diisi form wajib ada di `$fillable`/DTO dan tercakup tes round-trip.
-- Data bebas disimpan di JSON hanya bila dicast ke DTO bertipe; selainnya kolom.
-- Uang dalam integer rupiah. Waktu disimpan UTC, ditampilkan `Asia/Jakarta` (atau zona acara).
+# Aturan database
+- Migrasi baru untuk setiap perubahan skema. Jangan mengedit migrasi yang sudah digabung. Sediakan `down()` yang benar.
+- Gunakan foreign key, indeks untuk kolom yang difilter (`slug`, `user_id`, `status`, `invitation_id`), dan `softDeletes` pada undangan.
+- Jenis acara baru tidak boleh memerlukan migrasi. Data spesifik jenis acara masuk ke `sections.content` (JSON) atau `invitation_parties.role` / `invitation_events.kind` yang divalidasi oleh `EventTypeDefinition`.
+- Eloquent: `$fillable` eksplisit, `casts()` untuk enum dan JSON, eager loading (`with`) untuk mencegah N+1, `preventLazyLoading` aktif di non-produksi.
+- Jangan menjalankan `migrate:fresh` atau `db:wipe` di lingkungan selain lokal dan tes. Jangan membaca dump `.sql`.
+- Data pribadi (nama, telepon tamu) hanya disimpan seperlunya, dengan rencana penghapusan saat undangan kedaluwarsa (lihat F8-07).

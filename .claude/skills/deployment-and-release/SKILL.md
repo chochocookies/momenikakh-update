@@ -1,6 +1,17 @@
 ---
 name: deployment-and-release
-description: Deploy to staging/production safely (tags, migrations, queues, cache, rollback). Use for release tasks and OPS work.
+description: Rilis Momenikah ke staging dan produksi: checklist, migrasi aman, cache, antrian, DNS, rollback, dan pemantauan. Gunakan untuk F0-07, F8-06, F8-09.
 ---
-# deployment-and-release
-Alur: PR hijau → merge `main` → tag → deploy staging → uji asap (daftar → buat → publikasi → buka → RSVP) → deploy produksi. Migrasi aditif sebelum kode; `php artisan optimize`, `templates:cache`, restart queue; rencana rollback tertulis; cadangan DB terbaru terverifikasi. Jangan deploy Jumat sore. Catat di `docs/10-changelog.md`.
+# Skill: deployment-and-release
+## Sebelum rilis
+CI hijau, `composer audit` dan `npm audit` bersih, `npm run build`, migrasi ditinjau, cadangan DB baru, catatan rilis di `CHANGELOG.md`.
+## Langkah (staging lalu produksi)
+1. Mode pemeliharaan bila perlu. `git pull`, `composer install --no-dev --optimize-autoloader`, `npm ci && npm run build` (atau artefak CI).
+2. `php artisan migrate --force` (hanya migrasi baru). `config:cache`, `route:cache`, `view:cache`, `event:cache`.
+3. Muat ulang PHP-FPM dan worker antrian (`queue:restart`). Purge cache edge bila aset berubah.
+4. Smoke test: beranda, masuk, buka undangan contoh di `share.`, RSVP uji, `/up`, pembayaran mode uji.
+5. Pantau galat (Sentry/Flare) dan antrian selama 30 menit.
+## Rollback
+Kembali ke rilis sebelumnya, `migrate:rollback` hanya bila migrasi aman untuk dibalik, pulihkan cadangan bila data rusak. Rencana rollback ditulis sebelum rilis.
+## Cutover DNS
+Turunkan TTL sehari sebelumnya, uji di staging, ganti DNS, awasi, pertahankan redirect `/u/{slug}` lama (F8-08).

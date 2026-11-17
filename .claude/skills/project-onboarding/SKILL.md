@@ -1,10 +1,17 @@
 ---
 name: project-onboarding
-description: Orient before any task in Momenikah (repo state, TODO row, dependencies, decisions). Use at the start of every session or when the task is unclear.
+description: Orientasi proyek Momenikah: urutan baca dokumen, perintah penting, peta folder, dan cara memilih tugas. Gunakan di awal sesi atau saat konteks hilang.
 ---
-# project-onboarding
-1. `git status`, `git log --oneline -10`; catat cabang dan perubahan belum commit.
-2. Baca `.claude/CLAUDE.md`, `docs/00-produk.md`, `docs/09-keputusan.md`.
-3. Temukan baris tugas di `.claude/TODO.md`; cek `Dep` dan `DEC-nn`. Jika ada yang terbuka, berhenti dan tanya.
-4. Jalankan `php artisan route:list --except-vendor` dan `ls resources/templates` bila tugas menyentuh rute atau template.
-5. Hasilkan catatan 5 baris: ID, dependensi, risiko, rencana, keputusan dibutuhkan. Jangan edit file di tahap ini.
+# Skill: project-onboarding
+## Kapan dipakai
+Awal sesi baru, setelah konteks terpotong, atau saat Anda tidak yakin harus mulai dari mana.
+## Langkah
+1. Baca `.claude/CLAUDE.md` (aturan emas). Jangan melompatinya.
+2. `node .claude/scripts/task.mjs status` lalu `next 5` untuk melihat posisi proyek.
+3. Baca dokumen yang relevan saja: struktur → `ARCHITECTURE.md`; template → `TEMPLATE_SPEC.md`; data → `DATA_MODEL.md`; SEO → `SEO.md`; brand → `BRAND.md`; keputusan → `DECISIONS.md`.
+4. Pastikan keputusan yang menyentuh tugas bukan `Open` atau `Proposed`. Bila ya, tanyakan pemilik sebelum membangun.
+5. Periksa `git status` dan `git log -5` agar tidak menimpa pekerjaan yang sedang berjalan.
+## Perintah penting
+`composer check` (Pint + Larastan + Pest), `npm run build`, `php artisan template:lint {slug}`, `php artisan route:list`, `node .claude/scripts/task.mjs ...`.
+## Hasil
+Ringkasan satu paragraf: posisi proyek, tugas berikutnya, dan keputusan yang menghalangi (bila ada).

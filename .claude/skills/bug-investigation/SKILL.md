@@ -1,9 +1,12 @@
 ---
 name: bug-investigation
-description: Reproduce, isolate, and fix a defect with a regression test. Use when something is broken or behaves unexpectedly.
+description: Menyelidiki bug Momenikah secara sistematis: reproduksi, isolasi, akar masalah, perbaikan, dan tes regresi.
 ---
-# bug-investigation
-1. Reproduksi dengan langkah minimal; tulis tes yang gagal.
-2. Tentukan lapisan (data, validasi, policy, view-model, template, JS) dengan log/`dd` lokal; jangan memakai data nyata.
-3. Perbaiki akar masalah, bukan gejala; periksa tempat lain dengan pola sama (`rg`).
-4. Tes regresi hijau; catat penyebab di changelog. Jika bug menyangkut keamanan, ikuti `security-review`.
+# Skill: bug-investigation
+1. **Reproduksi**: langkah, data, lingkungan, ekspektasi vs kenyataan. Tulis tes gagal bila bisa.
+2. **Isolasi**: lapisan mana (route, policy, request, service, model, view, JS)? Gunakan `php artisan route:list`, log, Telescope/Pulse, dan konsol browser. Jangan membaca `.env` atau log yang memuat data pribadi.
+3. **Akar masalah**: jelaskan mengapa, bukan hanya di mana. Cek apakah ada tempat lain dengan pola yang sama.
+4. **Perbaikan minimal** di satu PR dengan tes regresi. Tidak mencampur refaktor.
+5. **Verifikasi**: `composer check`, uji manual alur yang terdampak, periksa efek samping (cache, antrian, tampilan di ponsel).
+6. **Catat**: ringkas penyebab dan pencegahan di PR atau `CHANGELOG.md`.
+Bug keamanan: jangan membahas detail eksploit di tempat publik, perbaiki dulu, lalu periksa log penyalahgunaan.

@@ -1,0 +1,23 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - config
+        - database
+        - routes
+
+    # Analysis level: 5 (range 0-9)
+    # Rationale: Level 5 provides a solid balance between strict type checking and pragmatic
+    # development. It catches common bugs (undefined variables, incorrect return types,
+    # basic type mismatches) while allowing some flexibility for Laravel's magic methods
+    # and dynamic features. This is a good starting point that can be incrementally
+    # increased as the codebase matures.
+    level: 5
+
+    excludePaths:
+        - bootstrap/cache
+        - storage
+        - vendor
+

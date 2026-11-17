@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DS-01 & DS-02 Verification</title>
+    <style>
+        /* Minimal CSS untuk testing */
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #FFF8F3;
+            color: #2B1B22;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3 {
+            font-family: Georgia, serif;
+            margin-top: 2rem;
+        }
+
+        .color-swatch {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            vertical-align: top;
+        }
+
+        .color-info {
+            font-size: 12px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .template-preview {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DS-01 & DS-02 Verification</h1>
+        <p>Halaman ini untuk memverifikasi implementasi Design System tokens dan font self-hosting.</p>
+
+        <h2>Status Implementasi</h2>
+        <ul>
+            <li><strong>DS-01 (Brand Tokens)</strong>: ✅ Selesai - tokens.css dibuat</li>
+            <li><strong>DS-02 (Font Self-Hosting)</strong>: ⚠️ Parsial - CSS selesai, font perlu diunduh</li>
+        </ul>
+
+        <h2>Warna Brand (dari prototype)</h2>
+
+        <div class="color-swatch" style="background: #FFF8F3;">
+            <div class="color-info">#FFF8F3<br>Background</div>
+        </div>
+
+        <div class="color-swatch" style="background: #2B1B22; color: white;">
+            <div class="color-info">#2B1B22<br>Ink/Text</div>
+        </div>
+
+        <div class="color-swatch" style="background: #BE185D; color: white;">
+            <div class="color-info">#BE185D<br>Rose (Primary)</div>
+        </div>
+
+        <div class="color-swatch" style="background: #6B5A62; color: white;">
+            <div class="color-info">#6B5A62<br>Muted</div>
+        </div>
+
+        <div class="color-swatch" style="background: #FCE7F3;">
+            <div class="color-info">#FCE7F3<br>Rose Light</div>
+        </div>
+
+        <div class="color-swatch" style="background: #F2D08A;">
+            <div class="color-info">#F2D08A<br>Gold</div>
+        </div>
+
+        <h2>Template Colors Preview</h2>
+
+        <div class="template-preview" style="background: #FBF5EC; color: #4A1F2B; border: 2px solid #7B1E3A;">
+            <h3>Classic Elegant</h3>
+            <p>Background: #FBF5EC</p>
+            <p>Text: #4A1F2B</p>
+            <p>Accent: #7B1E3A</p>
+        </div>
+
+        <div class="template-preview" style="background: linear-gradient(to bottom right, #FFF3F5, #EEF4E8); color: #44503D; border: 2px solid #A8456A;">
+            <h3>Floral Garden</h3>
+            <p>Background: Gradient #FFF3F5 → #EEF4E8</p>
+            <p>Text: #44503D</p>
+            <p>Accent: #A8456A</p>
+        </div>
+
+        <div class="template-preview" style="background: #15110D; color: #F1E3C0; border: 2px solid #D4AF37;">
+            <h3>Luxury Gold</h3>
+            <p>Background: #15110D</p>
+            <p>Text: #F1E3C0</p>
+            <p>Accent: #D4AF37</p>
+        </div>
+
+        <div class="template-preview" style="background: #ffffff; color: #111111; border: 2px solid #BE185D;">
+            <h3>Modern Minimal</h3>
+            <p>Background: #ffffff</p>
+            <p>Text: #111111</p>
+            <p>Accent: #BE185D</p>
+        </div>
+
+        <h2>Font Implementation</h2>
+        <p>Font yang akan digunakan:</p>
+        <ul>
+            <li><strong>Cormorant Garamond</strong> - Serif untuk heading dan elemen dekoratif</li>
+            <li><strong>Plus Jakarta Sans</strong> - Sans-serif untuk body text dan UI</li>
+        </ul>
+
+        <h2>Langkah Selanjutnya untuk DS-02</h2>
+        <ol>
+            <li>Jalankan script download font: <code>npm run fonts:download</code></li>
+            <li>Verifikasi font ada di <code>public/fonts/</code></li>
+            <li>Buka <a href="/styleguide">/styleguide</a> untuk melihat token display</li>
+            <li>Periksa Network tab untuk memastikan tidak ada request ke fonts.googleapis.com</li>
+        </ol>
+
+        <h2>File yang Telah Dibuat</h2>
+        <ul>
+            <li><code>resources/css/tokens.css</code> - Semua token desain + font declarations</li>
+            <li><code>resources/views/styleguide/index.blade.php</code> - Halaman styleguide lengkap</li>
+            <li><code>scripts/download-fonts.ps1</code> - Script download font (Windows)</li>
+            <li><code>scripts/download-fonts.sh</code> - Script download font (Linux/Mac)</li>
+            <li><code>docs/font-self-hosting.md</code> - Dokumentasi lengkap implementasi font</li>
+            <li><code>routes/web.php</code> - Route untuk /styleguide</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,12 +1,16 @@
 ---
 name: brand-identity
-description: Momenikah brand (name, voice, colors, fonts, logo, favicon, motion) and rules for landing page and template looks. Use for any branding, landing, catalog, or preview work.
+description: Sistem brand Momenikah: logo, favicon, warna, huruf, nada bahasa, dan cara membuat ulang kit brand. Gunakan untuk semua pekerjaan UI, copy, logo, favicon, dan gambar sosial.
 ---
-# brand-identity
-Baca `docs/07-merek.md` dan lihat `brand/`. Nada, palet, huruf disetujui (ADR-003); logo menunggu persetujuan (DEC-10).
-- Token: rose-600 `#BE185D`, rose-100 `#FCE7F3`, ink `#2B1B22`, muted `#6B5A62`, ivory `#FFF8F3`, gold `#B8893B`. Font: Cormorant Garamond + Plus Jakarta Sans saja.
-- Suara: Indonesia, "kamu/kalian", pendek, tanpa hype. Tanda baca tipografis (’ “ ”).
-- Landing hanya mengklaim fitur yang ada. **Dilarang**: rating, ulasan, testimoni, jumlah pengguna, harga fiktif.
-- Satu momen gerak utama; sisanya tenang. Cegah pola generik: fade-up di setiap bagian, kartu identik, label huruf kapital berjarak.
-- Logo: jangan putar/bayangi/ganti warna; ruang bebas = ½ tinggi cincin.
-- Uji 360/768/1280, reduced-motion, kontras.
+# Skill: brand-identity
+Acuan: `docs/BRAND.md`. Status: Proposed (D-06), nada dan warna sudah disetujui pemilik.
+## Inti
+Nama `Momenikah`, huruf **n** berwarna rose (dipakai bersama "momen" dan "nikah"). Tagline: Satu link untuk semua momen nikahmu. Lambang: dua cincin bertaut dengan hati.
+## Token
+rose `#BE185D`, rose-light `#F472B6`, rose-soft `#FCE7F3`, ink `#2B1B22`, muted `#6B5A62`, ivory `#FFF8F3`, gold `#B8893B` (premium saja). Huruf: Cormorant Garamond (judul), Plus Jakarta Sans (UI).
+## Berkas
+`.claude/brand/logo/*` (SVG dan PNG), `favicon/*` (ico, svg, png, maskable, `site.webmanifest`), `social/og-default.*`. Salin ke `public/` lewat tugas F7-06. Jangan membuat logo baru atau memodifikasi path wordmark secara manual.
+## Mengubah kit brand
+Ubah `TOKENS` di `.claude/brand/build-brand.py` lalu jalankan `pip install fonttools cairosvg pillow` dan `python3 .claude/brand/build-brand.py`. Semua berkas dibuat ulang. Peninjauan visual oleh pemilik wajib sebelum dipakai.
+## Aturan
+Ruang bebas minimal setinggi huruf M, lebar minimum 120 px (horizontal) dan 24 px (lambang). Jangan memutar, meregangkan, memberi bayangan, atau mengganti warna. Teks: hangat, jelas, romantis tanpa berlebihan. Dilarang klaim "terbaik", "ribuan pengguna", rating, atau testimoni tanpa data nyata.

@@ -1,0 +1,88 @@
+name: Deploy to Staging
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  deploy-staging:
+    name: Deploy Release to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Extract Tag Name
+        id: tag
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          ROLLBACK_TIMEOUT: 60
+          HEALTH_CHECK_RETRIES: 3
+          HEALTH_CHECK_INTERVAL: 5
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          port: ${{ secrets.STAGING_PORT || 22 }}
+          script: |
+            #!/usr/bin/env bash
+            set -euo pipefail
+
+            export TAG="${{ steps.tag.outputs.TAG }}"
+            export APP_DIR="${{ vars.APP_DIR || '/var/www/momenikah' }}"
+            export HEALTH_URL="${{ vars.HEALTH_URL || 'https://staging.momenikah.test/health' }}"
+            export ROLLBACK_TIMEOUT="${ROLLBACK_TIMEOUT:-60}"
+            export HEALTH_CHECK_RETRIES="${HEALTH_CHECK_RETRIES:-3}"
+            export HEALTH_CHECK_INTERVAL="${HEALTH_CHECK_INTERVAL:-5}"
+
+            # Export for use by deploy.sh
+            export ROLLBACK_TIMEOUT
+            export HEALTH_CHECK_RETRIES
+            export HEALTH_CHECK_INTERVAL
+
+            # Deploy using the deployment script
+            /var/www/momenikah/deploy/deploy.sh "${TAG}"
+
+      - name: Wait for Deployment Completion
+        if: always()
+        run: |
+          echo "Deployment completed or failed"
+          echo "If deployment failed, automatic rollback was initiated"
+          echo "Check deployment logs for details"
+
+      - name: Notify Deployment Status
+        if: failure()
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          slack-channel: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: |
+            :rotating_light: Deployment to Staging Failed!
+
+            *Tag:* ${{ steps.tag.outputs.TAG }}
+            *Status:* FAILED (Rolled back automatically)
+            *Time:* ${{ github.event.head_commit.timestamp }}
+
+            Check deployment logs for details.
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Notify Deployment Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          slack-channel: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: |
+            :white_check_mark: Deployment to Staging Successful!
+
+            *Tag:* ${{ steps.tag.outputs.TAG }}
+            *Status:* DEPLOYED
+            *Time:* ${{ github.event.head_commit.timestamp }}
+
+            Staging URLs:
+            - Main: https://staging.momenikah.test
+            - App: https://staging-app.momenikah.test
+            - Public: https://staging-undangan.momenikah.test
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

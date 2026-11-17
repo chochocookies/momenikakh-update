@@ -1,9 +1,13 @@
 ---
 name: code-quality
-description: Keep code consistent (Pint, Larastan, arch tests, dead code, duplicated templates). Use before finishing any task or when refactoring.
+description: Standar kode Momenikah: gaya, struktur, tipe, penamaan, dan refaktor aman. Gunakan untuk review dan saat menulis kode.
 ---
-# code-quality
-- `./vendor/bin/pint --test`, `./vendor/bin/phpstan`, `php artisan test --testsuite=Arch`.
-- Pencarian cepat: `rg "style=\"" resources` (inline), `rg "cdn\." resources` (CDN), `rg "{!!" resources` (HTML mentah), `rg "DB::|Model::" resources/templates` (template menyentuh data).
-- Duplikasi antar-template harus naik ke `_shared`. Fungsi > 40 baris dipecah. Nama jelas, tipe eksplisit.
-- Hapus kode mati; jangan menyisakan fitur setengah jadi di rute.
+# Skill: code-quality
+- Pint untuk gaya, Larastan untuk analisis statis (naikkan level bertahap), `declare(strict_types=1)` pada kode baru.
+- Controller tipis: validasi di Form Request, akses di Policy, logika di service, tampilan di komponen.
+- Nama jelas dalam bahasa Inggris. Satu class satu tanggung jawab. Hindari trait "serbaguna" dan helper global.
+- Enum untuk nilai tetap (status, peran, jenis acara). DTO atau view-model untuk data lintas lapisan.
+- Hindari duplikasi: cari komponen atau service yang ada sebelum menulis baru. Tiga duplikasi berarti saatnya diekstrak.
+- Refaktor hanya dengan tes hijau dan di PR terpisah dari fitur.
+- Komentar menjelaskan mengapa, bukan apa. Tidak ada kode mati atau `dd()` tersisa.
+- Dependensi baru butuh alasan, lisensi, ukuran, dan kondisi pemeliharaan.
