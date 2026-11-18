@@ -23,16 +23,23 @@ final readonly class EventData
         public ?float $longitude,
         public ?string $dressCode,
         public ?string $notes,
-    ) {
-    }
+    ) {}
 
     public static function fromModel(InvitationEvent $m, string $timezone): self
     {
         return new self(
-            $m->id, $m->kind, $m->label,
+            $m->id,
+            $m->kind,
+            $m->label,
             CarbonImmutable::instance($m->starts_at)->setTimezone($timezone),
             $m->ends_at ? CarbonImmutable::instance($m->ends_at)->setTimezone($timezone) : null,
-            $m->venue_name, $m->address, $m->maps_url, $m->latitude, $m->longitude, $m->dress_code, $m->notes,
+            $m->venue_name,
+            $m->address,
+            $m->maps_url,
+            $m->latitude,
+            $m->longitude,
+            $m->dress_code,
+            $m->notes,
         );
     }
 

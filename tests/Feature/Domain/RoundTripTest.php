@@ -19,7 +19,6 @@ use App\Http\Requests\Editor\UpdateStoryRequest;
 use App\Models\User;
 use Illuminate\Routing\Route;
 
-
 /** Drops ids and null/empty values so a payload row can be compared with the DTO row. */
 function rowSubset(array $payloadRow, array $dtoRow): array
 {

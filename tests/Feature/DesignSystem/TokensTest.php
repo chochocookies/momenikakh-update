@@ -55,7 +55,7 @@ it('does not place non-colour values in the colour namespace', function () {
         }
     }
     // Gradients belong in --background-image style variables, not --color-*, or bg-* utilities break.
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('exposes the brand fonts through Tailwind font namespaces', function () {
@@ -71,7 +71,7 @@ it('uses Tailwind namespaces for type scale tokens', function () {
     $names = array_keys(DesignSystem::tokens());
     $wrong = array_values(array_filter($names, fn ($n) => preg_match('/^--(font-size|line-height|letter-spacing)-/', $n)));
     // Use --text-*, --leading-*, --tracking-* so text-*, leading-*, tracking-* utilities pick them up.
-    expect($wrong)->toBeEmpty();
+    expect($wrong)->toBe([]);
 });
 
 it('self-hosts fonts with font-display swap and existing files', function () {
@@ -97,7 +97,9 @@ it('never loads fonts or scripts from third-party CDNs', function () {
     $bad = [];
     $pattern = '#https?://(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com|unpkg\.com|cdn\.tailwindcss\.com|code\.jquery\.com|use\.fontawesome\.com)#i';
     $all = array_merge(
-        DesignSystem::views(), DesignSystem::cssExceptTokens(), DesignSystem::scripts(),
+        DesignSystem::views(),
+        DesignSystem::cssExceptTokens(),
+        DesignSystem::scripts(),
         [['rel' => DesignSystem::TOKENS, 'content' => (string) file_get_contents(base_path(DesignSystem::TOKENS))]],
     );
     foreach ($all as $f) {
@@ -105,5 +107,5 @@ it('never loads fonts or scripts from third-party CDNs', function () {
             $bad[] = $f['rel'];
         }
     }
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });

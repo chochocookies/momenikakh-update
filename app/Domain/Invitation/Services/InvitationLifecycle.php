@@ -12,9 +12,7 @@ use Carbon\CarbonInterface;
 /** DOM-09: draft -> published -> expired/archived. Completeness checks (F4-10) are added in front of publish(). */
 final class InvitationLifecycle
 {
-    public function __construct(private readonly Entitlements $entitlements)
-    {
-    }
+    public function __construct(private readonly Entitlements $entitlements) {}
 
     public function publish(Invitation $invitation, ?CarbonInterface $now = null): Invitation
     {

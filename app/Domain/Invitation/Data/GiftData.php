@@ -17,8 +17,7 @@ final readonly class GiftData
         public ?string $number,
         public ?string $addressText,
         public bool $isActive,
-    ) {
-    }
+    ) {}
 
     public static function fromModel(InvitationGift $m): self
     {

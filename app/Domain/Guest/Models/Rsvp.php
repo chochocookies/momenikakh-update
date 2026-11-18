@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Guest\Models;
 
-use App\Domain\Invitation\Models\Invitation;
 use App\Domain\Guest\Enums\Attendance;
+use App\Domain\Invitation\Models\Invitation;
 use Database\Factories\RsvpFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

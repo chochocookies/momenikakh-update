@@ -1,0 +1,36 @@
+# Local S3-compatible storage for MED-01 (development only; never reuse these credentials).
+#   docker compose -f docker/docker-compose.media.yml up -d
+# Console: http://localhost:9001  (user: momenikah / password below). Bucket "momenikah-media" is created
+# with public read so media URLs open directly, like the CDN does in production.
+services:
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: momenikah
+      MINIO_ROOT_PASSWORD: change-me-local-only
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 momenikah change-me-local-only; do sleep 1; done;
+      mc mb --ignore-existing local/momenikah-media;
+      mc anonymous set download local/momenikah-media;
+      exit 0;
+      "
+
+volumes:
+  minio-data:

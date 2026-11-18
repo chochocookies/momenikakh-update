@@ -45,6 +45,7 @@ class ExecuteDatabaseBackup implements ShouldQueue
         // For testing or environments without mysqldump, only create manifest
         if (! $this->hasMysqldump()) {
             $this->createManifestOnlyBackup();
+
             return;
         }
 
@@ -59,11 +60,13 @@ class ExecuteDatabaseBackup implements ShouldQueue
         if (PHP_OS_FAMILY === 'Windows') {
             $output = [];
             exec('where mysqldump 2>nul', $output);
+
             return count($output) > 0;
         }
 
         $output = [];
         exec('which mysqldump 2>/dev/null', $output);
+
         return count($output) > 0;
     }
 
@@ -185,7 +188,7 @@ class ExecuteDatabaseBackup implements ShouldQueue
         exec($command, $output, $returnVar);
 
         if ($returnVar !== 0) {
-            throw new \RuntimeException('mysqldump command failed: ' . implode("\n", $output));
+            throw new \RuntimeException('mysqldump command failed: '.implode("\n", $output));
         }
 
         return implode("\n", $output);

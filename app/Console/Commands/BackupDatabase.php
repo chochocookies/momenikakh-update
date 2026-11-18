@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'backup:database')]
@@ -101,7 +100,7 @@ class BackupDatabase extends Command
             $command .= " --password={$password}";
         }
 
-        $command .= " --single-transaction --quick --routines --triggers";
+        $command .= ' --single-transaction --quick --routines --triggers';
         $command .= " {$database}";
 
         // Check if mysqldump is available
@@ -130,11 +129,13 @@ class BackupDatabase extends Command
         if (PHP_OS_FAMILY === 'Windows') {
             $output = [];
             exec('where mysqldump 2>nul', $output);
+
             return count($output) > 0;
         }
 
         $output = [];
         exec('which mysqldump 2>/dev/null', $output);
+
         return count($output) > 0;
     }
 
@@ -164,7 +165,7 @@ class BackupDatabase extends Command
                 'timestamp_utc' => now()->utc()->toIso8601String(),
                 'database' => config('database.connections.mysql.database'),
                 'tables' => [],
-                'note' => 'Database connection failed: ' . $e->getMessage(),
+                'note' => 'Database connection failed: '.$e->getMessage(),
             ];
         }
     }

@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Domain\Guest\Models\Guest;
 use App\Domain\Invitation\Data\InvitationData;
 use App\Domain\Invitation\Enums\EventType;
 use App\Domain\Invitation\EventTypes\EventTypeRegistry;
 use App\Domain\Invitation\Models\Invitation;
 use App\Domain\Invitation\Support\SamplePayload;
-
+use App\Models\User;
 
 it('creates a draft invitation with casts applied', function () {
     $i = Invitation::factory()->create();
@@ -52,10 +53,10 @@ it('has named factory states for each event type', function () {
 });
 
 it('does not allow mass assignment of the owner or token', function () {
-    $user = App\Models\User::factory()->create();
+    $user = User::factory()->create();
     $i = new Invitation(['user_id' => 999, 'title' => 'X', 'slug' => 'x-abcd', 'event_type' => 'wedding']);
     expect($i->user_id)->toBeNull();
-    $guest = new App\Domain\Guest\Models\Guest(['name' => 'A', 'token' => 'hacked']);
+    $guest = new Guest(['name' => 'A', 'token' => 'hacked']);
     expect($guest->token)->toBeNull();
     $saved = $user->invitations()->create(['title' => 'X', 'slug' => 'x-abcd', 'event_type' => 'wedding']);
     expect($saved->user_id)->toBe($user->id);
@@ -63,7 +64,7 @@ it('does not allow mass assignment of the owner or token', function () {
 
 it('creates a unique token for every guest', function () {
     $invitation = Invitation::factory()->create();
-    $guests = App\Domain\Guest\Models\Guest::factory()->count(20)->for($invitation)->create();
+    $guests = Guest::factory()->count(20)->for($invitation)->create();
     expect($guests->pluck('token')->unique())->toHaveCount(20);
     expect($guests->first()->token)->toMatch('/^[a-z0-9]{12}$/');
 });

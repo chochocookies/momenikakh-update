@@ -26,7 +26,7 @@ test('6 consecutive failed login attempts trigger rate limiting', function () {
             'email' => $user->email,
             'password' => 'WrongPassword!',
         ]);
-        
+
         $response->assertSessionHasErrors('email');
         expect($response->status())->toBe(302);
     }
@@ -39,7 +39,7 @@ test('6 consecutive failed login attempts trigger rate limiting', function () {
 
     // Rate limiter should block with 429 status
     expect($response->status())->toBe(429);
-    
+
     // Verify error message indicates rate limiting
     $response->assertSessionHasErrors('email');
     $errors = $response->getSession()->get('errors');
@@ -97,7 +97,7 @@ test('rate-limited users cannot login until lockout expires', function () {
 
 test('successful authentication after rate limit expiry works correctly', function () {
     Event::fake();
-    
+
     $user = User::factory()->create([
         'password' => bcrypt('Password123!'),
         'email_verified_at' => now(),
@@ -122,9 +122,9 @@ test('successful authentication after rate limit expiry works correctly', functi
 
     expect($response->status())->toBe(302);
     expect($response->headers->has('Location'))->toBeTrue();
-    
+
     $this->assertAuthenticatedAs($user);
-    
+
     // Verify login event was fired
     Event::assertDispatched(Login::class);
 })->group('auth');
@@ -183,7 +183,7 @@ test('rate limiting resets after lockout period expires', function () {
 
     expect($response->status())->toBe(302);
     $this->assertAuthenticatedAs($user);
-    
+
     // After successful login, the rate limit counter should reset
     // Make another 5 failed attempts
     for ($i = 0; $i < 5; $i++) {

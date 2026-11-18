@@ -10,12 +10,12 @@ use Tests\Support\DesignSystem;
 
 beforeEach(function () {
     $this->withoutVite();
-    View::share('errors', new ViewErrorBag());
+    View::share('errors', new ViewErrorBag);
 });
 
 function renderWithErrors(string $blade, array $messages): string
 {
-    $bag = (new ViewErrorBag())->put('default', new MessageBag($messages));
+    $bag = (new ViewErrorBag)->put('default', new MessageBag($messages));
     View::share('errors', $bag);
 
     return Blade::render($blade);
@@ -103,7 +103,7 @@ it('does not rely on inline event handlers or inline scripts in components', fun
             $offenders[] = $f['rel'];
         }
     }
-    expect($offenders)->toBeEmpty();
+    expect($offenders)->toBe([]);
 });
 
 it('has an empty-state, card and badge component', function () {

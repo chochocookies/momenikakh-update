@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Invitation\Support;
 
 use App\Domain\Invitation\Enums\EventType;
+use App\Domain\Invitation\EventTypes\EventTypeRegistry;
 
 /**
  * Fictional but valid editor payloads for every event type, keyed by editor step
@@ -18,7 +19,7 @@ final class SamplePayload
      */
     public static function for(EventType $type): array
     {
-        $registry = app(\App\Domain\Invitation\EventTypes\EventTypeRegistry::class);
+        $registry = app(EventTypeRegistry::class);
         $def = $registry->for($type);
         $d = $def->defaults;
 
@@ -134,7 +135,7 @@ final class SamplePayload
     }
 
     /**
-     * @param array<string,string> $defaults
+     * @param  array<string,string>  $defaults
      * @return array<string,string>
      */
     private static function content(EventType $t, array $defaults): array

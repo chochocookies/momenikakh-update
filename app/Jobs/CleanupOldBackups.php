@@ -18,14 +18,10 @@ class CleanupOldBackups implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        public readonly ?int $minRetentionDays = null,
-        public readonly ?int $maxRetentionDays = null,
-        public readonly ?string $disk = null,
-    ) {
-        $this->minRetentionDays = $minRetentionDays ?? config('backup.retention.min_days', 7);
-        $this->maxRetentionDays = $maxRetentionDays ?? config('backup.retention.max_days', 30);
-        $this->disk = $disk ?? config('backup.disk', 's3');
-    }
+        public readonly int $minRetentionDays = 7,
+        public readonly int $maxRetentionDays = 30,
+        public readonly string $disk = 'backups',
+    ) {}
 
     /**
      * Execute the job.
@@ -42,9 +38,9 @@ class CleanupOldBackups implements ShouldQueue
     private function validateRetentionConfig(): void
     {
         if ($this->minRetentionDays < 0) {
-            throw new InvalidArgumentException("Minimum retention days must be >= 0");
+            throw new InvalidArgumentException('Minimum retention days must be >= 0');
         }
-        
+
         if ($this->maxRetentionDays < $this->minRetentionDays) {
             throw new InvalidArgumentException("Maximum retention days ({$this->maxRetentionDays}) must be >= minimum retention days ({$this->minRetentionDays})");
         }
@@ -56,22 +52,22 @@ class CleanupOldBackups implements ShouldQueue
     private function cleanupOldBackups(): void
     {
         $backupPath = 'backups';
-        
+
         if (! Storage::disk($this->disk)->exists($backupPath)) {
             return;
         }
 
         $directories = Storage::disk($this->disk)->directories($backupPath);
-        
+
         foreach ($directories as $directory) {
             $timestamp = basename($directory);
-            
+
             if (! $this->isValidBackupTimestamp($timestamp)) {
                 continue;
             }
 
             $backupDate = \DateTime::createFromFormat('Y-m-d_His', $timestamp);
-            
+
             if (! $backupDate) {
                 continue;
             }

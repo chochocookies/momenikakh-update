@@ -31,7 +31,7 @@ class SecurityHeaders
 
         // 5. Surface-specific Content-Security-Policy (Task 9.3 - 9.5)
         // Only set CSP if not already present (check both original and normalized header names)
-        if (!$response->headers->has('Content-Security-Policy') && !$response->headers->has('content-security-policy')) {
+        if (! $response->headers->has('Content-Security-Policy') && ! $response->headers->has('content-security-policy')) {
             $cspHeader = collect($surfaceConfig['csp'])
                 ->map(fn (string $value, string $directive) => "{$directive} {$value}")
                 ->implode('; ');

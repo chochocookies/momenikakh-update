@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Domain\Billing\Models\Plan;
+use App\Domain\Guest\Models\Guest;
 use App\Domain\Invitation\Data\InvitationData;
 use App\Domain\Invitation\Enums\EventType;
 use App\Domain\Invitation\Enums\InvitationStatus;
 use App\Domain\Invitation\Models\Invitation;
-use App\Domain\Billing\Models\Plan;
+use App\Models\User;
 use Database\Seeders\DemoSeeder;
+use Database\Seeders\PlanSeeder;
 
 it('seeds one published demo invitation per event type', function () {
     $this->seed(DemoSeeder::class);
@@ -31,12 +34,12 @@ it('is idempotent', function () {
     $this->seed(DemoSeeder::class);
     $this->seed(DemoSeeder::class);
     expect(Invitation::query()->count())->toBe(count(EventType::cases()));
-    expect(App\Models\User::query()->where('email', 'demo@momenikah.test')->count())->toBe(1);
+    expect(User::query()->where('email', 'demo@momenikah.test')->count())->toBe(1);
 });
 
 it('uses only fictional contact data', function () {
     $this->seed(DemoSeeder::class);
-    $phones = App\Domain\Guest\Models\Guest::query()->pluck('phone');
+    $phones = Guest::query()->pluck('phone');
     foreach ($phones as $phone) {
         expect($phone)->toStartWith('08120000');
     }
@@ -47,11 +50,11 @@ it('refuses to run in production', function () {
     $this->app->detectEnvironment(fn () => 'production');
     $this->seed(DemoSeeder::class);
     expect(Invitation::query()->count())->toBe(0);
-    expect(App\Models\User::query()->where('email', 'demo@momenikah.test')->exists())->toBeFalse();
+    expect(User::query()->where('email', 'demo@momenikah.test')->exists())->toBeFalse();
 });
 
 it('seeds the plans with undecided prices and an inactive premium placeholder', function () {
-    $this->seed(Database\Seeders\PlanSeeder::class);
+    $this->seed(PlanSeeder::class);
     expect(Plan::query()->where('key', 'free')->first()->price_idr)->toBeNull();
     $premium = Plan::query()->where('key', 'premium')->first();
     expect($premium->price_idr)->toBeNull()->and($premium->is_active)->toBeFalse();

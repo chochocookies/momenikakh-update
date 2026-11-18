@@ -116,6 +116,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // This ensures all routes across all surfaces (marketing, app, public) receive security headers
         $middleware->prepend(SecurityHeaders::class);
 
+        // GST-02: the "guest opened" beacon comes from a page cached at the edge, so it cannot carry a CSRF token.
+        // The endpoint always answers 204 and is throttled (routes/public.php).
+        $middleware->validateCsrfTokens(except: ['*/opened']);
+
         $middleware->alias([
             'surface' => AddSurfaceHeader::class,
         ]);

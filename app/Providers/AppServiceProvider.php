@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Jobs\ExecuteDatabaseBackup;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
 
-            $schedule->job(new ExecuteDatabaseBackup())
+            $schedule->job(new ExecuteDatabaseBackup)
                 ->dailyAt('02:00')
                 ->timezone('UTC')
                 ->onOneServer();

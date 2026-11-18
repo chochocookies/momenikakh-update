@@ -11,9 +11,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 /** Validation rule for user-chosen slugs (F4-06). Pass the invitation id when editing. */
 final class AvailableSlug implements ValidationRule
 {
-    public function __construct(private readonly ?int $ignoreId = null)
-    {
-    }
+    public function __construct(private readonly ?int $ignoreId = null) {}
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

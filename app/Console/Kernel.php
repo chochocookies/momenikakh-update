@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Run backup cleanup weekly (every Sunday at 03:00 UTC)
-        $schedule->job(new CleanupOldBackups())
+        $schedule->job(new CleanupOldBackups)
             ->weekly()
             ->mondays()
             ->at('03:00')

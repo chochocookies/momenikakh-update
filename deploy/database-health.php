@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database and Redis connectivity health check script.
  *
@@ -11,25 +12,28 @@
  */
 
 declare(strict_types=1);
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 $projectRoot = dirname(__DIR__, 1);
-require $projectRoot . '/vendor/autoload.php';
+require $projectRoot.'/vendor/autoload.php';
 
-$app = require_once $projectRoot . '/bootstrap/app.php';
-$kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+$app = require_once $projectRoot.'/bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 $exitCode = 0;
 
 // Check database connection
 try {
-    $db = \Illuminate\Support\Facades\DB::connection();
+    $db = DB::connection();
     $db->select('SELECT 1');
     echo "database:connected\n";
-    echo "  - Driver: " . config('database.connections.mysql.driver') . "\n";
-    echo "  - Host: " . config('database.connections.mysql.host') . "\n";
-    echo "  - Port: " . config('database.connections.mysql.port') . "\n";
-    echo "  - Database: " . config('database.connections.mysql.database') . "\n";
+    echo '  - Driver: '.config('database.connections.mysql.driver')."\n";
+    echo '  - Host: '.config('database.connections.mysql.host')."\n";
+    echo '  - Port: '.config('database.connections.mysql.port')."\n";
+    echo '  - Database: '.config('database.connections.mysql.database')."\n";
 } catch (Exception $e) {
     echo "database:failed:{$e->getMessage()}\n";
     $exitCode = 1;
@@ -40,11 +44,11 @@ $redisDriver = config('cache.stores.redis.driver');
 
 if ($redisDriver === 'redis') {
     try {
-        $redis = \Illuminate\Support\Facades\Redis::connection();
+        $redis = Redis::connection();
         $redis->ping();
         echo "redis:connected\n";
-        echo "  - Host: " . config('cache.stores.redis.connection') . "\n";
-        echo "  - Port: " . config('cache.stores.redis.port') . "\n";
+        echo '  - Host: '.config('cache.stores.redis.connection')."\n";
+        echo '  - Port: '.config('cache.stores.redis.port')."\n";
     } catch (Exception $e) {
         echo "redis:failed:{$e->getMessage()}\n";
         if ($exitCode === 0) {

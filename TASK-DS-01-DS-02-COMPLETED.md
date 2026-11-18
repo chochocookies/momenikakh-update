@@ -150,11 +150,11 @@ powershell -ExecutionPolicy Bypass -File ./scripts/download-fonts.ps1
 - [x] Responsif di 360px/768px/1280px
 
 ### DS-02 Verification (setelah download font):
-- [ ] 10 font files ada di `public/fonts/`
-- [ ] Network tab: 0 request ke fonts.googleapis.com
-- [ ] Font-family menggunakan font lokal
-- [ ] `font-display: swap` bekerja (FOUT, bukan FOIT)
-- [ ] System font fallback visible sebelum font load
+- [x] 10 font files ada di `public/fonts/`
+- [x] Network tab: 0 request ke fonts.googleapis.com
+- [x] Font-family menggunakan font lokal
+- [x] `font-display: swap` bekerja (FOUT, bukan FOIT)
+- [x] System font fallback visible sebelum font load
 
 ## Issues & Notes
 

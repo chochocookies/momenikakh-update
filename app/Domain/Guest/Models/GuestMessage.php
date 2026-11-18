@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Guest\Models;
 
 use App\Domain\Invitation\Models\Invitation;
-use Illuminate\Database\Eloquent\Builder;
 use Database\Factories\GuestMessageFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

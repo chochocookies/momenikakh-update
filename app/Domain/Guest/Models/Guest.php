@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\Guest\Models;
 
 use App\Domain\Invitation\Models\Invitation;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 use Database\Factories\GuestFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Guest extends Model
 {
@@ -20,14 +20,12 @@ class Guest extends Model
 
     protected $fillable = ['name', 'group', 'phone'];
 
-
-
     protected static function newFactory(): GuestFactory
     {
         return GuestFactory::new();
     }
 
-     protected static function booted(): void
+    protected static function booted(): void
     {
         static::creating(function (self $guest): void {
             if (blank($guest->token)) {

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Domain\Invitation\Enums\EventKind;
 use App\Domain\Invitation\Enums\EventType;
+use App\Domain\Invitation\Enums\PersonRole;
 use App\Domain\Invitation\EventTypes\EventTypeDefinition;
 use App\Domain\Invitation\EventTypes\EventTypeRegistry;
-
 
 it('defines exactly the six event types', function () {
     expect(EventType::values())->toEqual(['wedding', 'walimatul_urs', 'engagement', 'aqiqah', 'khitanan', 'birthday']);
@@ -28,8 +29,8 @@ it('builds a complete definition for every event type', function (EventType $typ
 })->with(fn () => EventType::cases());
 
 it('uses only known role and event kind values', function () {
-    $roles = array_map(fn ($c) => $c->value, \App\Domain\Invitation\Enums\PersonRole::cases());
-    $kinds = array_map(fn ($c) => $c->value, \App\Domain\Invitation\Enums\EventKind::cases());
+    $roles = array_map(fn ($c) => $c->value, PersonRole::cases());
+    $kinds = array_map(fn ($c) => $c->value, EventKind::cases());
     foreach (app(EventTypeRegistry::class)->all() as $def) {
         expect(array_diff($def->roleKeys(), $roles))->toBeEmpty("{$def->key()} has unknown roles");
         expect(array_diff($def->kinds(), $kinds))->toBeEmpty("{$def->key()} has unknown event kinds");

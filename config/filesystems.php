@@ -60,6 +60,33 @@ return [
             'report' => false,
         ],
 
+        // MED-01: disk for uploaded invitation media (S3-compatible + CDN in production, local folder in dev).
+        // Local dev without MinIO: leave MEDIA_DRIVER unset (files go to storage/app/public/media; run `php artisan storage:link`).
+        'media' => env('MEDIA_DRIVER', 'local') === 's3'
+            ? [
+                'driver' => 's3',
+                'key' => env('MEDIA_ACCESS_KEY'),
+                'secret' => env('MEDIA_SECRET_KEY'),
+                'region' => env('MEDIA_REGION', 'auto'),            // R2: "auto"; MinIO: any, e.g. us-east-1
+                'bucket' => env('MEDIA_BUCKET'),
+                'endpoint' => env('MEDIA_ENDPOINT'),                // R2: https://<account>.r2.cloudflarestorage.com ; MinIO: http://localhost:9000
+                'use_path_style_endpoint' => (bool) env('MEDIA_PATH_STYLE', false), // true for MinIO
+                'url' => env('MEDIA_CDN_URL'),                      // media URLs are built from this (the CDN), not from the endpoint
+                'throw' => true,
+                'report' => false,
+                // Files have unique, unguessable names and are never overwritten, so they can be cached "forever".
+                'options' => ['CacheControl' => 'public, max-age=31536000, immutable'],
+                // No 'visibility' on purpose: R2 and many S3-compatible stores reject per-object ACLs.
+            ]
+            : [
+                'driver' => 'local',
+                'root' => storage_path('app/public/media'),
+                'url' => rtrim((string) env('APP_URL'), '/').'/storage/media',
+                'visibility' => 'public',
+                'throw' => true,
+                'report' => false,
+            ],
+
         'staging' => [
             'driver' => 's3',
             'key' => env('STAGING_AWS_ACCESS_KEY_ID'),

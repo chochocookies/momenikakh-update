@@ -8,9 +8,7 @@ use App\Domain\Invitation\Models\InvitationStoryItem;
 
 final readonly class StoryItemData
 {
-    public function __construct(public int $id, public string $title, public string $body, public ?string $happenedOn)
-    {
-    }
+    public function __construct(public int $id, public string $title, public string $body, public ?string $happenedOn) {}
 
     public static function fromModel(InvitationStoryItem $m): self
     {

@@ -13,12 +13,11 @@ final class SlugGenerator
 {
     /** No 0/o/1/i/l: easier to read aloud and type from a screenshot. */
     private const ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
+
     private const FORMAT = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
 
     /** @param list<string>|null $reserved */
-    public function __construct(private readonly ?array $reserved = null)
-    {
-    }
+    public function __construct(private readonly ?array $reserved = null) {}
 
     public function generate(string $title): string
     {

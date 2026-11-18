@@ -21,14 +21,16 @@ use InvalidArgumentException;
 final class InvitationWriter
 {
     private const PEOPLE = ['role', 'name', 'nickname', 'parents_text', 'bio', 'birth_date', 'instagram'];
+
     private const EVENTS = ['kind', 'label', 'starts_at', 'ends_at', 'venue_name', 'address', 'maps_url', 'latitude', 'longitude', 'dress_code', 'notes'];
+
     private const STORY = ['title', 'body', 'happened_on'];
+
     private const GIFTS = ['type', 'provider', 'holder_name', 'number', 'address_text', 'is_active'];
+
     private const SETTINGS = ['palette', 'motion', 'rsvp_enabled', 'wishes_enabled', 'gifts_enabled'];
 
-    public function __construct(private readonly EventTypeRegistry $registry)
-    {
-    }
+    public function __construct(private readonly EventTypeRegistry $registry) {}
 
     /** @param array<string,mixed> $data validated data for the step */
     public function apply(Invitation $invitation, string $step, array $data): Invitation
@@ -82,9 +84,9 @@ final class InvitationWriter
     }
 
     /**
-     * @param array<int,array<string,mixed>> $rows
-     * @param list<string> $columns
-     * @param array<string,mixed> $defaults
+     * @param  array<int,array<string,mixed>>  $rows
+     * @param  list<string>  $columns
+     * @param  array<string,mixed>  $defaults
      */
     private function sync(HasMany $relation, array $rows, array $columns, array $defaults = []): void
     {

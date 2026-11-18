@@ -18,14 +18,19 @@ final readonly class PersonData
         public ?string $bio,
         public ?string $birthDate,
         public ?string $instagram,
-    ) {
-    }
+    ) {}
 
     public static function fromModel(InvitationPerson $m): self
     {
         return new self(
-            $m->id, $m->role, $m->name, $m->nickname, $m->parents_text, $m->bio,
-            $m->birth_date?->format('Y-m-d'), $m->instagram,
+            $m->id,
+            $m->role,
+            $m->name,
+            $m->nickname,
+            $m->parents_text,
+            $m->bio,
+            $m->birth_date?->format('Y-m-d'),
+            $m->instagram,
         );
     }
 

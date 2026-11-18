@@ -10,7 +10,7 @@ use Tests\Support\Surfaces;
 
 beforeEach(function () {
     $this->withoutVite();
-    View::share('errors', new ViewErrorBag());
+    View::share('errors', new ViewErrorBag);
 });
 
 dataset('layouts', [

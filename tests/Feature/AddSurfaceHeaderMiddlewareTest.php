@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 test('middleware adds X-Surface header with the given surface name', function () {
-    $middleware = new AddSurfaceHeader();
+    $middleware = new AddSurfaceHeader;
     $request = Request::create('/');
 
     $response = $middleware->handle($request, fn () => new Response('ok'), 'marketing');
@@ -17,7 +17,7 @@ test('middleware adds X-Surface header with the given surface name', function ()
 });
 
 test('middleware passes each valid surface name through correctly', function (string $surface) {
-    $middleware = new AddSurfaceHeader();
+    $middleware = new AddSurfaceHeader;
     $request = Request::create('/');
 
     $response = $middleware->handle($request, fn () => new Response('ok'), $surface);
@@ -26,7 +26,7 @@ test('middleware passes each valid surface name through correctly', function (st
 })->with(['marketing', 'app', 'public']);
 
 test('middleware does not alter the response body', function () {
-    $middleware = new AddSurfaceHeader();
+    $middleware = new AddSurfaceHeader;
     $request = Request::create('/');
     $body = 'Hello Surface';
 
@@ -36,7 +36,7 @@ test('middleware does not alter the response body', function () {
 });
 
 test('middleware calls next handler in the pipeline', function () {
-    $middleware = new AddSurfaceHeader();
+    $middleware = new AddSurfaceHeader;
     $request = Request::create('/');
     $called = false;
 

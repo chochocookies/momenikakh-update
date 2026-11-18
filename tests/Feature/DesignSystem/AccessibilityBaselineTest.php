@@ -24,7 +24,7 @@ it('never removes the focus outline without a replacement', function () {
     $css = preg_replace('#/\*.*?\*/#s', '', allCss());
     preg_match_all('/([^{}]+)\{[^{}]*outline\s*:\s*(?:none|0)\b[^{}]*\}/i', $css, $m);
     $bad = array_values(array_filter($m[1], fn ($sel) => ! str_contains($sel, ':focus-visible') && ! str_contains($sel, ':focus:not(')));
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('honours prefers-reduced-motion globally', function () {
@@ -38,7 +38,7 @@ it('does not use positive tabindex or disable zoom', function () {
             $bad[] = $f['rel'];
         }
     }
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('keeps interactive text at 16px or more on form controls (no iOS zoom on focus)', function () {
@@ -50,5 +50,5 @@ it('keeps interactive text at 16px or more on form controls (no iOS zoom on focu
             }
         }
     }
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });

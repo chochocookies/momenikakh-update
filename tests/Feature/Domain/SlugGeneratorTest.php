@@ -62,7 +62,7 @@ it('treats taken slugs, including soft-deleted ones, as unavailable', function (
 
 it('validates user chosen slugs through the AvailableSlug rule', function () {
     Invitation::factory()->create(['slug' => 'sudah-dipakai']);
-    expect(Validator::make(['slug' => 'baru-saja'], ['slug' => [new AvailableSlug()]])->passes())->toBeTrue();
-    expect(Validator::make(['slug' => 'sudah-dipakai'], ['slug' => [new AvailableSlug()]])->fails())->toBeTrue();
-    expect(Validator::make(['slug' => 'admin'], ['slug' => [new AvailableSlug()]])->fails())->toBeTrue();
+    expect(Validator::make(['slug' => 'baru-saja'], ['slug' => [new AvailableSlug]])->passes())->toBeTrue();
+    expect(Validator::make(['slug' => 'sudah-dipakai'], ['slug' => [new AvailableSlug]])->fails())->toBeTrue();
+    expect(Validator::make(['slug' => 'admin'], ['slug' => [new AvailableSlug]])->fails())->toBeTrue();
 });

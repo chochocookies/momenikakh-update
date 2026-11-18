@@ -113,5 +113,5 @@ it('is the only place that reads plan features', function () {
             $offenders[] = $path;
         }
     }
-    expect($offenders)->toBeEmpty();
+    expect($offenders)->toBe([]);
 });

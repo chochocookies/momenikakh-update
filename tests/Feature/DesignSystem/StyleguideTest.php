@@ -88,7 +88,7 @@ it('labels every form control and icon-only button', function () {
             $problems[] = '<button> without explicit type';
         }
     }
-    expect($problems)->toBeEmpty();
+    expect($problems)->toBe([]);
 });
 
 it('gives every image alt, width and height', function () {
@@ -101,7 +101,7 @@ it('gives every image alt, width and height', function () {
             }
         }
     }
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('wires modals and tabs with valid aria relationships', function () {
@@ -146,7 +146,7 @@ it('wires modals and tabs with valid aria relationships', function () {
             $problems[] = 'tabpanel without matching tab';
         }
     }
-    expect($problems)->toBeEmpty();
+    expect($problems)->toBe([]);
 });
 
 it('demonstrates the error, disabled and loading states', function () {

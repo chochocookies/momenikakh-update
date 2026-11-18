@@ -1,0 +1,2662 @@
+=== phpstan.neon
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - config
+        - database
+        - routes
+
+    # Analysis level: 5 (range 0-9)
+    # Rationale: Level 5 provides a solid balance between strict type checking and pragmatic
+    # development. It catches common bugs (undefined variables, incorrect return types,
+    # basic type mismatches) while allowing some flexibility for Laravel's magic methods
+    # and dynamic features. This is a good starting point that can be incrementally
+    # increased as the codebase matures.
+    level: 5
+
+    excludePaths:
+        - bootstrap/cache
+        - storage
+        - vendor
+
+=== .github/workflows/ci.yml
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5 # 300s — Requirement 3.4
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run Laravel Pint (lint check)
+        run: ./vendor/bin/pint --test
+
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10 # 600s — Requirement 3.5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run Larastan
+        run: ./vendor/bin/phpstan analyse --memory-limit=1G
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15 # 900s — Requirement 3.6
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, sqlite3
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Prepare .env
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run Pest test suite
+        run: ./vendor/bin/pest
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          REDIS_CLIENT: predis
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10 # 600s — Requirement 3.7
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+=== tests/Feature/DesignSystem/StyleguideTest.php
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Support\Facades\File;
+use Tests\Support\DesignSystem;
+use Tests\Support\Surfaces;
+
+beforeEach(fn () => $this->withoutVite());
+
+/** Surface and path where /styleguide lives. Change if yours differs. */
+const STYLEGUIDE_SURFACE = 'marketing';
+const STYLEGUIDE_PATH = '/styleguide';
+
+function styleguide(): string
+{
+    $res = test()->get(Surfaces::url(STYLEGUIDE_SURFACE, STYLEGUIDE_PATH));
+    $res->assertSuccessful();
+
+    return $res->getContent();
+}
+
+it('shows every ui component in the styleguide source', function () {
+    $sources = '';
+    foreach (File::allFiles(resource_path('views')) as $f) {
+        if (str_contains($f->getFilename(), 'styleguide')) {
+            $sources .= $f->getContents();
+        }
+    }
+    expect($sources)->not->toBe('', 'no styleguide view found under resources/views');
+
+    $missing = [];
+    foreach (File::files(resource_path('views/components/ui')) as $file) {
+        $name = str_replace('.blade.php', '', $file->getFilename());
+        if (str_starts_with($name, '_')) {
+            continue;
+        }
+        if (! str_contains($sources, "<x-ui.{$name}") && ! str_contains($sources, "x-ui.{$name} ")) {
+            $missing[] = $name;
+        }
+    }
+    expect($missing)->toBeEmpty();
+});
+
+it('renders without server errors and with unique ids', function () {
+    $xp = DesignSystem::xpath(styleguide());
+    $ids = [];
+    foreach ($xp->query('//*[@id]') as $el) {
+        $ids[] = $el->getAttribute('id');
+    }
+    $dupes = array_keys(array_filter(array_count_values($ids), fn ($n) => $n > 1));
+    expect($dupes)->toBeEmpty();
+});
+
+it('has one h1 and a heading order that never skips levels', function () {
+    $xp = DesignSystem::xpath(styleguide());
+    expect($xp->query('//h1')->length)->toBe(1);
+    $prev = 0;
+    $skips = [];
+    foreach ($xp->query('//h1|//h2|//h3|//h4|//h5|//h6') as $h) {
+        $level = (int) substr($h->nodeName, 1);
+        if ($prev && $level > $prev + 1) {
+            $skips[] = "{$h->nodeName} after h{$prev}";
+        }
+        $prev = $level;
+    }
+    expect($skips)->toBeEmpty();
+});
+
+it('labels every form control and icon-only button', function () {
+    $xp = DesignSystem::xpath(styleguide());
+    $problems = [];
+
+    foreach ($xp->query('//input[not(@type="hidden") and not(@type="submit") and not(@type="button")]|//select|//textarea') as $c) {
+        $id = $c->getAttribute('id');
+        $labelled = $c->hasAttribute('aria-label') || $c->hasAttribute('aria-labelledby')
+            || ($id !== '' && $xp->query('//label[@for="'.$id.'"]')->length > 0)
+            || $xp->query('ancestor::label', $c)->length > 0;
+        if (! $labelled) {
+            $problems[] = "unlabelled <{$c->nodeName}> ".($c->getAttribute('name') ?: $id);
+        }
+    }
+    foreach ($xp->query('//button') as $b) {
+        if (trim($b->textContent) === '' && ! $b->hasAttribute('aria-label') && ! $b->hasAttribute('aria-labelledby')) {
+            $problems[] = 'icon-only <button> without aria-label';
+        }
+        if (! $b->hasAttribute('type')) {
+            $problems[] = '<button> without explicit type';
+        }
+    }
+    expect($problems)->toBe([]);
+});
+
+it('gives every image alt, width and height', function () {
+    $xp = DesignSystem::xpath(styleguide());
+    $bad = [];
+    foreach ($xp->query('//img') as $img) {
+        foreach (['alt', 'width', 'height'] as $a) {
+            if (! $img->hasAttribute($a)) {
+                $bad[] = $img->getAttribute('src')." lacks {$a}";
+            }
+        }
+    }
+    expect($bad)->toBe([]);
+});
+
+it('wires modals and tabs with valid aria relationships', function () {
+    $xp = DesignSystem::xpath(styleguide());
+    $problems = [];
+
+    foreach ($xp->query('//*[@data-modal-open]') as $trigger) {
+        $target = $trigger->getAttribute('data-modal-open');
+        if ($xp->query('//dialog[@id="'.$target.'"]')->length !== 1) {
+            $problems[] = "modal trigger points to missing dialog #{$target}";
+        }
+    }
+    foreach ($xp->query('//dialog') as $d) {
+        $ref = $d->getAttribute('aria-labelledby');
+        if ($ref === '' || $xp->query('//*[@id="'.$ref.'"]')->length !== 1) {
+            $problems[] = 'dialog without valid aria-labelledby';
+        }
+    }
+    foreach ($xp->query('//*[@role="tablist"]') as $list) {
+        $selected = 0;
+        foreach ($xp->query('.//*[@role="tab"]', $list) as $tab) {
+            $panel = $tab->getAttribute('aria-controls');
+            if ($xp->query('//*[@role="tabpanel" and @id="'.$panel.'"]')->length !== 1) {
+                $problems[] = "tab controls missing panel #{$panel}";
+            }
+            if ($tab->getAttribute('aria-selected') === 'true') {
+                $selected++;
+                if ($tab->getAttribute('tabindex') !== '0') {
+                    $problems[] = 'selected tab must have tabindex=0';
+                }
+            } elseif ($tab->getAttribute('tabindex') !== '-1') {
+                $problems[] = 'unselected tab must have tabindex=-1';
+            }
+        }
+        if ($selected !== 1) {
+            $problems[] = "tablist has {$selected} selected tabs";
+        }
+    }
+    foreach ($xp->query('//*[@role="tabpanel"]') as $panel) {
+        $ref = $panel->getAttribute('aria-labelledby');
+        if ($xp->query('//*[@role="tab" and @id="'.$ref.'"]')->length !== 1) {
+            $problems[] = 'tabpanel without matching tab';
+        }
+    }
+    expect($problems)->toBe([]);
+});
+
+it('demonstrates the error, disabled and loading states', function () {
+    $html = styleguide();
+    expect($html)->toContain('aria-invalid="true"')->toContain('aria-busy="true"')->toContain('disabled');
+});
+=== tests/Support/DesignSystem.php
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Support;
+
+use DOMDocument;
+use DOMXPath;
+use Illuminate\Support\Facades\File;
+
+/**
+ * Helpers for design-system conformance tests (DS-01..DS-07).
+ * Adjust the constants below if your paths differ.
+ */
+final class DesignSystem
+{
+    public const TOKENS = 'resources/css/tokens.css';
+
+    public const PUBLIC_FONTS = 'public/fonts';
+
+    /** @return list<array{rel:string,content:string}> */
+    public static function files(array $dirs, array $suffixes): array
+    {
+        $out = [];
+        foreach ($dirs as $dir) {
+            $abs = base_path($dir);
+            if (! is_dir($abs)) {
+                continue;
+            }
+            foreach (File::allFiles($abs) as $file) {
+                foreach ($suffixes as $suffix) {
+                    if (str_ends_with($file->getFilename(), $suffix)) {
+                        $out[] = [
+                            'rel' => ltrim(str_replace(base_path(), '', $file->getPathname()), '/'),
+                            'content' => $file->getContents(),
+                        ];
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $out;
+    }
+
+    /** @return list<array{rel:string,content:string}> */
+    public static function views(): array
+    {
+        return self::files(['resources/views'], ['.blade.php']);
+    }
+
+    /** CSS files except tokens.css (the only place raw colours may live). */
+    public static function cssExceptTokens(): array
+    {
+        return array_values(array_filter(
+            self::files(['resources/css'], ['.css']),
+            fn (array $f) => $f['rel'] !== self::TOKENS,
+        ));
+    }
+
+    public static function scripts(): array
+    {
+        return self::files(['resources/js'], ['.js', '.ts']);
+    }
+
+    /** @return array<string,string> custom property => value (as written) */
+    public static function tokens(): array
+    {
+        $css = (string) file_get_contents(base_path(self::TOKENS));
+        $css = preg_replace('#/\*.*?\*/#s', '', $css) ?? $css;
+        preg_match_all('/(--[a-z0-9-]+)\s*:\s*([^;{}]+);/i', $css, $m, PREG_SET_ORDER);
+        $out = [];
+        foreach ($m as $match) {
+            $out[$match[1]] = trim($match[2]);
+        }
+
+        return $out;
+    }
+
+    public static function luminance(string $hex): float
+    {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) {
+            $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+        }
+        [$r, $g, $b] = array_map(fn ($c) => hexdec($c) / 255, str_split($hex, 2));
+        $f = fn (float $c) => $c <= 0.03928 ? $c / 12.92 : (($c + 0.055) / 1.055) ** 2.4;
+
+        return 0.2126 * $f($r) + 0.7152 * $f($g) + 0.0722 * $f($b);
+    }
+
+    public static function contrast(string $fg, string $bg): float
+    {
+        $a = self::luminance($fg);
+        $b = self::luminance($bg);
+        [$hi, $lo] = $a >= $b ? [$a, $b] : [$b, $a];
+
+        return ($hi + 0.05) / ($lo + 0.05);
+    }
+
+    public static function xpath(string $html): DOMXPath
+    {
+        $dom = new DOMDocument;
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
+        libxml_clear_errors();
+
+        return new DOMXPath($dom);
+    }
+}
+=== tests/Feature/AuthenticationTest.php
+<?php
+
+use App\Models\User;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\URL;
+
+// NOTE: These tests require the authentication starter kit and multi-surface routing
+// to be fully configured (Tasks 8.1–8.4). Run with: php artisan test --group=auth
+// They are excluded from the default test run until those tasks are complete.
+
+test('user can register and receives verification email within time limits', function () {
+    Notification::fake();
+    $startTime = microtime(true);
+
+    $response = $this->post('/register', [
+        'name' => 'Budi Santoso',
+        'email' => 'budi@example.com',
+        'password' => 'Password123!',
+        'password_confirmation' => 'Password123!',
+    ]);
+
+    $elapsed = microtime(true) - $startTime;
+
+    $response->assertSessionHasNoErrors();
+
+    $user = User::where('email', 'budi@example.com')->first();
+    expect($user)->not->toBeNull();
+    expect($elapsed)->toBeLessThan(5.0);
+
+    Notification::assertSentTo($user, VerifyEmail::class);
+})->group('auth');
+
+test('user can verify email address within time limits', function () {
+    Event::fake();
+    $startTime = microtime(true);
+
+    $user = User::factory()->unverified()->create();
+
+    $verificationUrl = URL::temporarySignedRoute(
+        'verification.verify',
+        now()->addMinutes(60),
+        ['id' => $user->id, 'hash' => sha1($user->email)]
+    );
+
+    $response = $this->actingAs($user)->get($verificationUrl);
+
+    $elapsed = microtime(true) - $startTime;
+    expect($elapsed)->toBeLessThan(2.0);
+
+    Event::assertDispatched(Verified::class);
+    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+})->group('auth');
+
+test('user can login with valid credentials within 2 seconds', function () {
+    $user = User::factory()->create([
+        'password' => Hash::make('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    $startTime = microtime(true);
+
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    $elapsed = microtime(true) - $startTime;
+
+    $response->assertSessionHasNoErrors();
+    $this->assertAuthenticatedAs($user);
+    expect($elapsed)->toBeLessThan(2.0);
+})->group('auth');
+
+test('user cannot login with invalid credentials', function () {
+    $user = User::factory()->create([
+        'password' => Hash::make('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'WrongPassword!',
+    ]);
+
+    $response->assertSessionHasErrors('email');
+    $this->assertGuest();
+})->group('auth');
+
+test('complete password reset flow works properly', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+
+    // Request password reset
+    $response = $this->post('/forgot-password', [
+        'email' => $user->email,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+
+    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
+        // Reset password with token
+        $response = $this->post('/reset-password', [
+            'token' => $notification->token,
+            'email' => $user->email,
+            'password' => 'NewPassword123!',
+            'password_confirmation' => 'NewPassword123!',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        expect(Hash::check('NewPassword123!', $user->fresh()->password))->toBeTrue();
+
+        return true;
+    });
+})->group('auth');
+
+test('email verification flow works correctly', function () {
+    $user = User::factory()->unverified()->create();
+
+    // Simulate clicking verification link
+    $verificationUrl = URL::temporarySignedRoute(
+        'verification.verify',
+        now()->addMinutes(60),
+        ['id' => $user->id, 'hash' => sha1($user->email)]
+    );
+
+    $response = $this->actingAs($user)->get($verificationUrl);
+
+    $response->assertSessionHas('status', 'verifying');
+
+    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+})->group('auth');
+
+test('6 consecutive failed login attempts trigger rate limiting and expire after 60 seconds', function () {
+    $user = User::factory()->create([
+        'password' => Hash::make('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    // 5 failed attempts first
+    for ($i = 0; $i < 5; $i++) {
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'WrongPassword!',
+        ]);
+        $response->assertSessionHasErrors('email');
+    }
+
+    // 6th attempt should be rate limited
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    // Rate limiter should block (429 status or validation error)
+    expect($response->status())->toBeOneOf([429, 302]);
+
+    // Simulate time passing 61 seconds (lockout expires)
+    $this->travel(61)->seconds();
+
+    // Login should now succeed
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $this->assertAuthenticatedAs($user);
+})->group('auth');
+=== tests/Feature/Authentication/RateLimitingTest.php
+<?php
+
+use App\Models\User;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
+
+uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    // Reset rate limiters before each test
+    RateLimiter::clear('login');
+    RateLimiter::clear('register');
+});
+
+test('6 consecutive failed login attempts trigger rate limiting', function () {
+    $user = User::factory()->create([
+        'password' => bcrypt('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    // Perform 5 failed login attempts
+    for ($i = 0; $i < 5; $i++) {
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'WrongPassword!',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        expect($response->status())->toBe(302);
+    }
+
+    // 6th attempt should be rate limited (429 Too Many Requests)
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    // Rate limiter should block with 429 status
+    expect($response->status())->toBe(429);
+
+    // Verify error message indicates rate limiting
+    $response->assertSessionHasErrors('email');
+    $errors = $response->getSession()->get('errors');
+    expect($errors->get('email'))->toContain('Too many login attempts');
+    expect($errors->get('email'))->toContain('locked');
+})->group('auth');
+
+test('rate-limited users cannot login until lockout expires', function () {
+    $user = User::factory()->create([
+        'password' => bcrypt('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    // Trigger rate limiting by making 6 failed attempts
+    for ($i = 0; $i < 6; $i++) {
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'WrongPassword!',
+        ]);
+    }
+
+    // Verify user is locked out (cannot login even with correct password)
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    expect($response->status())->toBe(429);
+    expect($this->isGuest())->toBeTrue();
+
+    // Simulate time passing - 59 seconds (lockout NOT expired yet)
+    $this->travel(59)->seconds();
+
+    // Should still be locked out
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    expect($response->status())->toBe(429);
+    expect($this->isGuest())->toBeTrue();
+
+    // Simulate time passing - 2 more seconds (total 61 seconds, lockout expired)
+    $this->travel(2)->seconds();
+
+    // Now login should succeed
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    expect($response->status())->toBe(302);
+    $this->assertAuthenticatedAs($user);
+})->group('auth');
+
+test('successful authentication after rate limit expiry works correctly', function () {
+    Event::fake();
+
+    $user = User::factory()->create([
+        'password' => bcrypt('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    // Trigger rate limiting
+    for ($i = 0; $i < 6; $i++) {
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'WrongPassword!',
+        ]);
+    }
+
+    // Wait for lockout to expire (61 seconds)
+    $this->travel(61)->seconds();
+
+    // Login should succeed and fire Login event
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    expect($response->status())->toBe(302);
+    expect($response->headers->has('Location'))->toBeTrue();
+
+    $this->assertAuthenticatedAs($user);
+
+    // Verify login event was fired
+    Event::assertDispatched(Login::class);
+})->group('auth');
+
+test('rate limiting uses correct throttle key (email + IP combination)', function () {
+    $user1 = User::factory()->create([
+        'password' => bcrypt('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    $user2 = User::factory()->create([
+        'password' => bcrypt('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    // Make 6 failed attempts for user1
+    for ($i = 0; $i < 6; $i++) {
+        $this->post('/login', [
+            'email' => $user1->email,
+            'password' => 'WrongPassword!',
+        ]);
+    }
+
+    // user2 should still be able to login (different throttle key)
+    $response = $this->post('/login', [
+        'email' => $user2->email,
+        'password' => 'Password123!',
+    ]);
+
+    expect($response->status())->toBe(302);
+    $this->assertAuthenticatedAs($user2);
+})->group('auth');
+
+test('rate limiting resets after lockout period expires', function () {
+    $user = User::factory()->create([
+        'password' => bcrypt('Password123!'),
+        'email_verified_at' => now(),
+    ]);
+
+    // Trigger rate limiting
+    for ($i = 0; $i < 6; $i++) {
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'WrongPassword!',
+        ]);
+    }
+
+    // Wait for lockout to expire
+    $this->travel(61)->seconds();
+
+    // Should be able to make login attempts again
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    expect($response->status())->toBe(302);
+    $this->assertAuthenticatedAs($user);
+
+    // After successful login, the rate limit counter should reset
+    // Make another 5 failed attempts
+    for ($i = 0; $i < 5; $i++) {
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'WrongPassword!',
+        ]);
+        expect($response->status())->toBe(302);
+    }
+
+    // 6th attempt should be rate limited again
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'Password123!',
+    ]);
+
+    expect($response->status())->toBe(429);
+})->group('auth');
+=== app/Http/Requests/Editor/EditorStepRequest.php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests\Editor;
+
+use App\Domain\Invitation\EventTypes\EventTypeDefinition;
+use App\Domain\Invitation\EventTypes\EventTypeRegistry;
+use App\Domain\Invitation\Models\Invitation;
+use Illuminate\Foundation\Http\FormRequest;
+
+/**
+ * One request per editor step. Rules come from the event type definition, so adding a field in
+ * config/event-types.php or EventTypeDefinition changes validation everywhere at once.
+ * The route must bind the invitation as {invitation}.
+ */
+abstract class EditorStepRequest extends FormRequest
+{
+    /** One of EventTypeDefinition::STEPS. */
+    abstract protected function step(): string;
+
+    public function invitation(): Invitation
+    {
+        $invitation = $this->route('invitation');
+
+        return $invitation instanceof Invitation ? $invitation : Invitation::query()->findOrFail($invitation);
+    }
+
+    public function definition(): EventTypeDefinition
+    {
+        return app(EventTypeRegistry::class)->for($this->invitation()->event_type);
+    }
+
+    public function authorize(): bool
+    {
+        return $this->user()?->can('update', $this->invitation()) ?? false;
+    }
+
+    /** @return array<string,mixed> */
+    public function rules(): array
+    {
+        return $this->definition()->rules($this->step());
+    }
+
+    public function messages(): array
+    {
+        return [
+            'required' => ':attribute wajib diisi.',
+            'max' => ':attribute terlalu panjang.',
+            'in' => ':attribute tidak valid.',
+            'url' => ':attribute harus berupa tautan https.',
+            'date_format' => 'Format :attribute tidak valid.',
+        ];
+    }
+}
+=== tests/Feature/Domain/DemoSeederTest.php
+<?php
+
+declare(strict_types=1);
+
+use App\Domain\Billing\Models\Plan;
+use App\Domain\Guest\Models\Guest;
+use App\Domain\Invitation\Data\InvitationData;
+use App\Domain\Invitation\Enums\EventType;
+use App\Domain\Invitation\Enums\InvitationStatus;
+use App\Domain\Invitation\Models\Invitation;
+use App\Models\User;
+use Database\Seeders\DemoSeeder;
+use Database\Seeders\PlanSeeder;
+
+it('seeds one published demo invitation per event type', function () {
+    $this->seed(DemoSeeder::class);
+
+    expect(Invitation::query()->count())->toBe(count(EventType::cases()));
+    foreach (EventType::cases() as $type) {
+        $invitation = Invitation::query()->where('event_type', $type->value)->firstOrFail();
+        expect($invitation->status)->toBe(InvitationStatus::Published);
+        expect($invitation->slug)->toStartWith('demo-');
+
+        $data = InvitationData::fromModel($invitation);
+        expect($data->people)->not->toBeEmpty()->and($data->events)->not->toBeEmpty();
+        expect($invitation->guests()->count())->toBeGreaterThan(0);
+        expect($invitation->rsvps()->count())->toBeGreaterThan(0);
+        expect($invitation->messages()->count())->toBeGreaterThan(0);
+        expect($invitation->dailyStats()->count())->toBe(7);
+    }
+});
+
+it('is idempotent', function () {
+    $this->seed(DemoSeeder::class);
+    $this->seed(DemoSeeder::class);
+    expect(Invitation::query()->count())->toBe(count(EventType::cases()));
+    expect(User::query()->where('email', 'demo@momenikah.test')->count())->toBe(1);
+});
+
+it('uses only fictional contact data', function () {
+    $this->seed(DemoSeeder::class);
+    $phones = Guest::query()->pluck('phone');
+    foreach ($phones as $phone) {
+        expect($phone)->toStartWith('08120000');
+    }
+    expect(DB::table('invitation_gifts')->pluck('number')->unique()->all())->each->toMatch('/^(1234567890|081200000001)$/');
+});
+
+it('refuses to run in production', function () {
+    $this->app->detectEnvironment(fn () => 'production');
+    $this->seed(DemoSeeder::class);
+    expect(Invitation::query()->count())->toBe(0);
+    expect(User::query()->where('email', 'demo@momenikah.test')->exists())->toBeFalse();
+});
+
+it('seeds the plans with undecided prices and an inactive premium placeholder', function () {
+    $this->seed(PlanSeeder::class);
+    expect(Plan::query()->where('key', 'free')->first()->price_idr)->toBeNull();
+    $premium = Plan::query()->where('key', 'premium')->first();
+    expect($premium->price_idr)->toBeNull()->and($premium->is_active)->toBeFalse();
+});
+=== database/seeders/DemoSeeder.php
+<?php
+
+declare(strict_types=1);
+
+namespace Database\Seeders;
+
+use App\Domain\Guest\Enums\Attendance;
+use App\Domain\Guest\Models\Guest;
+use App\Domain\Guest\Models\GuestMessage;
+use App\Domain\Guest\Models\InvitationDailyStat;
+use App\Domain\Guest\Models\Rsvp;
+use App\Domain\Invitation\Enums\EventType;
+use App\Domain\Invitation\Models\Invitation;
+use App\Models\User;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+
+/**
+ * DOM-11: fictional demo data for every event type. NEVER runs in production.
+ * php artisan db:seed --class=DemoSeeder   (idempotent: re-running does not duplicate)
+ */
+class DemoSeeder extends Seeder
+{
+    public function run(): void
+    {
+        if (app()->isProduction()) {
+            $this->command?->error('DemoSeeder refuses to run in production.');
+
+            return;
+        }
+
+        $this->call(PlanSeeder::class);
+
+        $user = User::query()->firstOrCreate(
+            ['email' => 'demo@momenikah.test'],
+            ['name' => 'Akun Demo', 'password' => Hash::make('password'), 'email_verified_at' => now()],
+        );
+
+        foreach (EventType::cases() as $type) {
+            $slug = 'demo-'.str_replace('_', '-', $type->value);
+            if (Invitation::withTrashed()->where('slug', $slug)->exists()) {
+                continue;
+            }
+
+            $invitation = Invitation::factory()
+                ->for($user)->forType($type)->complete()->published()
+                ->create(['slug' => $slug]);
+
+            Guest::factory()->count(5)->for($invitation)->create();
+            Rsvp::factory()->count(4)->for($invitation)->create();
+            Rsvp::factory()->for($invitation)->create(['attendance' => Attendance::Yes]);
+            GuestMessage::factory()->count(3)->for($invitation)->create();
+            foreach (range(0, 6) as $daysAgo) {
+                InvitationDailyStat::factory()->for($invitation)->create([
+                    'date' => now()->subDays($daysAgo)->format('Y-m-d'),
+                ]);
+            }
+        }
+    }
+}
+=== app/Domain/Billing/Entitlements.php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Billing;
+
+use App\Domain\Billing\Models\Plan;
+use App\Domain\Invitation\Models\Invitation;
+use App\Models\User;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
+use InvalidArgumentException;
+
+/** DOM-10: the single place that answers "may this invitation/user do X?". No plan checks anywhere else. */
+final class Entitlements
+{
+    public function __construct(private readonly SubscriptionResolver $resolver) {}
+
+    /** The plan in force: the active subscription's plan, else the free plan. */
+    public function planFor(Invitation|User $subject, ?CarbonInterface $at = null): Plan
+    {
+        $sub = $subject instanceof Invitation
+            ? $this->resolver->forInvitation($subject, $at)
+            : $this->resolver->forUser($subject, $at);
+
+        return $sub?->plan ?? Plan::free();
+    }
+
+    /** True when a non-free subscription is active at the given moment. */
+    public function hasActivePlan(Invitation|User $subject, ?CarbonInterface $at = null): bool
+    {
+        $sub = $subject instanceof Invitation
+            ? $this->resolver->forInvitation($subject, $at)
+            : $this->resolver->forUser($subject, $at);
+
+        return $sub !== null && ! $sub->plan->isFree();
+    }
+
+    public function can(Invitation|User $subject, string $ability, ?CarbonInterface $at = null): bool
+    {
+        if (! in_array($ability, (array) config('entitlements.abilities'), true)) {
+            throw new InvalidArgumentException("Unknown ability [{$ability}].");
+        }
+
+        return (bool) ($this->planFor($subject, $at)->features[$ability] ?? false);
+    }
+
+    /** null = no limit decided/applied. */
+    public function limit(Invitation|User $subject, string $key, ?CarbonInterface $at = null): ?int
+    {
+        if (! in_array($key, (array) config('entitlements.limits'), true)) {
+            throw new InvalidArgumentException("Unknown limit [{$key}].");
+        }
+        $value = $this->planFor($subject, $at)->limits[$key] ?? null;
+
+        return $value === null ? null : (int) $value;
+    }
+
+    /** When a publish made at $from should expire: end of the active subscription, else free-plan duration, else never. */
+    public function expiresAtFor(Invitation $invitation, ?CarbonInterface $from = null): ?CarbonImmutable
+    {
+        $from = CarbonImmutable::instance($from ?? now());
+        $sub = $this->resolver->forInvitation($invitation, $from);
+        if ($sub?->ends_at !== null) {
+            return CarbonImmutable::instance($sub->ends_at);
+        }
+        $days = ($sub?->plan ?? Plan::free())->duration_days;
+
+        return $days === null ? null : $from->addDays($days);
+    }
+}
+=== app/Console/Commands/RestoreDatabaseBackup.php
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Console\Attribute\AsCommand;
+
+#[AsCommand(name: 'backup:restore')]
+class RestoreDatabaseBackup extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'backup:restore
+                            {backupName? : The backup name to restore}
+                            {--disk= : The disk where the backup is stored}
+                            {--force : Skip confirmation prompt}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Restore database from backup';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(): int
+    {
+        $disk = $this->option('disk') ?: config('backup.disk', 's3');
+        $backupName = $this->argument('backupName') ?: $this->selectBackup($disk);
+
+        if (! $backupName) {
+            $this->error('No backup selected');
+
+            return self::FAILURE;
+        }
+
+        // Confirm restore
+        if (! $this->option('force')) {
+            if (! $this->confirm("Are you sure you want to restore backup '{$backupName}'? This will overwrite the current database.")) {
+                $this->info('Restore cancelled.');
+
+                return self::FAILURE;
+            }
+        }
+
+        try {
+            $this->info("Starting restore from backup: {$backupName}");
+
+            // Verify manifest exists
+            if (! Storage::disk($disk)->exists("backups/{$backupName}/manifest.json")) {
+                $this->error("Manifest file not found for backup: {$backupName}");
+
+                return self::FAILURE;
+            }
+
+            // Verify backup.sql exists
+            if (! Storage::disk($disk)->exists("backups/{$backupName}/backup.sql")) {
+                $this->error("Backup SQL file not found for backup: {$backupName}");
+
+                return self::FAILURE;
+            }
+
+            // Read manifest for verification
+            $manifest = json_decode((string) Storage::disk($disk)->get("backups/{$backupName}/manifest.json"), true);
+            $this->info("Manifest loaded for database: {$manifest['database']}");
+
+            // Restore database
+            $this->info('Restoring database...');
+            $this->restoreDatabase($disk, $backupName);
+
+            // Verify restore
+            $this->info('Verifying restore...');
+            if ($this->verifyRestore($manifest)) {
+                $this->info('Restore completed successfully!');
+                $this->info("Backup manifest: {$backupName}/manifest.json");
+                $this->info("Backup SQL: {$backupName}/backup.sql");
+
+                return self::SUCCESS;
+            }
+
+            $this->error('Restore verification failed - row counts do not match');
+
+            return self::FAILURE;
+        } catch (\Exception $e) {
+            $this->error("Restore failed: {$e->getMessage()}");
+
+            return self::FAILURE;
+        }
+    }
+
+    /**
+     * Select backup from list of available backups.
+     */
+    private function selectBackup(string $disk): ?string
+    {
+        $backups = Storage::disk($disk)->directories('backups');
+
+        if (empty($backups)) {
+            $this->error('No backups found');
+
+            return null;
+        }
+
+        // Sort by name (timestamp) descending
+        rsort($backups);
+
+        $backupNames = array_map('basename', $backups);
+
+        return $this->choice('Select backup to restore', $backupNames);
+    }
+
+    /**
+     * Restore database from SQL file.
+     */
+    private function restoreDatabase(string $disk, string $backupName): void
+    {
+        $sqlContent = (string) Storage::disk($disk)->get("backups/{$backupName}/backup.sql");
+
+        // Split SQL into individual statements
+        $statements = array_filter(array_map('trim', explode(';', $sqlContent)));
+
+        // Execute each statement
+        foreach ($statements as $statement) {
+            if (trim($statement) !== '' && $statement !== '--') {
+                try {
+                    DB::statement($statement);
+                } catch (\Exception $e) {
+                    // Skip if statement already exists (for idempotent operations)
+                    if (! str_contains($e->getMessage(), 'already exists')) {
+                        throw $e;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Verify restore by comparing row counts with manifest.
+     */
+    private function verifyRestore(array $manifest): bool
+    {
+        $allMatch = true;
+
+        foreach ($manifest['tables'] as $table => $expectedCount) {
+            if (! DB::getSchemaBuilder()->hasTable($table)) {
+                $this->error("Table '{$table}' does not exist after restore");
+                $allMatch = false;
+
+                continue;
+            }
+
+            $actualCount = DB::table($table)->count();
+
+            if ($actualCount !== $expectedCount) {
+                $this->error("Table '{$table}': expected {$expectedCount} rows, got {$actualCount} rows");
+                $allMatch = false;
+            }
+        }
+
+        return $allMatch;
+    }
+}
+=== app/Jobs/CleanupOldBackups.php
+<?php
+
+namespace App\Jobs;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
+
+class CleanupOldBackups implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Create a new job instance.
+     */
+    public function __construct(
+        public readonly int $minRetentionDays = 7,
+        public readonly int $maxRetentionDays = 30,
+        public readonly string $disk = 'backups',
+    ) {}
+
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
+    {
+        $this->validateRetentionConfig();
+        $this->cleanupOldBackups();
+    }
+
+    /**
+     * Validate retention configuration.
+     */
+    private function validateRetentionConfig(): void
+    {
+        if ($this->minRetentionDays < 0) {
+            throw new InvalidArgumentException('Minimum retention days must be >= 0');
+        }
+
+        if ($this->maxRetentionDays < $this->minRetentionDays) {
+            throw new InvalidArgumentException("Maximum retention days ({$this->maxRetentionDays}) must be >= minimum retention days ({$this->minRetentionDays})");
+        }
+    }
+
+    /**
+     * Cleanup backups older than max retention days.
+     */
+    private function cleanupOldBackups(): void
+    {
+        $backupPath = 'backups';
+
+        if (! Storage::disk($this->disk)->exists($backupPath)) {
+            return;
+        }
+
+        $directories = Storage::disk($this->disk)->directories($backupPath);
+
+        foreach ($directories as $directory) {
+            $timestamp = basename($directory);
+
+            if (! $this->isValidBackupTimestamp($timestamp)) {
+                continue;
+            }
+
+            $backupDate = \DateTime::createFromFormat('Y-m-d_His', $timestamp);
+
+            if (! $backupDate) {
+                continue;
+            }
+
+            $ageInDays = $backupDate->diff(now())->days;
+
+            // Delete backups older than max retention days
+            if ($ageInDays > $this->maxRetentionDays) {
+                $this->deleteBackupDirectory($directory);
+            }
+        }
+    }
+
+    /**
+     * Check if timestamp matches backup format.
+     */
+    private function isValidBackupTimestamp(string $timestamp): bool
+    {
+        return (bool) \DateTime::createFromFormat('Y-m-d_His', $timestamp);
+    }
+
+    /**
+     * Delete backup directory and all its contents.
+     */
+    private function deleteBackupDirectory(string $directory): void
+    {
+        try {
+            Storage::disk($this->disk)->deleteDirectory($directory);
+        } catch (\Exception $e) {
+            report($e);
+        }
+    }
+
+    /**
+     * Get the number of seconds the job can run.
+     */
+    public function timeout(): int
+    {
+        return 600; // 10 minutes maximum
+    }
+}
+=== resources/css/tokens.css
+/* DS-01: Brand tokens for Tailwind 4 @theme */
+/* DS-02: Font self-hosting with display: swap */
+/* Extracted from Momenikah landing pages and prototypes */
+/* Last updated: 2025-01-12 */
+
+/* DS-02: Font face declarations with display: swap */
+/* Note: Run 'npm run fonts:download' to download the actual font files */
+/* Or manually download fonts and place in /public/fonts/ directory */
+
+/* Font loading strategy */
+/* Modern browsers will use font-display: swap for immediate text display */
+/* Older browsers will use fallback fonts while loading */
+
+/* System font fallbacks for better performance */
+:root {
+    --font-fallback-serif: Georgia, 'Times New Roman', Times, serif;
+    --font-fallback-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Optional: Critical font loading classes for FOUT/FOIT control */
+.font-loading-serif {
+    font-family: var(--font-fallback-serif);
+    font-feature-settings: 'liga' off, 'kern' off;
+}
+
+.font-loading-sans {
+    font-family: var(--font-fallback-sans);
+    font-feature-settings: 'liga' off, 'kern' off;
+}
+
+.font-loaded-serif {
+    font-family: var(--font-family-serif), var(--font-fallback-serif);
+    font-feature-settings: normal;
+}
+
+.font-loaded-sans {
+    font-family: var(--font-family-sans), var(--font-fallback-sans);
+    font-feature-settings: normal;
+}
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-latin-400-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-latin-500-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-latin-600-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-latin-700-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/cormorant-garamond-latin-500-italic.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Plus Jakarta Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/plus-jakarta-sans-latin-400-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Plus Jakarta Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/plus-jakarta-sans-latin-500-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Plus Jakarta Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/plus-jakarta-sans-latin-600-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Plus Jakarta Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/plus-jakarta-sans-latin-700-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Plus Jakarta Sans';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('/fonts/plus-jakarta-sans-latin-800-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@theme {
+  /* Color palette - from Momenikah – Landing page dan branding.html */
+  --color-brand-bg: #FFF8F3;
+  --color-brand-bg-dark: #1B1217;
+  --color-brand-ink: #2B1B22;
+  --color-brand-ink-dark: #F6E9EE;
+  --color-brand-muted: #6B5A62;
+  --color-brand-muted-dark: #B9A5AE;
+  --color-brand-rose: #BE185D;
+  --color-brand-rose-dark: #F472B6;
+  --color-brand-rose-light: #FCE7F3;
+  --color-brand-rose-light-dark: #3A1F2C;
+  --color-brand-line: #EBD9DF;
+  --color-brand-line-dark: #3B2A32;
+  --color-brand-on: #ffffff;
+  --color-brand-on-dark: #2B1B22;
+  --color-brand-gold: #F2D08A;
+  --color-brand-gold-alt: #B8893B;
+
+  /* Alias ringkas yang dipakai komponen UI */
+  --color-ivory: #FFF8F3;
+  --color-ink: #2B1B22;
+  --color-muted: #6B5A62;
+  --color-rose: #BE185D;
+  --color-rose-light: #FCE7F3;
+  --color-gold: #B8893B;
+  --color-danger: #B91C1C;
+
+  /* Template colors (solid colors only) */
+  --color-template-classic-bg: #FBF5EC;
+  --color-template-classic-text: #4A1F2B;
+  --color-template-classic-accent: #7B1E3A;
+
+  --color-template-beach-text: #5A2E2A;
+  --color-template-beach-accent: #B83A28;
+
+  --color-template-floral-text: #44503D;
+  --color-template-floral-accent: #A8456A;
+
+  --color-template-luxury-bg: #15110D;
+  --color-template-luxury-text: #F1E3C0;
+  --color-template-luxury-accent: #D4AF37;
+
+  --color-template-minimal-bg: #ffffff;
+  --color-template-minimal-text: #111111;
+  --color-template-minimal-accent: #BE185D;
+
+  --color-template-rustic-bg: #E9D8BC;
+  --color-template-rustic-text: #4B3621;
+  --color-template-rustic-accent: #8A4B2A;
+
+  /* Gradients (harus di --background-image-*, bukan --color-*) */
+  --background-image-template-beach-bg: linear-gradient(#FFE6CF, #FFC9A8 60%, #9FDAD6);
+  --background-image-template-floral-bg: linear-gradient(#FFF3F5, #EEF4E8);
+
+  /* Typography - Tailwind v4 naming */
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Font sizes (--text-*, bukan --font-size-*) */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-4xl: 2.25rem;     /* 36px */
+  --text-5xl: 3rem;        /* 48px */
+  --text-6xl: 3.75rem;     /* 60px */
+  --text-7xl: 4.5rem;      /* 72px */
+
+  /* Line heights (--leading-*, bukan --line-height-*) */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  /* Letter spacing (--tracking-*, bukan --letter-spacing-*) */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* Border radius */
+  --radius-xs: 0.125rem;   /* 2px */
+  --radius-sm: 0.25rem;    /* 4px */
+  --radius-md: 0.375rem;   /* 6px */
+  --radius-lg: 0.5rem;     /* 8px */
+  --radius-xl: 0.75rem;    /* 12px */
+
+  /* Spacing scale */
+  --spacing-px: 1px;
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;    /* 4px */
+  --spacing-2: 0.5rem;     /* 8px */
+  --spacing-3: 0.75rem;    /* 12px */
+  --spacing-4: 1rem;       /* 16px */
+  --spacing-5: 1.25rem;    /* 20px */
+  --spacing-6: 1.5rem;     /* 24px */
+  --spacing-8: 2rem;       /* 32px */
+  --spacing-10: 2.5rem;    /* 40px */
+  --spacing-12: 3rem;      /* 48px */
+  --spacing-16: 4rem;      /* 64px */
+  --spacing-20: 5rem;      /* 80px */
+  --spacing-24: 6rem;      /* 96px */
+  --spacing-32: 8rem;      /* 128px */
+
+  /* Container widths */
+  --container-xs: 20rem;    /* 320px */
+  --container-sm: 24rem;    /* 384px */
+  --container-md: 28rem;    /* 448px */
+  --container-lg: 32rem;    /* 512px */
+  --container-xl: 36rem;    /* 576px */
+  --container-2xl: 42rem;   /* 672px */
+  --container-3xl: 48rem;   /* 768px */
+  --container-4xl: 56rem;   /* 896px */
+  --container-5xl: 64rem;   /* 1024px */
+  --container-6xl: 72rem;   /* 1152px */
+  --container-7xl: 80rem;   /* 1280px */
+
+  /* Breakpoints (mobile-first) */
+  --breakpoint-sm: 40rem;   /* 640px */
+  --breakpoint-md: 48rem;   /* 768px */
+  --breakpoint-lg: 64rem;   /* 1024px */
+  --breakpoint-xl: 80rem;   /* 1280px */
+  --breakpoint-2xl: 96rem;  /* 1536px */
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Animation timings */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 750ms;
+
+  /* Easings */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+=== routes/marketing.php
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return response('Momenikah - Marketing Surface', 200);
+})->name('marketing.home');
+=== routes/app.php
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return response('Momenikah - Application Surface', 200);
+})->name('app.home');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
+=== routes/public.php
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return response('Momenikah - Public Invitation Surface', 200);
+})->name('public.home');
+=== bootstrap/app.php
+<?php
+
+use App\Http\Middleware\AddSurfaceHeader;
+use App\Http\Middleware\SecurityHeaders;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Route;
+use Sentry\Laravel\Integration;
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+        then: function () {
+            // Subdomain surfaces are registered BEFORE the root domain surface so that
+            // Laravel's router matches app.momenikah.test and undangan.momenikah.test
+            // before it evaluates the root momenikah.test domain.
+            $surfaces = [
+                'app' => [
+                    'domain' => config('surfaces.app.domain', 'app.momenikah.test'),
+                    'file' => base_path('routes/app.php'),
+                ],
+                'public' => [
+                    'domain' => config('surfaces.public.domain', 'undangan.momenikah.test'),
+                    'file' => base_path('routes/public.php'),
+                ],
+                // Root domain registered last — must come after all subdomain entries.
+                'marketing' => [
+                    'domain' => config('surfaces.marketing.domain', 'momenikah.test'),
+                    'file' => base_path('routes/marketing.php'),
+                ],
+            ];
+
+            foreach ($surfaces as $key => $config) {
+                try {
+                    if (! file_exists($config['file'])) {
+                        throw new RuntimeException("Route file not found: {$config['file']}");
+                    }
+
+                    Route::domain($config['domain'])
+                        ->middleware(['web', AddSurfaceHeader::class.':'.$key])
+                        ->group($config['file']);
+                } catch (Throwable $e) {
+                    // Per Requirement 5.11: log the failing route file name and halt
+                    // initialization so the application does not start in a broken state.
+                    Log::critical("Failed to load route file for surface [{$key}]: {$e->getMessage()}", [
+                        'surface' => $key,
+                        'file' => $config['file'],
+                        'exception' => $e,
+                    ]);
+
+                    throw new RuntimeException(
+                        "Application initialization halted: could not load route file for surface [{$key}]. "
+                        ."File: {$config['file']}. Reason: {$e->getMessage()}",
+                        previous: $e
+                    );
+                }
+            }
+
+            // Health check endpoint — domain-agnostic, accessible from any surface.
+            // Registered after surface routes so surface fallback does not shadow it.
+            Route::get('/health', function () {
+                $status = 'healthy';
+                $checks = [];
+                $httpCode = 200;
+
+                try {
+                    DB::connection()->getPdo();
+                    $checks['database'] = [
+                        'status' => 'connected',
+                        'connection' => config('database.default'),
+                    ];
+                } catch (Throwable $e) {
+                    $status = 'unhealthy';
+                    $httpCode = 503;
+                    $checks['database'] = [
+                        'status' => 'disconnected',
+                        'error' => $e->getMessage(),
+                    ];
+                }
+
+                try {
+                    Redis::ping();
+                    $checks['redis'] = [
+                        'status' => 'connected',
+                    ];
+                } catch (Throwable $e) {
+                    $status = 'unhealthy';
+                    $httpCode = 503;
+                    $checks['redis'] = [
+                        'status' => 'disconnected',
+                        'error' => $e->getMessage(),
+                    ];
+                }
+
+                return response()->json([
+                    'status' => $status,
+                    'timestamp' => now()->toISOString(),
+                    'checks' => $checks,
+                ], $httpCode);
+            })->middleware('web')->name('health.check');
+
+            // Fallback: any request reaching here did not match a configured surface domain.
+            // Returns HTTP 404 per Requirement 5.5.
+            Route::fallback(function () {
+                abort(404, 'Unrecognized surface domain.');
+            });
+        },
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        // Register security headers middleware globally for all web routes
+        // This ensures all routes across all surfaces (marketing, app, public) receive security headers
+        $middleware->prepend(SecurityHeaders::class);
+
+        $middleware->alias([
+            'surface' => AddSurfaceHeader::class,
+        ]);
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        Integration::handles($exceptions);
+    })->create();
+=== config/sentry.php
+<?php
+
+/**
+ * Sentry Laravel SDK configuration file.
+ *
+ * @see https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/
+ */
+return [
+
+    // @see https://docs.sentry.io/concepts/key-terms/dsn-explainer/
+    'dsn' => env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN')),
+
+    // @see https://spotlightjs.com/
+    // 'spotlight' => env('SENTRY_SPOTLIGHT', false),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#logger
+    // 'logger' => Sentry\Logger\DebugFileLogger::class, // By default this will log to `storage_path('logs/sentry.log')`
+
+    // The release version of your application
+    // Example with dynamic git hash: trim(exec('git --git-dir ' . base_path('.git') . ' log --pretty="%h" -n1 HEAD'))
+    'release' => env('SENTRY_RELEASE'),
+
+    // When left empty or `null` the Laravel environment will be used (usually discovered from `APP_ENV` in your `.env`)
+    'environment' => env('SENTRY_ENVIRONMENT'),
+
+    // Override the organization ID used for trace continuation checks.
+    'org_id' => env('SENTRY_ORG_ID') === null ? null : (int) env('SENTRY_ORG_ID'),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#sample_rate
+    'sample_rate' => env('SENTRY_SAMPLE_RATE') === null ? 1.0 : (float) env('SENTRY_SAMPLE_RATE'),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#traces_sample_rate
+    'traces_sample_rate' => env('SENTRY_TRACES_SAMPLE_RATE') === null ? null : (float) env('SENTRY_TRACES_SAMPLE_RATE'),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#profiles_sample_rate
+    'profiles_sample_rate' => env('SENTRY_PROFILES_SAMPLE_RATE') === null ? null : (float) env('SENTRY_PROFILES_SAMPLE_RATE'),
+
+    // Only continue incoming traces when the organization IDs are compatible with this SDK instance.
+    'strict_trace_continuation' => env('SENTRY_STRICT_TRACE_CONTINUATION', false),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#enable_logs
+    'enable_logs' => env('SENTRY_ENABLE_LOGS', false),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#enable_metrics
+    'enable_metrics' => env('SENTRY_ENABLE_METRICS', true),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#log_flush_threshold
+    'log_flush_threshold' => env('SENTRY_LOG_FLUSH_THRESHOLD') === null ? null : (int) env('SENTRY_LOG_FLUSH_THRESHOLD'),
+
+    // The minimum log level that will be sent to Sentry as logs using the `sentry_logs` logging channel
+    'logs_channel_level' => env('SENTRY_LOG_LEVEL', env('SENTRY_LOGS_LEVEL', env('LOG_LEVEL', 'debug'))),
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#send_default_pii
+    'send_default_pii' => env('SENTRY_SEND_DEFAULT_PII', false),
+
+    // Configures which data is collected automatically, `null` keeps collecting data based on `send_default_pii`
+    'data_collection' => null,
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#ignore_exceptions
+    // 'ignore_exceptions' => [],
+
+    // @see: https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/#ignore_transactions
+    'ignore_transactions' => [
+        // Ignore Laravel's default health URL
+        '/up',
+
+        // Ignore the Laravel Horizon, Laravel Telescope and Laravel Debugbar routes
+        '/^\/(horizon|telescope|_debugbar)(\/|$)/',
+    ],
+
+    // Breadcrumb specific configuration
+    'breadcrumbs' => [
+        // Capture Laravel logs as breadcrumbs
+        'logs' => env('SENTRY_BREADCRUMBS_LOGS_ENABLED', true),
+
+        // Capture Laravel cache events (hits, writes etc.) as breadcrumbs
+        'cache' => env('SENTRY_BREADCRUMBS_CACHE_ENABLED', true),
+
+        // Capture Livewire components like routes as breadcrumbs
+        'livewire' => env('SENTRY_BREADCRUMBS_LIVEWIRE_ENABLED', true),
+
+        // Capture SQL queries as breadcrumbs
+        'sql_queries' => env('SENTRY_BREADCRUMBS_SQL_QUERIES_ENABLED', true),
+
+        // Capture SQL query bindings (parameters) in SQL query breadcrumbs, ignored when `data_collection` is set
+        // This option will be migrated to `data_collection.database_query_data` in the next major version
+        'sql_bindings' => env('SENTRY_BREADCRUMBS_SQL_BINDINGS_ENABLED', false),
+
+        // Capture queue job information as breadcrumbs
+        'queue_info' => env('SENTRY_BREADCRUMBS_QUEUE_INFO_ENABLED', true),
+
+        // Capture command information as breadcrumbs
+        'command_info' => env('SENTRY_BREADCRUMBS_COMMAND_JOBS_ENABLED', true),
+
+        // Capture HTTP client request information as breadcrumbs
+        'http_client_requests' => env('SENTRY_BREADCRUMBS_HTTP_CLIENT_REQUESTS_ENABLED', true),
+
+        // Capture send notifications as breadcrumbs
+        'notifications' => env('SENTRY_BREADCRUMBS_NOTIFICATIONS_ENABLED', true),
+    ],
+
+    // Crons monitoring specific configuration
+    'crons' => [
+        // Monitor every scheduled task as if `->sentryMonitor()` was called on it
+        'monitor_scheduled_tasks' => env('SENTRY_CRONS_MONITOR_SCHEDULED_TASKS', false),
+
+        // Commands, job classes, task names or monitor slugs of tasks that are not monitored automatically, `*` is a wildcard
+        'exclude_scheduled_tasks' => [],
+    ],
+
+    // Performance monitoring specific configuration
+    'tracing' => [
+        // Trace queue jobs as their own transactions (this enables tracing for queue jobs)
+        'queue_job_transactions' => env('SENTRY_TRACE_QUEUE_ENABLED', true),
+
+        // Capture queue jobs as spans when executed on the sync driver
+        'queue_jobs' => env('SENTRY_TRACE_QUEUE_JOBS_ENABLED', true),
+
+        // Capture SQL queries as spans
+        'sql_queries' => env('SENTRY_TRACE_SQL_QUERIES_ENABLED', true),
+
+        // Capture SQL query bindings (parameters) in SQL query spans, ignored when `data_collection` is set
+        // This option will be migrated to `data_collection.database_query_data` in the next major version
+        'sql_bindings' => env('SENTRY_TRACE_SQL_BINDINGS_ENABLED', false),
+
+        // Capture where the SQL query originated from on the SQL query spans
+        'sql_origin' => env('SENTRY_TRACE_SQL_ORIGIN_ENABLED', true),
+
+        // Define a threshold in milliseconds for SQL queries to resolve their origin
+        'sql_origin_threshold_ms' => env('SENTRY_TRACE_SQL_ORIGIN_THRESHOLD_MS', 100),
+
+        // Capture views rendered as spans
+        'views' => env('SENTRY_TRACE_VIEWS_ENABLED', true),
+
+        // Capture Livewire components as spans
+        'livewire' => env('SENTRY_TRACE_LIVEWIRE_ENABLED', true),
+
+        // Capture HTTP client requests as spans
+        'http_client_requests' => env('SENTRY_TRACE_HTTP_CLIENT_REQUESTS_ENABLED', true),
+
+        // Capture where the HTTP client request originated from on the HTTP client request spans
+        'http_client_requests_origin' => env('SENTRY_TRACE_HTTP_CLIENT_REQUESTS_ORIGIN_ENABLED', true),
+
+        // Define a threshold in milliseconds for HTTP client requests to resolve their origin
+        'http_client_requests_origin_threshold_ms' => env('SENTRY_TRACE_HTTP_CLIENT_REQUESTS_ORIGIN_THRESHOLD_MS', 250),
+
+        // Capture Laravel cache events (hits, writes etc.) as spans
+        'cache' => env('SENTRY_TRACE_CACHE_ENABLED', true),
+
+        // Capture Redis operations as spans (this enables Redis events in Laravel)
+        'redis_commands' => env('SENTRY_TRACE_REDIS_COMMANDS', false),
+
+        // Capture where the Redis command originated from on the Redis command spans
+        'redis_origin' => env('SENTRY_TRACE_REDIS_ORIGIN_ENABLED', true),
+
+        // Capture send notifications as spans
+        'notifications' => env('SENTRY_TRACE_NOTIFICATIONS_ENABLED', true),
+
+        // Enable tracing for requests without a matching route (404's)
+        'missing_routes' => env('SENTRY_TRACE_MISSING_ROUTES_ENABLED', false),
+
+        // Configures if the performance trace should continue after the response has been sent to the user until the application terminates
+        // This is required to capture any spans that are created after the response has been sent like queue jobs dispatched using `dispatch(...)->afterResponse()` for example
+        'continue_after_response' => env('SENTRY_TRACE_CONTINUE_AFTER_RESPONSE', true),
+
+        // Capture AI agent interactions as spans (requires laravel/ai)
+        'gen_ai' => env('SENTRY_TRACE_GEN_AI_ENABLED', true),
+
+        // Capture AI invoke_agent spans
+        'gen_ai_invoke_agent' => env('SENTRY_TRACE_GEN_AI_INVOKE_AGENT_ENABLED', true),
+
+        // Capture AI chat spans
+        'gen_ai_chat' => env('SENTRY_TRACE_GEN_AI_CHAT_ENABLED', true),
+
+        // Capture AI execute_tool spans
+        'gen_ai_execute_tool' => env('SENTRY_TRACE_GEN_AI_EXECUTE_TOOL_ENABLED', true),
+
+        // Capture AI embeddings spans
+        'gen_ai_embeddings' => env('SENTRY_TRACE_GEN_AI_EMBEDDINGS_ENABLED', true),
+
+        // Capture AI evaluate spans for classifications (requires laravel/ai 1.0+)
+        'gen_ai_evaluate' => env('SENTRY_TRACE_GEN_AI_EVALUATE_ENABLED', true),
+
+        // Enable the tracing integrations supplied by Sentry (recommended)
+        'default_integrations' => env('SENTRY_TRACE_DEFAULT_INTEGRATIONS_ENABLED', true),
+    ],
+
+];
+=== resources/views/components/layouts/public.blade.php
+@props(['title' => null, 'description' => null, 'image' => null])
+<!doctype html>
+<html lang="id" class="scroll-smooth motion-reduce:scroll-auto">
+<head>
+    <x-seo.head :title="$title" :description="$description" :image="$image" />
+    <meta name="robots" content="noindex,nofollow">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body data-surface="public" class="min-h-screen bg-ivory font-sans text-ink antialiased">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-rose focus:px-5 focus:py-3 focus:text-white">Lewati ke konten</a>
+    <main id="main" tabindex="-1">{{ $slot }}</main>
+    <div id="toasts" role="region" aria-label="Notifikasi" class="fixed inset-x-4 bottom-4 z-50 grid gap-2 sm:left-auto sm:w-96"></div>
+</body>
+</html>
+=== resources/views/styleguide/index.blade.php
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styleguide - Momenikah Design System</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-surface text-text min-h-screen">
+    <header class="sticky top-0 z-50 border-b border-border bg-surface/95 backdrop-blur-sm">
+        <div class="container-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary"></div>
+                    <h1 class="text-2xl font-serif font-bold">Momenikah Design System</h1>
+                </div>
+                <nav class="flex items-center gap-6">
+                    <a href="#colors" class="text-sm font-medium hover:text-primary transition-colors">Warna</a>
+                    <a href="#typography" class="text-sm font-medium hover:text-primary transition-colors">Tipografi</a>
+                    <a href="#templates" class="text-sm font-medium hover:text-primary transition-colors">Template</a>
+                    <a href="#spacing" class="text-sm font-medium hover:text-primary transition-colors">Spacing</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-7xl mx-auto px-4 py-8 space-y-16">
+        <!-- Colors Section -->
+        <section id="colors" class="space-y-8">
+            <h2 class="text-3xl font-serif font-bold border-b border-border pb-4">Warna Brand</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Brand Colors -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-serif font-semibold">Palet Brand (Light Mode)</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-ivory border border-border"></div>
+                            <div class="text-sm">
+                                <div class="font-medium">Background</div>
+                                <code class="text-text-muted">#FFF8F3</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#2B1B22] border border-border"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-text">Ink/Text</div>
+                                <code class="text-text-muted">#2B1B22</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#BE185D] border border-border"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-on-primary">Rose (Primary)</div>
+                                <code class="text-text-muted">#BE185D</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#6B5A62] border border-border"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-text">Muted</div>
+                                <code class="text-text-muted">#6B5A62</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#FCE7F3] border border-border"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-text">Rose Light</div>
+                                <code class="text-text-muted">#FCE7F3</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#F2D08A] border border-border"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-text">Gold</div>
+                                <code class="text-text-muted">#F2D08A</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dark Mode Colors -->
+                <div class="space-y-6 p-6 rounded-xl bg-[#1B1217] text-[#F6E9EE]">
+                    <h3 class="text-xl font-serif font-semibold">Palet Brand (Dark Mode)</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#1B1217] border border-[#3B2A32]"></div>
+                            <div class="text-sm">
+                                <div class="font-medium">Background</div>
+                                <code class="text-[#B9A5AE]">#1B1217</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#F6E9EE] border border-[#3B2A32]"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-[#1B1217]">Ink/Text</div>
+                                <code class="text-[#B9A5AE]">#F6E9EE</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#F472B6] border border-[#3B2A32]"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-[#2B1B22]">Rose (Primary)</div>
+                                <code class="text-[#B9A5AE]">#F472B6</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#B9A5AE] border border-[#3B2A32]"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-[#1B1217]">Muted</div>
+                                <code class="text-[#B9A5AE]">#B9A5AE</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#3A1F2C] border border-[#3B2A32]"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-[#F6E9EE]">Rose Light</div>
+                                <code class="text-[#B9A5AE]">#3A1F2C</code>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="w-full h-32 rounded-lg bg-[#B8893B] border border-[#3B2A32]"></div>
+                            <div class="text-sm">
+                                <div class="font-medium text-[#1B1217]">Gold Alt</div>
+                                <code class="text-[#B9A5AE]">#B8893B</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Examples -->
+            <div class="space-y-4">
+                <h3 class="text-xl font-serif font-semibold">Penggunaan Warna</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-xl bg-primary text-on-primary">
+                        <h4 class="text-lg font-bold mb-2">Primary</h4>
+                        <p class="text-sm">Digunakan untuk tombol utama, aksi, dan elemen interaktif utama.</p>
+                    </div>
+                    <div class="p-6 rounded-xl border border-border bg-surface">
+                        <h4 class="text-lg font-bold mb-2">Surface</h4>
+                        <p class="text-sm text-text-muted">Latar belakang utama dan kontainer konten.</p>
+                    </div>
+                    <div class="p-6 rounded-xl bg-primary-light border border-primary/20">
+                        <h4 class="text-lg font-bold mb-2">Primary Light</h4>
+                        <p class="text-sm text-text">Highlight dan feedback visual yang halus.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typography Section -->
+        <section id="typography" class="space-y-8">
+            <h2 class="text-3xl font-serif font-bold border-b border-border pb-4">Tipografi</h2>
+
+            <!-- Font Families -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-serif font-semibold">Keluarga Font</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <div class="p-6 border border-border rounded-xl">
+                            <div class="text-4xl font-serif font-bold mb-4">Cormorant Garamond</div>
+                            <p class="text-lg font-serif">Font serif untuk heading, judul, dan elemen dekoratif.</p>
+                            <div class="mt-4 text-sm text-text-muted">
+                                <div>Weight: 400, 500, 600, 700</div>
+                                <div>Style: Normal, Italic</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-6 border border-border rounded-xl">
+                            <div class="text-4xl font-sans font-bold mb-4">Plus Jakarta Sans</div>
+                            <p class="text-lg font-sans">Font sans-serif untuk body text, UI, dan elemen fungsional.</p>
+                            <div class="mt-4 text-sm text-text-muted">
+                                <div>Weight: 400, 500, 600, 700, 800</div>
+                                <div>Style: Normal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Type Scale -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-serif font-semibold">Skala Type</h3>
+                <div class="space-y-6">
+                    <div class="border border-border rounded-xl overflow-hidden">
+                        <div class="px-6 py-4 border-b border-border bg-surface/50">
+                            <div class="text-lg font-bold">Heading Display</div>
+                        </div>
+                        <div class="p-6 space-y-8">
+                            <div class="space-y-2">
+                                <div class="text-7xl font-serif font-bold">H1 Display (72px)</div>
+                                <div class="text-sm text-text-muted">font-serif, bold, leading-tight</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="text-6xl font-serif font-bold">H1 (60px)</div>
+                                <div class="text-sm text-text-muted">font-serif, bold, leading-tight</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="text-5xl font-serif font-bold">H2 (48px)</div>
+                                <div class="text-sm text-text-muted">font-serif, bold, leading-tight</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="text-4xl font-serif font-bold">H3 (36px)</div>
+                                <div class="text-sm text-text-muted">font-serif, semibold, leading-tight</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border border-border rounded-xl overflow-hidden">
+                        <div class="px-6 py-4 border-b border-border bg-surface/50">
+                            <div class="text-lg font-bold">Body Text</div>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="space-y-2">
+                                <div class="text-2xl font-sans">Lead (24px)</div>
+                                <div class="text-sm text-text-muted">font-sans, normal, leading-relaxed</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="text-xl font-sans">Large Body (20px)</div>
+                                <div class="text-sm text-text-muted">font-sans, normal, leading-relaxed</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="text-lg font-sans">Body (18px)</div>
+                                <div class="text-sm text-text-muted">font-sans, normal, leading-normal</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="text-base font-sans">Base (16px)</div>
+                                <p class="text-sm text-text-muted">font-sans, normal, leading-normal. Standar untuk paragraf dan konten utama.</p>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="text-sm font-sans">Small (14px)</div>
+                                <div class="text-sm text-text-muted">font-sans, normal, leading-normal</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="text-xs font-sans">Extra Small (12px)</div>
+                                <div class="text-sm text-text-muted">font-sans, normal, leading-normal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Font Weights -->
+            <div class="space-y-6">
+                <h3 class="text-xl font-serif font-semibold">Weight Font</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 border border-border rounded-xl">
+                        <div class="text-lg font-sans font-normal">Normal (400)</div>
+                        <p class="text-sm text-text-muted mt-2">Default untuk body text</p>
+                    </div>
+                    <div class="p-4 border border-border rounded-xl">
+                        <div class="text-lg font-sans font-medium">Medium (500)</div>
+                        <p class="text-sm text-text-muted mt-2">Untuk aksen dan sub-heading</p>
+                    </div>
+                    <div class="p-4 border border-border rounded-xl">
+                        <div class="text-lg font-sans font-semibold">Semibold (600)</div>
+                        <p class="text-sm text-text-muted mt-2">Untuk heading kecil</p>
+                    </div>
+                    <div class="p-4 border border-border rounded-xl">
+                        <div class="text-lg font-sans font-bold">Bold (700)</div>
+                        <p class="text-sm text-text-muted mt-2">Untuk heading utama</p>
+                    </div>
+                    <div class="p-4 border border-border rounded-xl">
+                        <div class="text-lg font-sans font-extrabold">Extrabold (800)</div>
+                        <p class="text-sm text-text-muted mt-2">Untuk display text</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Templates Section -->
+        <section id="templates" class="space-y-8">
+            <h2 class="text-3xl font-serif font-bold border-b border-border pb-4">Template Colors</h2>
+            <p class="text-lg text-text-muted">Warna untuk enam template undangan yang berbeda.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Classic Template -->
+                <div class="border border-border rounded-xl overflow-hidden">
+                    <div class="h-32 bg-[#FBF5EC]"></div>
+                    <div class="p-6 space-y-3">
+                        <h4 class="text-lg font-serif font-bold text-[#4A1F2B]">Classic Elegant</h4>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#FBF5EC] border border-border"></span>
+                            <code>bg: #FBF5EC</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#4A1F2B]"></span>
+                            <code>text: #4A1F2B</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#7B1E3A]"></span>
+                            <code>accent: #7B1E3A</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beach Template -->
+                <div class="border border-border rounded-xl overflow-hidden">
+                    <div class="h-32 bg-gradient-to-br from-[#FFE6CF] via-[#FFC9A8] to-[#9FDAD6]"></div>
+                    <div class="p-6 space-y-3">
+                        <h4 class="text-lg font-serif font-bold text-[#5A2E2A]">Beach Sunset</h4>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-gradient-to-r from-[#FFE6CF] to-[#9FDAD6]"></span>
+                            <code>bg: gradient</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#5A2E2A]"></span>
+                            <code>text: #5A2E2A</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#B83A28]"></span>
+                            <code>accent: #B83A28</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floral Template -->
+                <div class="border border-border rounded-xl overflow-hidden">
+                    <div class="h-32 bg-gradient-to-br from-[#FFF3F5] to-[#EEF4E8]"></div>
+                    <div class="p-6 space-y-3">
+                        <h4 class="text-lg font-serif font-bold text-[#44503D]">Floral Garden</h4>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-gradient-to-r from-[#FFF3F5] to-[#EEF4E8]"></span>
+                            <code>bg: gradient</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#44503D]"></span>
+                            <code>text: #44503D</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#A8456A]"></span>
+                            <code>accent: #A8456A</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Luxury Template -->
+                <div class="border border-border rounded-xl overflow-hidden">
+                    <div class="h-32 bg-[#15110D]"></div>
+                    <div class="p-6 space-y-3">
+                        <h4 class="text-lg font-serif font-bold text-[#F1E3C0]">Luxury Gold</h4>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#15110D]"></span>
+                            <code>bg: #15110D</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#F1E3C0]"></span>
+                            <code>text: #F1E3C0</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#D4AF37]"></span>
+                            <code>accent: #D4AF37</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Minimal Template -->
+                <div class="border border-border rounded-xl overflow-hidden">
+                    <div class="h-32 bg-white border-b border-border"></div>
+                    <div class="p-6 space-y-3">
+                        <h4 class="text-lg font-serif font-bold text-[#111111]">Modern Minimal</h4>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-white border border-border"></span>
+                            <code>bg: #ffffff</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#111111]"></span>
+                            <code>text: #111111</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#BE185D]"></span>
+                            <code>accent: #BE185D</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rustic Template -->
+                <div class="border border-border rounded-xl overflow-hidden">
+                    <div class="h-32 bg-[#E9D8BC]"></div>
+                    <div class="p-6 space-y-3">
+                        <h4 class="text-lg font-serif font-bold text-[#4B3621]">Rustic Vintage</h4>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#E9D8BC]"></span>
+                            <code>bg: #E9D8BC</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#4B3621]"></span>
+                            <code>text: #4B3621</code>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-4 h-4 rounded-full bg-[#8A4B2A]"></span>
+                            <code>accent: #8A4B2A</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spacing Section -->
+        <section id="spacing" class="space-y-8">
+            <h2 class="text-3xl font-serif font-bold border-b border-border pb-4">Spacing Scale</h2>
+
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Spacing Tokens -->
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-serif font-semibold">Token Spacing</h3>
+                        <div class="border border-border rounded-xl overflow-hidden">
+                            <div class="px-6 py-4 border-b border-border bg-surface/50">
+                                <div class="font-medium">Tingkat Spacing</div>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">spacing-1</code>
+                                    <div class="w-8 h-8 bg-primary/20 rounded flex items-center justify-center text-xs">4px</div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">spacing-2</code>
+                                    <div class="w-16 h-8 bg-primary/20 rounded flex items-center justify-center text-xs">8px</div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">spacing-3</code>
+                                    <div class="w-24 h-8 bg-primary/20 rounded flex items-center justify-center text-xs">12px</div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">spacing-4</code>
+                                    <div class="w-32 h-8 bg-primary/20 rounded flex items-center justify-center text-xs">16px</div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">spacing-6</code>
+                                    <div class="w-48 h-8 bg-primary/20 rounded flex items-center justify-center text-xs">24px</div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">spacing-8</code>
+                                    <div class="w-64 h-8 bg-primary/20 rounded flex items-center justify-center text-xs">32px</div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">spacing-12</code>
+                                    <div class="w-96 h-8 bg-primary/20 rounded flex items-center justify-center text-xs">48px</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Radius Tokens -->
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-serif font-semibold">Border Radius</h3>
+                        <div class="border border-border rounded-xl overflow-hidden">
+                            <div class="px-6 py-4 border-b border-border bg-surface/50">
+                                <div class="font-medium">Tingkat Radius</div>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">radius-xs</code>
+                                    <div class="w-16 h-16 bg-primary/10 rounded-xs border border-border"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">radius-sm</code>
+                                    <div class="w-16 h-16 bg-primary/10 rounded-sm border border-border"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">radius-md</code>
+                                    <div class="w-16 h-16 bg-primary/10 rounded-md border border-border"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">radius-lg</code>
+                                    <div class="w-16 h-16 bg-primary/10 rounded-lg border border-border"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">radius-xl</code>
+                                    <div class="w-16 h-16 bg-primary/10 rounded-xl border border-border"></div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <code class="text-sm">radius-full</code>
+                                    <div class="w-16 h-16 bg-primary/10 rounded-full border border-border"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-border mt-16">
+        <div class="container-7xl mx-auto px-4 py-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-sm text-text-muted">Momenikah Design System v1.0</div>
+                    <div class="text-xs text-text-muted mt-1">Dibangun dengan Tailwind CSS 4</div>
+                </div>
+                <div class="text-sm text-text-muted">
+                    &copy; {{ date('Y') }} Momenikah. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+=== THIRD_PARTY.md
+# Third-Party Licenses
+
+**Last Updated:** 2024-12-23
+
+This document provides an overview of third-party libraries, frameworks, fonts, and JavaScript packages used in this Laravel 13 application, along with their respective licenses.
+
+---
+
+## Maintenance
+
+This section documents the process for maintaining the third-party dependency list.
+
+### Adding New Dependencies
+
+When adding a new dependency, follow these steps:
+
+1. **Install the package** using the appropriate command:
+
+   - For Composer (PHP packages):
+     ```bash
+     composer require vendor/package-name
+     ```
+
+   - For npm (JavaScript packages):
+     ```bash
+     npm install package-name
+     ```
+
+2. **Update THIRD_PARTY.md**:
+   - Add the new package to the appropriate section (Composer Packages or npm Packages)
+   - Include the package name, version, and license information
+   - Add a brief note about usage if applicable
+   - Update the **Last Updated** date at the top of the document to today's date (ISO 8601 format: YYYY-MM-DD)
+
+3. **Commit changes** in the same commit as the dependency installation:
+   ```bash
+   git add composer.json composer.lock package.json package-lock.json THIRD_PARTY.md
+   git commit -m "Add new dependency and update THIRD_PARTY.md"
+   ```
+
+**Example - Adding a new Composer package:**
+```bash
+# Install the package
+composer require spatie/laravel-model-status
+
+# Update THIRD_PARTY.md (add spatie/laravel-model-status to Composer Packages section)
+# Update the Last Updated date
+
+# Commit all changes
+git add composer.json composer.lock THIRD_PARTY.md
+git commit -m "Add spatie/laravel-model-status package"
+```
+
+### Removing Dependencies
+
+When removing a dependency, follow these steps:
+
+1. **Remove the package** using the appropriate command:
+
+   - For Composer:
+     ```bash
+     composer remove vendor/package-name
+     ```
+
+   - For npm:
+     ```bash
+     npm uninstall package-name
+     ```
+
+2. **Update THIRD_PARTY.md**:
+   - Remove the package entry from the appropriate section
+   - Reorder packages alphabetically if needed for consistency
+   - Update the **Last Updated** date at the top of the document to today's date (ISO 8601 format: YYYY-MM-DD)
+
+3. **Commit changes** in the same commit as the dependency removal:
+   ```bash
+   git add composer.json composer.lock package.json package-lock.json THIRD_PARTY.md
+   git commit -m "Remove dependency and update THIRD_PARTY.md"
+   ```
+
+**Example - Removing a Composer package:**
+```bash
+# Remove the package
+composer remove vendor/package-name
+
+# Update THIRD_PARTY.md (remove package entry)
+# Update the Last Updated date
+
+# Commit all changes
+git add composer.json composer.lock THIRD_PARTY.md
+git commit -m "Remove vendor/package-name"
+```
+
+### Updating Last-Updated Date
+
+- **Always update the Last Updated date** when making any changes to the dependency list (adding, removing, or modifying entries)
+- Use ISO 8601 format: `YYYY-MM-DD` (e.g., `2024-12-23`)
+- Update the date at the top of the document, below the main heading
+
+### Future Automation
+
+Consider implementing a pre-commit hook to automatically update the Last Updated date when changes are made to dependency files. This could be implemented using a simple script that:
+
+1. Detects changes to `composer.lock` or `package-lock.json`
+2. Updates the Last Updated date in `THIRD_PARTY.md`
+3. Automatically stages the updated file
+
+This would ensure the date is always current without manual intervention.
+
+---
+
+## GSAP (GreenSock Animation Platform)
+
+- **License Type:** Commercial/Free Dual License
+- **Commercial Usage:** Free for most projects; commercial license required for certain types of commercial applications
+- **Reference URL:** [https://greensock.com/](https://greensock.com/)
+- **Status:** Using free features only
+
+GSAP is provided under a "Free For Standard Use" license for most websites and applications. A commercial license is required for:
+
+- Products, services, or applications that charge fees for use (subscription, per-use, or one-time fee)
+- Apps, games, or tools that are sold or monetized in any way
+- Internal tools used by for-profit organizations (some exceptions apply)
+
+See [GSAP License Details](https://greensock.com/why-license) for full information.
+
+---
+
+## Fonts
+
+### Cormorant Garamond
+
+- **License:** SIL Open Font License (OFL) 1.1
+- **Source:** Google Fonts
+- **Usage:** Web fonts for headings and titles
+
+### Plus Jakarta Sans
+
+- **License:** SIL Open Font License (OFL) 1.1
+- **Source:** Google Fonts
+- **Usage:** Web fonts for body text and UI elements
+
+Both fonts are licensed under the [SIL Open Font License 1.1](https://scripts.sil.org/OFL).
+
+---
+
+## Composer Packages
+
+| Package | Version | License |
+|---------|---------|---------|
+| fakerphp/faker | ^1.23 | MIT |
+| larastan/larastan | ^3.0 | MIT |
+| laravel/framework | ^13.0 | MIT |
+| laravel/fortify | ^1.42 | MIT |
+| laravel/pail | ^1.2.2 | MIT |
+| laravel/pint | ^1.24 | MIT |
+| laravel/sail | ^1.41 | MIT |
+| laravel/tinker | ^3.0 | MIT |
+| livewire/livewire | ^4.4 | MIT |
+| mockery/mockery | ^1.6 | BSD-3-Clause |
+| nunomaduro/collision | ^8.6 | MIT |
+| pestphp/pest | ^4.0 | MIT |
+| pestphp/pest-plugin-laravel | ^4.0 | MIT |
+| predis/predis | ^3.7 | MIT |
+| sentry/sentry-laravel | * | MIT |
+| phpunit/phpunit | ^12.5 | BSD-3-Clause |
+
+---
+
+## npm Packages
+
+| Package | Version | License |
+|---------|---------|---------|
+| @tailwindcss/vite | ^4.0.0 | MIT |
+| axios | ^1.11.0 | MIT |
+| concurrently | ^9.0.1 | MIT |
+| laravel-vite-plugin | ^2.0.0 | MIT |
+| tailwindcss | ^4.0.0 | MIT |
+| vite | ^7.0.7 | MIT |
+
+---
+
+## Notes
+
+- This document should be updated whenever new third-party packages are added
+- Version numbers should be updated when packages are upgraded
+- License information should be verified for each package
+- Refer to individual package repositories for detailed licensing information
+- See the Maintenance section above for detailed procedures

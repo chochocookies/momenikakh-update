@@ -34,7 +34,7 @@ it('has no hard-coded colours in views, scripts or non-token css', function () {
         offenders(DesignSystem::scripts(), '/#[0-9a-fA-F]{6}\b/'),
         offenders(DesignSystem::cssExceptTokens(), '/(?<![&\w-])#[0-9a-fA-F]{6}\b|(?<![&\w-])#[0-9a-fA-F]{3}\b(?!\w)/'),
     );
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('has no inline styles, inline scripts or inline event handlers in views', function () {
@@ -46,7 +46,7 @@ it('has no inline styles, inline scripts or inline event handlers in views', fun
         offenders($views, '/\son(?:click|load|error|change|submit|focus|blur|mouse\w+|key\w+)="/i'),
         offenders($views, '/href="javascript:/i'),
     );
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('never interpolates tailwind class names (they would be purged)', function () {
@@ -69,7 +69,7 @@ it('opens external links safely', function () {
             }
         }
     }
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('gives every static img alt, width and height', function () {
@@ -84,7 +84,7 @@ it('gives every static img alt, width and height', function () {
             }
         }
     }
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('gives every static button an explicit type', function () {
@@ -97,7 +97,7 @@ it('gives every static button an explicit type', function () {
             }
         }
     }
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });
 
 it('limits fonts to the two brand families', function () {
@@ -107,5 +107,5 @@ it('limits fonts to the two brand families', function () {
             $bad[] = $f['rel'].' => '.trim($m[0]);
         }
     }
-    expect($bad)->toBeEmpty();
+    expect($bad)->toBe([]);
 });

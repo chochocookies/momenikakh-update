@@ -1,0 +1,19 @@
+name: gst-med-standalone
+# Framework-free checks: PHP logic (CSV, phone, links, export, image sanitizer, audio) and the public-page scripts.
+on: [pull_request]
+jobs:
+  standalone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: gd, mbstring, fileinfo, exif
+      - run: php tests/standalone/run.php
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i --no-save jsdom
+      - run: node tests/standalone/guest-name.test.mjs
+      - run: node tests/standalone/music.test.mjs

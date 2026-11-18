@@ -54,7 +54,7 @@ class Plan extends Model
     /** @param array<string,mixed> $config */
     public static function fromConfig(array $config): self
     {
-        $plan = new self();
+        $plan = new self;
         $plan->forceFill([
             'key' => $config['key'], 'name' => $config['name'], 'tier' => $config['tier'],
             'duration_days' => $config['duration_days'] ?? null, 'features' => $config['features'] ?? [],

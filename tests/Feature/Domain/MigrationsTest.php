@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Domain\Invitation\Models\Invitation;
 use Illuminate\Support\Facades\Schema;
-
 
 it('creates every domain table with its key columns', function () {
     $expected = [
@@ -40,7 +40,7 @@ it('enforces uniqueness on slug, guest token, plan key, order number and daily s
 });
 
 it('cascades child rows when an invitation is force deleted', function () {
-    $invitation = App\Domain\Invitation\Models\Invitation::factory()->complete()->create();
+    $invitation = Invitation::factory()->complete()->create();
     $id = $invitation->id;
     expect(DB::table('invitation_people')->where('invitation_id', $id)->count())->toBeGreaterThan(0);
     $invitation->forceDelete();

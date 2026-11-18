@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Domain\Invitation\Models\Invitation;
-use App\Domain\Guest\Models\Rsvp;
 use App\Domain\Guest\Enums\Attendance;
+use App\Domain\Guest\Models\Rsvp;
+use App\Domain\Invitation\Models\Invitation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<Rsvp> */

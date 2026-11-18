@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\File;
 final class DesignSystem
 {
     public const TOKENS = 'resources/css/tokens.css';
+
     public const PUBLIC_FONTS = 'public/fonts';
 
     /** @return list<array{rel:string,content:string}> */
@@ -99,7 +100,7 @@ final class DesignSystem
 
     public static function xpath(string $html): DOMXPath
     {
-        $dom = new DOMDocument();
+        $dom = new DOMDocument;
         libxml_use_internal_errors(true);
         $dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
         libxml_clear_errors();

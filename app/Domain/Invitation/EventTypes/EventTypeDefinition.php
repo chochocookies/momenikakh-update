@@ -17,12 +17,12 @@ final readonly class EventTypeDefinition
     public const STEPS = ['basics', 'people', 'events', 'story', 'gifts', 'content', 'settings'];
 
     /**
-     * @param array<string, array{label:string,min:int,max:int}> $roles
-     * @param array{min:int,max:int,kinds:list<string>} $events
-     * @param list<string> $sections
-     * @param array<string,int> $content key => max length
-     * @param array<string,bool> $features
-     * @param array<string,string> $defaults
+     * @param  array<string, array{label:string,min:int,max:int}>  $roles
+     * @param  array{min:int,max:int,kinds:list<string>}  $events
+     * @param  list<string>  $sections
+     * @param  array<string,int>  $content  key => max length
+     * @param  array<string,bool>  $features
+     * @param  array<string,string>  $defaults
      */
     public function __construct(
         public EventType $type,
@@ -34,8 +34,7 @@ final readonly class EventTypeDefinition
         public array $content,
         public array $features,
         public array $defaults,
-    ) {
-    }
+    ) {}
 
     /** @param array<string,mixed> $config */
     public static function fromArray(EventType $type, array $config): self
@@ -47,8 +46,15 @@ final readonly class EventTypeDefinition
         }
 
         return new self(
-            $type, $config['label'], $config['description'], $config['roles'], $config['events'],
-            $config['sections'], $config['content'], $config['features'], $config['defaults'],
+            $type,
+            $config['label'],
+            $config['description'],
+            $config['roles'],
+            $config['events'],
+            $config['sections'],
+            $config['content'],
+            $config['features'],
+            $config['defaults'],
         );
     }
 

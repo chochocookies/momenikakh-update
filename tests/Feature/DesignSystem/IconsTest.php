@@ -10,7 +10,7 @@ use Tests\Support\DesignSystem;
 
 beforeEach(function () {
     $this->withoutVite();
-    View::share('errors', new ViewErrorBag());
+    View::share('errors', new ViewErrorBag);
 });
 
 it('has no emoji in views', function () {
@@ -20,7 +20,7 @@ it('has no emoji in views', function () {
             $hits[] = $f['rel'];
         }
     }
-    expect($hits)->toBeEmpty();
+    expect($hits)->toBe([]);
 });
 
 it('uses only icons that exist', function () {
@@ -57,7 +57,7 @@ it('ships only clean, sizeable, recolourable svg icons', function () {
             $problems[] = "{$name}: malformed XML";
         }
     }
-    expect($problems)->toBeEmpty();
+    expect($problems)->toBe([]);
 });
 
 it('hides decorative icons and labels meaningful ones', function () {

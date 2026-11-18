@@ -17,13 +17,13 @@ use App\Domain\Invitation\Models\Invitation;
 final readonly class InvitationData
 {
     /**
-     * @param list<PersonData> $people
-     * @param list<EventData> $events
-     * @param list<StoryItemData> $story
-     * @param list<GiftData> $gifts
-     * @param array<string,string> $content
-     * @param array<string,mixed> $settings
-     * @param list<string> $sections
+     * @param  list<PersonData>  $people
+     * @param  list<EventData>  $events
+     * @param  list<StoryItemData>  $story
+     * @param  list<GiftData>  $gifts
+     * @param  array<string,string>  $content
+     * @param  array<string,mixed>  $settings
+     * @param  list<string>  $sections
      */
     public function __construct(
         public int $id,
@@ -41,8 +41,7 @@ final readonly class InvitationData
         public array $content,
         public array $settings,
         public array $sections,
-    ) {
-    }
+    ) {}
 
     public static function fromModel(Invitation $i, ?EventTypeRegistry $registry = null): self
     {
@@ -52,7 +51,14 @@ final readonly class InvitationData
         $tz = $i->timezone;
 
         return new self(
-            $i->id, $i->slug, $i->title, $i->event_type, $i->template_slug, $i->locale, $tz, $i->status,
+            $i->id,
+            $i->slug,
+            $i->title,
+            $i->event_type,
+            $i->template_slug,
+            $i->locale,
+            $tz,
+            $i->status,
             $i->people->map(fn ($m) => PersonData::fromModel($m))->all(),
             $i->events->map(fn ($m) => EventData::fromModel($m, $tz))->all(),
             $i->storyItems->map(fn ($m) => StoryItemData::fromModel($m))->all(),

@@ -1,19 +1,18 @@
 <?php
 
 use App\Console\Commands\BackupDatabase;
-use App\Jobs\ExecuteDatabaseBackup;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 
 it('creates backup command with correct signature', function () {
-    $command = new BackupDatabase();
+    $command = new BackupDatabase;
 
     expect($command->getName())->toBe('backup:database');
 });
 
 it('has correct description', function () {
-    $command = new BackupDatabase();
+    $command = new BackupDatabase;
 
     expect($command->getDescription())->toBe('Create database backup with manifest');
 });
@@ -100,7 +99,7 @@ it('handles missing mysqldump gracefully', function () {
 });
 
 it('supports manual backup execution', function () {
-    $backupName = 'manual_backup_' . now()->timestamp;
+    $backupName = 'manual_backup_'.now()->timestamp;
 
     $result = Artisan::call('backup:database', [
         '--disk' => 'local',

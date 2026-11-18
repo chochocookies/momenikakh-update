@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Invitation\Models;
 
+use App\Domain\Billing\Models\Plan;
 use App\Domain\Billing\Models\Subscription;
 use App\Domain\Guest\Models\Guest;
 use App\Domain\Guest\Models\GuestMessage;
@@ -11,6 +12,7 @@ use App\Domain\Guest\Models\InvitationDailyStat;
 use App\Domain\Guest\Models\Rsvp;
 use App\Domain\Invitation\Enums\EventType;
 use App\Domain\Invitation\Enums\InvitationStatus;
+use App\Domain\Media\Concerns\RegistersInvitationMedia;
 use App\Models\User;
 use Database\Factories\InvitationFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,10 +21,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Invitation extends Model
+class Invitation extends Model implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
+    use RegistersInvitationMedia;
     use SoftDeletes;
 
     protected $table = 'invitations';
@@ -58,14 +65,31 @@ class Invitation extends Model
         ];
     }
 
+    public function registerMediaCollections(): void
+    {
+        $this->registerInvitationMediaCollections();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->registerInvitationMediaConversions($media);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Plan, $this> */
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
+    /** @return HasMany<InvitationPerson, $this> */
     public function people(): HasMany
     {
-        return $this->hasMany(InvitationPerson::class)->orderBy('sort')->orderBy('id');
+        return $this->hasMany(InvitationPerson::class);
     }
 
     public function events(): HasMany

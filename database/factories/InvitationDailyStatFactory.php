@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Domain\Invitation\Models\Invitation;
 use App\Domain\Guest\Models\InvitationDailyStat;
+use App\Domain\Invitation\Models\Invitation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<InvitationDailyStat> */

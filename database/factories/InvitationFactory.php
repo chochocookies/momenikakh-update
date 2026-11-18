@@ -41,12 +41,35 @@ class InvitationFactory extends Factory
         return $this->state(fn () => ['event_type' => $type]);
     }
 
-    public function wedding(): static { return $this->forType(EventType::Wedding); }
-    public function walimatulUrs(): static { return $this->forType(EventType::WalimatulUrs); }
-    public function engagement(): static { return $this->forType(EventType::Engagement); }
-    public function aqiqah(): static { return $this->forType(EventType::Aqiqah); }
-    public function khitanan(): static { return $this->forType(EventType::Khitanan); }
-    public function birthday(): static { return $this->forType(EventType::Birthday); }
+    public function wedding(): static
+    {
+        return $this->forType(EventType::Wedding);
+    }
+
+    public function walimatulUrs(): static
+    {
+        return $this->forType(EventType::WalimatulUrs);
+    }
+
+    public function engagement(): static
+    {
+        return $this->forType(EventType::Engagement);
+    }
+
+    public function aqiqah(): static
+    {
+        return $this->forType(EventType::Aqiqah);
+    }
+
+    public function khitanan(): static
+    {
+        return $this->forType(EventType::Khitanan);
+    }
+
+    public function birthday(): static
+    {
+        return $this->forType(EventType::Birthday);
+    }
 
     /** Fills people, events, story, gifts, content and settings with valid fictional data for the event type. */
     public function complete(): static

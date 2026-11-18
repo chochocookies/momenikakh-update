@@ -14,9 +14,7 @@ use InvalidArgumentException;
 /** DOM-10: the single place that answers "may this invitation/user do X?". No plan checks anywhere else. */
 final class Entitlements
 {
-    public function __construct(private readonly SubscriptionResolver $resolver)
-    {
-    }
+    public function __construct(private readonly SubscriptionResolver $resolver) {}
 
     /** The plan in force: the active subscription's plan, else the free plan. */
     public function planFor(Invitation|User $subject, ?CarbonInterface $at = null): Plan
