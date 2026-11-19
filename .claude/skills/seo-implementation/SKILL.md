@@ -1,6 +1,6 @@
 ---
 name: seo-implementation
-description: Menerapkan SEO Momenikah: komponen x-seo, judul dan deskripsi, JSON-LD, sitemap, robots, favicon, OG, dan aturan noindex untuk undangan. Gunakan untuk tugas F3-12, F7-05, F7-06, F7-10, F7-12.
+description: Menerapkan SEO Momenikah: komponen x-seo, judul dan deskripsi, JSON-LD, sitemap, robots, favicon, OG, dan aturan noindex untuk undangan. Gunakan untuk tugas PUB-07, SEO-01, DS-05, SEO-08, SEO-02.
 ---
 # Skill: seo-implementation
 Acuan: `docs/SEO.md`, aturan: `.claude/rules/60-seo.md`.

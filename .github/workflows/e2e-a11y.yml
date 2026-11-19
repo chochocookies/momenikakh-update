@@ -10,6 +10,9 @@ jobs:
       DB_CONNECTION: sqlite
       DB_DATABASE: ":memory:"
       E2E_BASE_URL: http://momenikah.test:8000
+      E2E_PUBLIC_URL: http://undangan.momenikah.test:8000
+      CACHE_STORE: array
+      SESSION_DRIVER: array
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2

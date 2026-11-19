@@ -18,6 +18,10 @@ final class InvitationLifecycle
     {
         $now ??= now();
         $this->guard($invitation, InvitationStatus::Published);
+        // DEC-01: a free invitation is a sample (preview only). Only an invitation with the paid plan goes live.
+        if (! $this->entitlements->can($invitation, 'publish', $now)) {
+            throw PublishRequiresPlan::forSample();
+        }
         $invitation->forceFill([
             'status' => InvitationStatus::Published,
             'published_at' => $invitation->published_at ?? $now,

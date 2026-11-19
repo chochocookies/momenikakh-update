@@ -1,0 +1,15 @@
+{
+  "slug": "classic-elegant",
+  "name": "Classic Elegant",
+  "version": "1.0.0",
+  "tier": "free",
+  "event_types": ["wedding", "walimatul_urs", "engagement"],
+  "tags": ["klasik", "formal", "serif"],
+  "mood": "formal, hangat, bingkai ganda",
+  "sections": ["cover", "opening", "people", "events", "countdown", "story", "gallery", "gift", "map", "rsvp", "guestbook", "closing", "music"],
+  "palettes": [
+    { "key": "burgundy", "name": "Burgundy", "tokens": { "--t-bg": "#FBF5EC", "--t-ink": "#4A1F2B", "--t-accent": "#7B1E3A", "--t-orn": "#B8893B" } }
+  ],
+  "motion": { "cover": "envelope", "scroll": "fade-up", "ambient": "sway" },
+  "budget": { "css_kb": 30, "js_kb": 20, "assets_kb": 400 }
+}

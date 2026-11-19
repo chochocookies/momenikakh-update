@@ -178,6 +178,13 @@
   --color-template-rustic-text: #4B3621;
   --color-template-rustic-accent: #8A4B2A;
 
+  /* Landing page (MKT-01): colours of the sample phones that no template token covers */
+  --color-phone-frame: #1C1417;
+  --color-wave: #5FB9B5;
+  --color-petal: #F4B6C6;
+  --color-sheen: #FFE9A0;
+  --color-landing-dark-muted: #D8C4CC;
+
   /* Gradients (harus di --background-image-*, bukan --color-*) */
   --background-image-template-beach-bg: linear-gradient(#FFE6CF, #FFC9A8 60%, #9FDAD6);
   --background-image-template-floral-bg: linear-gradient(#FFF3F5, #EEF4E8);

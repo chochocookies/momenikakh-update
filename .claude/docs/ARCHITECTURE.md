@@ -50,7 +50,7 @@ Menambah template tidak menyentuh folder lain: cukup membuat `resources/template
 2. `InvitationViewModel::from($invitation)` membuat objek read-only (tanggal terformat, URL media, section aktif, teks bawaan jenis acara).
 3. `TemplateRenderer` memilih view `templates.{slug}.index` dan entri Vite `theme.css` / `theme.js` milik template itu.
 4. HTML bersifat netral terhadap tamu: tidak ada nama tamu di sisi server. `core.js` membaca `?to=`, memotong 60 karakter, dan menulisnya dengan `textContent` ke slot `[data-guest]`. Cara ini membuat halaman bisa di-cache penuh di Cloudflare dengan aturan cache yang mengabaikan parameter `to`.
-5. Respons membawa `X-Robots-Tag: noindex, nofollow`, `Cache-Control` publik berumur pendek dengan `stale-while-revalidate`, dan ETag. Saat undangan diubah atau dipublish, cache di-purge lewat API Cloudflare (tugas F3-13).
+5. Respons membawa `X-Robots-Tag: noindex, nofollow`, `Cache-Control` publik berumur pendek dengan `stale-while-revalidate`, dan ETag. Saat undangan diubah atau dipublish, cache di-purge lewat API Cloudflare (tugas OPS-06).
 6. Aksi tamu (RSVP, ucapan, ping "sudah buka") memakai `fetch` JSON ke `/api/*`, dilindungi Turnstile dan throttle.
 
 ## Alur pembuatan (dashboard)

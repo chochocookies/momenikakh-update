@@ -1,5 +1,5 @@
 ---
-description: Menutup tugas: verifikasi, tandai selesai, catat perubahan (contoh: /finish-task F2-05)
+description: Menutup tugas: verifikasi, tandai selesai, catat perubahan (contoh: /finish-task TPL-01)
 ---
 ID tugas: $ARGUMENTS. Bila kosong, ambil dari cabang saat ini.
 1. Jalankan `composer check` dan `npm run build`. Perbaiki sampai hijau.

@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Middleware\AddSurfaceHeader;
+use App\Http\Middleware\PreviewHeaders;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\StatelessPublic;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -27,6 +30,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 'public' => [
                     'domain' => config('surfaces.public.domain', 'undangan.momenikah.test'),
                     'file' => base_path('routes/public.php'),
+                    // PUB-01: no session, no cookies. See the `public` group in withMiddleware().
+                    'group' => 'public',
                 ],
                 // Root domain registered last — must come after all subdomain entries.
                 'marketing' => [
@@ -42,7 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     }
 
                     Route::domain($config['domain'])
-                        ->middleware(['web', AddSurfaceHeader::class.':'.$key])
+                        ->middleware([$config['group'] ?? 'web', AddSurfaceHeader::class.':'.$key])
                         ->group($config['file']);
                 } catch (Throwable $e) {
                     // Per Requirement 5.11: log the failing route file name and halt
@@ -120,8 +125,15 @@ return Application::configure(basePath: dirname(__DIR__))
         // The endpoint always answers 204 and is throttled (routes/public.php).
         $middleware->validateCsrfTokens(except: ['*/opened']);
 
+        // PUB-01: the public (undangan.) surface is stateless. Laravel's `web` group starts a session and sets cookies.
+        $middleware->group('public', [
+            StatelessPublic::class,
+            SubstituteBindings::class,
+        ]);
+
         $middleware->alias([
             'surface' => AddSurfaceHeader::class,
+            'preview.headers' => PreviewHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

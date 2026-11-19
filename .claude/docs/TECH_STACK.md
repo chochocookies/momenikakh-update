@@ -39,4 +39,4 @@ jQuery dan Bootstrap (berat dan membuat gaya tidak konsisten), Tailwind Play CDN
 `local` (Herd/Sail) → `staging` (data uji, domain terpisah) → `production`. Variabel penting di `.env.example`: `APP_URL`, `SHARE_DOMAIN`, `SESSION_DOMAIN` (kosong atau per host), `QUEUE_CONNECTION`, `CACHE_STORE`, `FILESYSTEM_DISK`, `DUITKU_*`, `TURNSTILE_*`, `SENTRY_DSN`. Rahasia tidak pernah masuk repo.
 
 ## Kapasitas awal (pedoman, ukur sebelum percaya)
-Satu VPS dengan LiteSpeed atau Nginx + PHP-FPM, OPcache aktif, Cloudflare di depan, halaman undangan di-cache penuh di edge, antrian satu worker. Naik ke Redis dan worker tambahan bila antrian gambar menumpuk atau waktu respons dashboard memburuk (tugas F8-05).
+Satu VPS dengan LiteSpeed atau Nginx + PHP-FPM, OPcache aktif, Cloudflare di depan, halaman undangan di-cache penuh di edge, antrian satu worker. Naik ke Redis dan worker tambahan bila antrian gambar menumpuk atau waktu respons dashboard memburuk (tugas QA-03).

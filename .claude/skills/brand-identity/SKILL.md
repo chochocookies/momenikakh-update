@@ -9,7 +9,7 @@ Nama `Momenikah`, huruf **n** berwarna rose (dipakai bersama "momen" dan "nikah"
 ## Token
 rose `#BE185D`, rose-light `#F472B6`, rose-soft `#FCE7F3`, ink `#2B1B22`, muted `#6B5A62`, ivory `#FFF8F3`, gold `#B8893B` (premium saja). Huruf: Cormorant Garamond (judul), Plus Jakarta Sans (UI).
 ## Berkas
-`.claude/brand/logo/*` (SVG dan PNG), `favicon/*` (ico, svg, png, maskable, `site.webmanifest`), `social/og-default.*`. Salin ke `public/` lewat tugas F7-06. Jangan membuat logo baru atau memodifikasi path wordmark secara manual.
+`.claude/brand/logo/*` (SVG dan PNG), `favicon/*` (ico, svg, png, maskable, `site.webmanifest`), `social/og-default.*`. Salin ke `public/` lewat tugas DS-05. Jangan membuat logo baru atau memodifikasi path wordmark secara manual.
 ## Mengubah kit brand
 Ubah `TOKENS` di `.claude/brand/build-brand.py` lalu jalankan `pip install fonttools cairosvg pillow` dan `python3 .claude/brand/build-brand.py`. Semua berkas dibuat ulang. Peninjauan visual oleh pemilik wajib sebelum dipakai.
 ## Aturan

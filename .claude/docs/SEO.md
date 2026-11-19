@@ -40,7 +40,7 @@ Menerima `title`, `description`, `canonical`, `image`, `type`, `noindex`, `jsonL
 <link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#BE185D">
 ```
-Berkas dari `.claude/brand/favicon/` dan `.claude/brand/social/` disalin ke `public/` (tugas F7-06).
+Berkas dari `.claude/brand/favicon/` dan `.claude/brand/social/` disalin ke `public/` (tugas DS-05).
 
 ## Data terstruktur (JSON-LD)
 - `Organization` (nama, url, logo `/logo.png`), `WebSite`, `BreadcrumbList` di halaman dalam.
@@ -52,13 +52,13 @@ Berkas dari `.claude/brand/favicon/` dan `.claude/brand/social/` disalin ke `pub
 `/sitemap.xml` (halaman pemasaran, template, panduan; `lastmod` jujur), `/robots.txt` (izinkan pemasaran, larang `/dashboard`, `/admin`, `/api`; cantumkan sitemap). Domain `share.` tidak diblokir di robots.txt, tetapi memakai `noindex`.
 
 ## Performa sebagai SEO
-Target ponsel: LCP baik, CLS mendekati 0, INP baik. Font di-host sendiri dan di-preload, gambar WebP dengan `width`/`height`, GSAP dimuat sebagai chunk terpisah setelah konten terlihat, teks hero ada di HTML (tidak disembunyikan sampai JS jalan). Anggaran di CI (F2-14, F7-11).
+Target ponsel: LCP baik, CLS mendekati 0, INP baik. Font di-host sendiri dan di-preload, gambar WebP dengan `width`/`height`, GSAP dimuat sebagai chunk terpisah setelah konten terlihat, teks hero ada di HTML (tidak disembunyikan sampai JS jalan). Anggaran di CI (TPL-14, MKT-07).
 
 ## Konten awal (rencana 12 artikel panduan)
 Cara membuat undangan digital pernikahan, cara membagikan undangan lewat WhatsApp ke banyak tamu, contoh kata pembuka undangan, tips memilih template, cara menambahkan peta dan hitung mundur, panduan amplop digital, etika undangan digital, susunan acara akad dan resepsi, undangan walimatul urs, undangan khitanan, undangan aqiqah, ide tema ulang tahun. Setiap artikel unik, ditulis untuk pembaca, dan menautkan ke template relevan.
 
 ## Analitik dan privasi
-GA4 dan Search Console serta Bing Webmaster. Banner persetujuan untuk analitik, kebijakan privasi jelas, tanpa pelacak pada halaman undangan tamu selain hitungan kunjungan anonim. Tinjau dengan ahli hukum terkait UU Pelindungan Data Pribadi (F8-07).
+GA4 dan Search Console serta Bing Webmaster. Banner persetujuan untuk analitik, kebijakan privasi jelas, tanpa pelacak pada halaman undangan tamu selain hitungan kunjungan anonim. Tinjau dengan ahli hukum terkait UU Pelindungan Data Pribadi (DOM-14).
 
 ## Pratinjau tautan (WhatsApp, Facebook, X)
 Undangan memakai `og:title` "Undangan Pernikahan {Nama & Nama}", `og:description` sopan dan netral, `og:image` hasil konversi `og` (1200×630) dari foto sampul. Nama tamu tidak masuk OG. Uji dengan Facebook Sharing Debugger dan tempelkan tautan ke WhatsApp.

@@ -1,10 +1,11 @@
-@props(['title' => null, 'description' => null, 'image' => null])
+@props(['title' => null, 'description' => null, 'image' => null, 'assets' => null])
 <!doctype html>
 <html lang="id" class="scroll-smooth motion-reduce:scroll-auto">
 <head>
     <x-seo.head :title="$title" :description="$description" :image="$image" />
     <meta name="robots" content="noindex,nofollow">
-    @vite(['resources/css/app.css', 'resources/js/public.js'])
+    {{-- An invitation passes its own entries (core + one theme); other public pages use the default bundle. --}}
+    @vite($assets ?? ['resources/css/app.css', 'resources/js/public.js'])
 </head>
 <body data-surface="public" class="min-h-screen bg-ivory font-sans text-ink antialiased">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-rose focus:px-5 focus:py-3 focus:text-white">Lewati ke konten</a>

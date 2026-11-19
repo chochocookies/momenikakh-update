@@ -19,7 +19,7 @@ test('marketing domain returns 200 with marketing content within 2 seconds', fun
     $elapsed = microtime(true) - $startTime;
 
     $response->assertStatus(200)
-        ->assertSee('Marketing Surface');
+        ->assertSee('Satu link untuk semua momen nikahmu.');
 
     expect($elapsed)->toBeLessThan(2.0);
 })->group('routing');

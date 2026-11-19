@@ -27,7 +27,10 @@ class SecurityHeaders
         $surfaceConfig = config("security.surfaces.{$surface}", config('security.surfaces.marketing'));
 
         // 4. Surface-specific X-Frame-Options (Task 9.2)
-        $response->headers->set('X-Frame-Options', $surfaceConfig['frame_options']);
+        // A route may set its own value first (the preview frame uses SAMEORIGIN); never overwrite that.
+        if (! $response->headers->has('X-Frame-Options')) {
+            $response->headers->set('X-Frame-Options', $surfaceConfig['frame_options']);
+        }
 
         // 5. Surface-specific Content-Security-Policy (Task 9.3 - 9.5)
         // Only set CSP if not already present (check both original and normalized header names)

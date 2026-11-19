@@ -9,13 +9,14 @@
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-rose focus:px-5 focus:py-3 focus:text-white">Lewati ke konten</a>
     <header class="border-b border-ink/10 bg-white/80 backdrop-blur">
         <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-            <a href="/dashboard"><img src="{{ asset('brand/momenikah-logo-horizontal.svg') }}" width="150" height="30" alt="Momenikah Dashboard"></a>
+            <a href="{{ route('dashboard') }}"><img src="{{ asset('brand/momenikah-logo-horizontal.svg') }}" width="150" height="30" alt="Momenikah Dashboard"></a>
             <nav aria-label="Navigasi aplikasi" class="flex items-center gap-4 text-sm">
-                <a href="/dashboard" class="hover:text-rose">Dashboard</a>
+                <a href="{{ route('dashboard') }}" class="inline-flex min-h-11 items-center hover:text-rose">Undangan saya</a>
+                <a href="{{ route('dashboard.invitations.create') }}" class="inline-flex min-h-11 items-center hover:text-rose">Buat undangan</a>
                 @auth
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="text-muted hover:text-ink">Keluar</button>
+                        <button type="submit" class="min-h-11 text-muted hover:text-ink">Keluar</button>
                     </form>
                 @endauth
             </nav>

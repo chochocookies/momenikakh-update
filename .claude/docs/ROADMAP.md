@@ -1,79 +1,73 @@
 # Roadmap Momenikah
 
-Rujukan rinci: `TODO.md` (122 tugas, 11 fase). Angka waktu di bawah dihitung otomatis oleh `node .claude/scripts/task.mjs estimate` dari ukuran tugas (S = 0,5, M = 1,5, L = 4, XL = 8 hari kerja efektif). Itu **asumsi satu pengembang dengan Claude Code**, bukan janji. Hitung ulang setelah Fase 0 dan setelah dua sprint pertama, memakai kecepatan nyata.
+Rujukan rinci tugas, dependensi, dan milestone: `.claude/TODO.md` (satu-satunya pelacak). Angka waktu dihitung oleh `node .claude/scripts/task.mjs estimate` dari ukuran tugas (S = 0,5, M = 1,5, L = 4, XL = 8 hari kerja efektif). Itu **asumsi satu pengembang dengan Claude Code**, bukan janji. Hitung ulang setelah M0 dan setelah dua sprint pertama memakai kecepatan nyata.
 
-## Ringkasan beban kerja (tidak termasuk backlog)
-| Fase | Nama | Tugas | Hari kerja | Minggu | Kumulatif (minggu) |
-|---|---|---|---|---|---|
-| F0 | Fondasi dan keputusan | 12 | 11 | 2,2 | 2,2 |
-| F1 | Platform inti | 13 | 17 | 3,4 | 5,6 |
-| F2 | Design system dan mesin template | 14 | 28 | 5,6 | 11,2 |
-| F3 | Undangan publik | 16 | 26 | 5,2 | 16,4 |
-| F4 | Dashboard pembuat undangan | 14 | 29 | 5,8 | 22,2 |
-| F5 | Katalog template batch 1 | 9 | 31 | 6,2 | 28,4 |
-| F6 | Paket, pembayaran, admin | 8 | 16 | 3,2 | 31,6 |
-| F7 | Situs pemasaran, landing GSAP, SEO | 12 | 27,5 | 5,5 | 37,1 |
-| F8 | Kualitas dan peluncuran | 11 | 21,5 | 4,3 | 41,4 |
-| F9, F10 | Jenis acara baru dan peningkatan | 12 | backlog | n/a | n/a |
-| | **Total** | 109 + 13 backlog (termasuk F6-09) | **207** | **41,4** | |
+## Ringkasan beban kerja (per 19 November 2026)
+| M | Nama | Tugas | Selesai | Hari kerja total | Tersisa (hari) | Tersisa (minggu) |
+|---|---|---|---|---|---|---|
+| M0 | Fondasi | 20 | 15 | 25 | 3,5 | 0,7 |
+| M1 | Inti domain | 15 | 12 | 21 | 2,5 | 0,5 |
+| M2 | Mesin template | 15 | 3 | 32,5 | 25,5 | 5,1 |
+| M3 | Pembuat undangan | 36 | 0 | 49 | 49 | 9,8 |
+| M4 | Pemasaran | 17 | 1 | 22 | 20,5 | 4,1 |
+| M5 | Template penuh + jenis acara | 15 | 0 | 34 | 34 | 6,8 |
+| M6 | Uang dan operasi | 25 | 0 | 41 | 41 | 8,2 |
+| M7 | Rilis | 3 | 0 | 2 | 2 | 0,4 |
+| | **Total** | 146 | 31 | **226,5** | **178** | **35,6** |
 
-Per prioritas: P0 = 56 tugas (125 hari), P1 = 41 tugas (67,5 hari), P2 = 12 tugas (14,5 hari). **Jalur minimum menuju rilis** (semua P0 beserta dependensinya) = 65 tugas, 140 hari kerja (±28 minggu). Pekerjaan paralel (ilustrator, konten, hukum) memperpendek kalender, bukan beban pengembang.
+Backlog pasca-rilis (`LCH-03`) tidak dihitung. Perbarui tabel ini dari `task.mjs estimate` setiap akhir sprint.
+
+## Milestone
+Definisi dan kriteria keluar tiap milestone ada di `TODO.md` (bagian Milestone). Jangan menduplikasinya di sini.
 
 ## Jalur paralel
 | Jalur | Isi | Mulai |
 |---|---|---|
-| A. Platform | F0, F1, sisi server F3, F6 | Minggu 1 |
-| B. Antarmuka | F2, F4, F7 | Setelah F0-04 |
-| C. Aset visual | F5-01 (kontrak ilustrator, set ornamen enam tema), F5-08 (musik berlisensi) | **Segera setelah F0-01** karena waktu tunggu paling panjang |
-| D. Konten dan hukum | Artikel panduan, teks bawaan per jenis acara, kebijakan privasi, syarat | Paralel sejak F2 |
+| A. Platform | FND, DOM, MED, sisi server PUB, BIL | Minggu 1 |
+| B. Antarmuka | DS, TPL, DSH, MKT | Setelah DS-01 |
+| C. Aset visual | TPL-15 (kontrak ilustrator, set ornamen enam tema), MED-06 (musik berlisensi) | **Segera setelah DEC-05 dan DEC-06**, karena waktu tunggunya paling panjang |
+| D. Konten dan hukum | Artikel panduan (MKT-06), teks bawaan per jenis acara, kebijakan privasi dan syarat (MKT-08), UU PDP (DOM-14) | Paralel sejak M2 |
 
-## Tonggak
-| Tonggak | Kriteria | Fase |
-|---|---|---|
-| M0 Siap bangun | Keputusan terbuka tertutup, repo, CI, staging, DNS | F0 |
-| M1 Fondasi hidup | Masuk, buat undangan kosong, template contoh tampil di pratinjau | F1, F2 |
-| M2 Undangan pertama terbuka | Satu undangan published terbuka di `share.` dengan `?to=`, RSVP, ucapan, galeri, template classic-elegant | F3, F5-02 |
-| M3 Pembuat lengkap | Wizard, pratinjau langsung, daftar tamu, statistik | F4 |
-| M4 Bisa dijual | Enam template, paket, pembayaran, admin | F5, F6 |
-| M5 Dikenal | Landing GSAP, katalog, SEO teknis, artikel awal | F7 |
-| M6 Rilis | Audit keamanan, beban, beta tertutup, cutover | F8 |
-| M7+ | Jenis acara baru lalu peningkatan lanjutan | F9, F10 |
-
-## Urutan yang disarankan (menghindari "semua jadi di akhir")
-1. **F0** selesai, lalu **F5-01** dimulai (paralel).
-2. **F1 + F2** bersama sampai M1.
-3. Langsung buat **satu template penuh (F5-02)** dan **F3**. M2 memberi bukti nyata bahwa arsitektur template bekerja sebelum membuat lima template lain.
-4. **F4** (dashboard). Pada titik ini pengguna uji pertama bisa membuat undangan.
-5. **F5-03 sampai F5-07** (template lain) dan **F6** berjalan bergantian.
-6. **F7** (landing dan SEO) dikerjakan ketika template dan logo final siap supaya gambar dan demo di landing nyata.
-7. **F8** sebelum membuka untuk umum. Jangan memotong F8-03 (keamanan) dan F8-09 (checklist rilis).
+## Urutan yang disarankan
+1. M0 selesai. Mulai jalur C paralel.
+2. M1, lalu M2: buktikan mesin template dengan **satu template penuh** (TPL-08) sebelum membuat lima lainnya. Di sinilah duplikasi biasanya mulai.
+3. M3: pengguna uji pertama sudah bisa membuat undangan.
+4. M4 (pemasaran) berjalan bersama M5 (template lain dan jenis acara). Landing (MKT-01) dikerjakan setelah template dan logo final siap supaya gambar dan demo nyata.
+5. M6, lalu M7. Jangan memotong QA-05 (keamanan) dan OPS-08 (rilis percobaan).
 
 ## Ritme kerja
-Sprint dua minggu. Awal sprint: `node .claude/scripts/task.mjs next 5`, pilih tugas, `/start-task`. Akhir sprint: `task.mjs status` dan `task.mjs estimate`, tinjau kecepatan, perbarui asumsi ukuran. Satu tugas satu PR kecil. `main` selalu dapat dirilis ke staging.
+Sprint dua minggu. Awal sprint: `task.mjs next 5`, `task.mjs blocked`, pilih tugas, `/start-task`. Akhir sprint: `task.mjs status` dan `task.mjs estimate`, tinjau kecepatan, perbarui asumsi ukuran dan tabel di atas. Satu tugas satu PR kecil. `main` selalu dapat dirilis ke staging.
 
 ## Gerbang keputusan
-| Sebelum tugas | Keputusan yang dibutuhkan |
+Daftar lengkap dan status ada di `docs/DECISIONS.md` (bagian `DEC-nn`); lihat dengan `task.mjs decisions`.
+| Sebelum tugas | Keputusan |
 |---|---|
-| F5-01 | Gaya ilustrasi dan anggaran ilustrator (D-11) |
-| F6-01, F7-07 | Paket dan harga (D-02) |
-| F0-07, F0-11 | Hosting dan edge (D-12) |
-| F8-08 | Ada tidaknya pengguna lama (D-15) |
-| F8-07 | Masa simpan data tamu (D-16) |
-| F9-xx | Urutan jenis acara (D-13) |
+| PUB-01, FND-12 | DEC-03: host undangan publik (`undangan.` atau `share.`) |
+| OPS-05 | DEC-02: hosting, email, anggaran |
+| MED-01 | DEC-04: penyimpanan objek + CDN |
+| TPL-15 | DEC-05: sumber aset ilustrasi |
+| MED-05, MED-06 | DEC-06: katalog musik |
+| DOM-09, BIL-03, BIL-06, MKT-05 | DEC-01: paket dan harga |
+| EVT-01…05 | DEC-11: urutan jenis acara |
+| OPS-07 | DEC-12: ada tidaknya pengguna lama |
+| DOM-14 | DEC-13: masa simpan data tamu |
+| LCH-02 | DEC-10: persetujuan logo dan nama merek |
 
 ## Risiko dan penanganan
 | Risiko | Dampak | Penanganan |
 |---|---|---|
-| Aset ilustrasi terlambat | Template tampak polos, F5 dan F7 tertunda | Mulai F5-01 sejak awal; sediakan ornamen SVG sederhana buatan sendiri sebagai cadangan |
-| Kelebihan cakupan (semua jenis acara sekaligus) | MVP tidak pernah rilis | Pernikahan dulu; jenis acara lain hanya sebagai backlog (F9) |
-| Persetujuan akun Duitku lambat | F6 tertahan | Ajukan akun saat F0; siapkan mode uji dan alternatif (Midtrans, Xendit) |
-| Performa buruk karena ornamen dan animasi | Undangan lambat di jaringan seluler | Anggaran bobot di manifest dan CI (F2-12, F2-14) |
-| Landing GSAP berat | LCP dan SEO turun | Teks hero di HTML, GSAP di chunk terpisah, anggaran di LANDING.md |
-| Teks keagamaan atau adat keliru | Reputasi | Tinjauan oleh ahli sebelum rilis, teks selalu dapat diubah pengguna |
-| Satu orang pengembang | Titik tunggal kegagalan | Dokumentasi di `.claude`, tes otomatis, runbook (F8-06) |
-| Perubahan versi Laravel dan Filament | Utang teknis | Dependabot (F0-09), kunci versi, perbarui per kuartal |
-| Pelanggaran lisensi aset | Tuntutan | Hak cipta penuh dari ilustrator, simpan bukti lisensi musik dan font |
-| Data tamu bocor | Pelanggaran privasi | Audit F8-03, retensi F8-07, tanpa data tamu di OG dan log |
+| Aset ilustrasi terlambat atau berlisensi bermasalah | Template tampak polos, tuntutan | Mulai TPL-15 sejak awal; ilustrator dengan alih hak; `assets/LICENSE.md` wajib; ornamen SVG sederhana buatan sendiri sebagai cadangan |
+| Template berat di jaringan seluler | Tamu menutup undangan | Anggaran 400 KB di manifest, `template:lint` di CI (TPL-14) |
+| Data hilang saat simpan | Kepercayaan hilang | DTO + tes round-trip (DOM-06) dan tes kontrak (QA-06) |
+| Lonjakan tamu dari grup WhatsApp | Server tumbang | Cache halaman (PUB-03), edge (OPS-06), domain terpisah, uji k6 (QA-03) |
+| Kebocoran data tamu/RSVP | Pelanggaran UU PDP | Policy, throttle, log tanpa PII, retensi (DOM-14), audit (QA-05), tanpa data tamu di OG |
+| Gerak berlebihan di ponsel murah | Patah-patah | Hanya `transform`/`opacity`, tingkat gerak `none/gentle/rich`, uji perangkat nyata |
+| Lingkup melebar (6 jenis acara × 6 template) | Tidak pernah rilis | Mulai dari 1 template × 3 jenis; sisanya konfigurasi (EVT dikerjakan setelah M2) |
+| Landing GSAP berat | LCP dan SEO turun | Teks hero di HTML, GSAP di chunk terpisah, anggaran di `docs/LANDING.md` (MKT-07) |
+| Persetujuan akun Duitku lambat | Pembayaran tertahan | Ajukan akun sejak M0; mode uji; siapkan alternatif (Midtrans, Xendit) di balik `PaymentGateway` |
+| Teks keagamaan atau adat keliru | Reputasi | Tinjauan ahli sebelum rilis; teks selalu dapat diubah pengguna (EVT-01) |
+| Perubahan versi Laravel dan Filament | Utang teknis | Dependabot (FND-11), kunci versi, perbarui per kuartal |
+| Satu orang pengembang | Titik tunggal kegagalan | Dokumentasi di `.claude`, tes otomatis, runbook (OPS-01) |
 
 ## Kriteria rilis publik
-Semua P0 selesai. Audit keamanan tanpa temuan kritis atau tinggi yang terbuka. Alur inti lolos tes otomatis dan browser test. Pemulihan cadangan pernah dilatih. Kebijakan privasi dan syarat terbit. Uji beban memenuhi target yang disepakati. Beta tertutup selesai tanpa masalah penghalang. Landing tidak memuat klaim yang tidak benar.
+Semua tugas M0–M6 selesai. Audit keamanan tanpa temuan tinggi terbuka (QA-05). Alur inti lolos tes otomatis dan browser test (QA-01, QA-02). Pemulihan cadangan pernah dilatih (OPS-01). Kebijakan privasi dan syarat terbit (MKT-08). Uji beban memenuhi target (QA-03). Beta tertutup selesai tanpa masalah penghalang (LCH-01). Landing tidak memuat klaim yang tidak benar (DEC D-14). Daftar periksa rilis (LCH-02) lulus.

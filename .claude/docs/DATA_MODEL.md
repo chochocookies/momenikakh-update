@@ -24,5 +24,5 @@ Prinsip: skema generik, perilaku spesifik jenis acara dipegang `EventTypeDefinit
 ## Aturan
 - `slug` undangan: nama + akhiran acak 4 karakter (contoh `raka-sinta-x7k2`), unik, ada daftar reserved (`preview`, `admin`, `api`, `login`, `u`, dan seterusnya).
 - Status undangan: `draft → published → expired | archived`. Hanya `published` yang dapat dibuka tamu.
-- Penghapusan: undangan kedaluwarsa disembunyikan, data tamu dihapus setelah masa tenggang (ditetapkan di F8-07).
-- Kolom yang dibaca template selalu melewati `InvitationViewModel`. Tes kontrak (F8-02) membandingkan field definisi ↔ form ↔ model ↔ view-model.
+- Penghapusan: undangan kedaluwarsa disembunyikan, data tamu dihapus setelah masa tenggang (ditetapkan di DOM-14).
+- Kolom yang dibaca template selalu melewati `InvitationViewModel`. Tes kontrak (QA-06) membandingkan field definisi ↔ form ↔ model ↔ view-model.

@@ -1,0 +1,222 @@
+/*
+ * Landing page (/): ported from "Momenikah – Landing page dan branding.html".
+ * Only the theme layer of Tailwind is imported, so every --color-* token used below is emitted without pulling in
+ * utilities again (app.css already loads them). No hex values: colours come from tokens.css.
+ * Motion is transform and opacity only and stops for prefers-reduced-motion.
+ */
+@import './tokens.css';
+@import 'tailwindcss/theme.css' layer(theme);
+
+.lp {
+    --lp-bg: var(--color-ivory);
+    --lp-ink: var(--color-ink);
+    --lp-mu: var(--color-muted);
+    --lp-ro: var(--color-rose);
+    --lp-on: var(--color-brand-on);
+    --lp-r1: var(--color-rose-light);
+    --lp-ln: var(--color-brand-line);
+    --lp-sf: var(--font-sans);
+    --lp-sr: var(--font-serif);
+    background: var(--lp-bg);
+    color: var(--lp-ink);
+    font: 400 1rem/1.65 var(--lp-sf);
+    overflow-x: clip;
+}
+.lp *, .lp *::before, .lp *::after { box-sizing: border-box; }
+.lp h1, .lp h2, .lp h3 { font-family:var(--lp-sr); font-weight: 600; line-height: 1.05; margin: 0; }
+.lp h1 { font-size: clamp(2.9rem, 8.5vw, 5.4rem); letter-spacing: -0.01em; }
+.lp h2 { font-size: clamp(2.1rem, 5vw, 3.3rem); }
+:where(.lp) p { margin: 0; }
+.lp-w { max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; }
+
+/* ---- buttons ---- */
+.lp-btn {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 26px;
+    border: 0; border-radius: 999px; background: var(--lp-ro); color: var(--lp-on);
+    font: 700 1rem var(--lp-sf); text-decoration: none; cursor: pointer; transition: transform 0.2s;
+}
+.lp-btn:hover { transform: translateY(-2px); }
+.lp-btn--ghost { background: none; color: var(--lp-ink); box-shadow: inset 0 0 0 1.5px var(--lp-ink); }
+
+/* ---- brand mark ---- */
+.lp-logo { display: inline-flex; align-items: center; gap: 10px; font: 600 1.8rem/1 var(--lp-sr); text-decoration: none; }
+.lp-logo svg { width: 38px; height: 36px; }
+.lp-ring-a { fill: none; stroke: currentColor; stroke-width: 2.4; }
+.lp-ring-b { fill: none; stroke: var(--lp-ro); stroke-width: 2.4; }
+.lp-heart { fill: var(--lp-ro); }
+
+/* ---- hero ---- */
+.lp-hero { display: grid; gap: 44px; padding-top: 20px; padding-bottom: 80px; align-items: center; }
+.lp-lead { font-size: 1.2rem; max-width: 34ch; color: var(--lp-mu); margin-top: 22px; }
+.lp-cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0 16px; }
+.lp-note { font-size: 0.875rem; color: var(--lp-mu); }
+.lp-demo { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.lp-hero-phone { display: flex; justify-content: center; }
+.lp-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 400px; }
+.lp-chip {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px;
+    border: 1.5px solid var(--lp-ln); border-radius: 999px; background: none; color: var(--lp-ink);
+    font: 600 0.875rem var(--lp-sf); cursor: pointer;
+}
+.lp-chip i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); }
+.lp-chip[aria-pressed='true'] { border-color: var(--lp-ro); background: var(--lp-r1); }
+.lp-chip--classic { --c: var(--color-template-classic-accent); }
+.lp-chip--beach { --c: var(--color-template-beach-accent); }
+.lp-chip--floral { --c: var(--color-template-floral-accent); }
+.lp-chip--lux { --c: var(--color-template-luxury-accent); }
+.lp-chip--min { --c: var(--color-template-minimal-text); }
+.lp-chip--rus { --c: var(--color-template-rustic-accent); }
+
+/* ---- sections ---- */
+.lp-sec { padding: 76px 0; }
+.lp-sec > .lp-w > h2 { max-width: 16ch; }
+.lp-sub { color: var(--lp-mu); max-width: 46ch; margin-top: 14px; }
+.lp-gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 44px 24px; margin-top: 48px; list-style: none; padding: 0; }
+.lp-gc { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.lp-gc h3 { font-size: 1.7rem; margin-top: 14px; }
+.lp-gc p { color: var(--lp-mu); font-size: 0.9375rem; max-width: 24ch; margin-bottom: 8px; }
+
+.lp-steps { list-style: none; counter-reset: s; padding: 0; margin: 48px 0 0; display: grid; gap: 32px; }
+.lp-steps li { counter-increment: s; border-top: 1px solid var(--lp-ln); padding-top: 18px; }
+.lp-steps li::before { content: counter(s); font: 600 3.4rem/1 var(--lp-sr); color: var(--lp-ro); display: block; margin-bottom: 8px; }
+.lp-steps b { display: block; font: 600 1.6rem/1.15 var(--lp-sr); margin-bottom: 6px; }
+.lp-steps span { color: var(--lp-mu); }
+
+.lp-feat { margin-top: 44px; border-top: 1px solid var(--lp-ln); }
+.lp-feat div { padding: 20px 0; border-bottom: 1px solid var(--lp-ln); }
+.lp-feat b { display: block; font: 600 1.7rem/1.1 var(--lp-sr); }
+.lp-feat span { color: var(--lp-mu); }
+
+/* ---- price ---- */
+.lp-plans { display: grid; gap: 20px; margin-top: 44px; }
+.lp-plan { border: 1.5px solid var(--lp-ln); border-radius: 20px; padding: 28px; display: grid; gap: 10px; align-content: start; }
+.lp-plan--paid { border-color: var(--lp-ro); background: var(--lp-r1); }
+.lp-plan h3 { font-size: 1.9rem; }
+.lp-price { font: 600 2.8rem/1 var(--lp-sr); color: var(--lp-ro); }
+.lp-plan ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; color: var(--lp-mu); }
+.lp-plan li::before { content: '– '; }
+
+/* ---- brand block ---- */
+.lp-brand { background: var(--color-ink); color: var(--color-ivory); }
+.lp-brand .lp-sub { color: var(--color-landing-dark-muted); }
+.lp-brand .lp-logo { font-size: 2.8rem; margin-bottom: 22px; }
+.lp-brand .lp-logo svg { width: 58px; height: 54px; }
+.lp-brand .lp-ring-a { stroke: var(--color-ivory); }
+.lp-brand .lp-ring-b { stroke: var(--color-brand-rose-dark); }
+.lp-brand .lp-heart { fill: var(--color-brand-rose-dark); }
+.lp-brand-grid { display: grid; gap: 48px; }
+.lp-sw { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; list-style: none; padding: 0; margin: 0; }
+.lp-sw li { min-height: 92px; border-radius: 12px; padding: 10px; font-size: 0.875rem; line-height: 1.3; display: flex; flex-direction: column; justify-content: flex-end; }
+.lp-sw b { font-weight: 700; }
+.lp-sw-rose { background: var(--color-rose); color: var(--color-brand-on); }
+.lp-sw-rose-light { background: var(--color-rose-light); color: var(--color-ink); }
+.lp-sw-ink { background: var(--color-ink); color: var(--color-brand-on); box-shadow: inset 0 0 0 1px var(--color-brand-line-dark); }
+.lp-sw-ivory { background: var(--color-ivory); color: var(--color-ink); }
+.lp-sw-gold { background: var(--color-gold); color: var(--color-ink); }
+.lp-sw-muted { background: var(--color-muted); color: var(--color-brand-on); }
+.lp-spec { margin-top: 20px; display: grid; gap: 8px; }
+.lp-spec p:first-child { font: 600 2.6rem/1 var(--lp-sr); }
+.lp-spec p:last-child { font: 500 1.15rem var(--lp-sf); }
+.lp-values { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.lp-final { text-align: center; }
+.lp-final h2 { margin: 0 auto 26px; max-width: 14ch; }
+
+@media (min-width: 860px) {
+    .lp-hero { grid-template-columns: 1.1fr 0.9fr; padding-top: 56px; }
+    .lp-steps { grid-template-columns: repeat(3, 1fr); gap: 32px; }
+    .lp-feat { display: grid; grid-template-columns: 1fr 1fr; column-gap: 56px; }
+    .lp-plans { grid-template-columns: 1fr 1fr; }
+    .lp-brand-grid { grid-template-columns: 1fr 1fr; }
+    .lp-sec { padding: 104px 0; }
+}
+
+/* ---- sample phone (em based: font-size sets the scale) ---- */
+.ph {
+    position: relative; width: 17em; aspect-ratio: 9 / 18; border-radius: 2.1em; overflow: hidden; isolation: isolate;
+    border: 0.4em solid var(--color-phone-frame); background: var(--pb); color: var(--pt); font-family:var(--lp-sf); line-height: 1.35;
+    box-shadow: 0 2em 4em -1.6em color-mix(in srgb, var(--color-ink) 50%, transparent);
+}
+.ph--lg { font-size: 16px; }
+.ph--sm { font-size: 9px; }
+.ph .in, .ph .cv, .ph .fx { position: absolute; inset: 0; }
+.ph .in { z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 0.7em; padding: 2em 1.4em; }
+.ph .cv { z-index: 2; background: var(--pb); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.9em; text-align: center; padding: 2em; }
+.ph .fx { z-index: 3; pointer-events: none; }
+.ph p { font-size: 0.875em; margin: 0; }
+.ph .nm { font: var(--pw, 600) 2.3em/1 var(--pf); color: var(--pa); margin: 0; }
+.ph .bo {
+    font: 700 0.9em var(--lp-sf); background: var(--pa); color: var(--po); border: 0; border-radius: 999px; padding: 0 1.4em;
+    min-height: 3.1em; display: inline-flex; align-items: center; cursor: pointer;
+}
+.ph .cd { display: flex; gap: 0.5em; }
+.ph .cd span { display: flex; flex-direction: column; align-items: center; min-width: 3.6em; padding: 0.5em 0.3em; border: 1px solid var(--pa); border-radius: 0.6em; font-size: 0.875em; }
+.ph .cd b { font: 600 1.6em/1 var(--pf); }
+.ph .gf { border: 1px dashed var(--pa); padding: 0.4em 1em; border-radius: 999px; }
+
+/* Without JavaScript the phone is simply open. With it, the cover closes the phone until the button (or the timer) opens it. */
+.lp-js .ph .in > * { opacity: 0; transform: translateY(1em); transition: opacity 0.6s, transform 0.6s; }
+.lp-js .ph .in > :nth-child(1) { transition-delay: 0.7s; }
+.lp-js .ph .in > :nth-child(2) { transition-delay: 0.84s; }
+.lp-js .ph .in > :nth-child(3) { transition-delay: 0.98s; }
+.lp-js .ph .in > :nth-child(4) { transition-delay: 1.12s; }
+.lp-js .ph .in > :nth-child(5) { transition-delay: 1.26s; }
+.lp-js .ph .in > :nth-child(6) { transition-delay: 1.4s; }
+.lp-js .ph.op .in > * { opacity: 1; transform: none; }
+.ph .cv { display: none; transition: transform 1s cubic-bezier(0.7, 0, 0.2, 1); }
+.lp-js .ph .cv { display: flex; }
+.lp-js .ph.op .cv { transform: translateY(-101%); }
+/* The small phones in the gallery are pictures of closed covers: show their cover, not their content. */
+.lp-js .ph--sm .in > * { opacity: 1; transform: none; }
+
+/* ---- the six template looks ---- */
+.t-classic { --pb: var(--color-template-classic-bg); --pt: var(--color-template-classic-text); --pa: var(--color-template-classic-accent); --po: var(--color-brand-on); --pf: var(--lp-sr); }
+.t-classic .fx { inset: 0.7em; border-radius: 1.5em; box-shadow: inset 0 0 0 1px var(--pa), inset 0 0 0 0.35em var(--pb), inset 0 0 0 calc(0.35em + 1px) var(--pa); animation: lp-fade 2s both; }
+.t-beach { --pb: var(--background-image-template-beach-bg); --pt: var(--color-template-beach-text); --pa: var(--color-template-beach-accent); --po: var(--color-brand-on); --pf: var(--lp-sr); }
+.t-beach .fx::before, .t-beach .fx::after {
+    content: ''; position: absolute; left: 0; bottom: 0; width: calc(100% + 2em); height: 1.2em; animation: lp-wave 5s linear infinite;
+    background: radial-gradient(circle at 50% 100%, var(--color-wave) 0 0.95em, transparent 1em) 0 100% / 2em 1.1em repeat-x;
+}
+.t-beach .fx::after {
+    bottom: -0.35em; animation-duration: 8s; animation-direction: reverse;
+    background: radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--color-brand-on) 69%, transparent) 0 0.95em, transparent 1em) 0 100% / 2em 1.1em repeat-x;
+}
+.t-floral { --pb: var(--background-image-template-floral-bg); --pt: var(--color-template-floral-text); --pa: var(--color-template-floral-accent); --po: var(--color-brand-on); --pf: var(--lp-sr); }
+.t-floral .fx s { position: absolute; top: -1.2em; width: 0.7em; height: 1em; background: var(--color-petal); border-radius: 100% 0; opacity: 0.85; animation: lp-petal linear infinite; }
+.t-floral .fx s:nth-child(1) { left: 2%; animation-duration: 6s; animation-delay: 0s; }
+.t-floral .fx s:nth-child(2) { left: 13%; animation-duration: 7.5s; animation-delay: -1.3s; }
+.t-floral .fx s:nth-child(3) { left: 24%; animation-duration: 9s; animation-delay: -2.6s; }
+.t-floral .fx s:nth-child(4) { left: 35%; animation-duration: 10.5s; animation-delay: -3.9s; }
+.t-floral .fx s:nth-child(5) { left: 46%; animation-duration: 6s; animation-delay: -5.2s; }
+.t-floral .fx s:nth-child(6) { left: 57%; animation-duration: 7.5s; animation-delay: -6.5s; }
+.t-floral .fx s:nth-child(7) { left: 68%; animation-duration: 9s; animation-delay: -7.8s; }
+.t-floral .fx s:nth-child(8) { left: 79%; animation-duration: 10.5s; animation-delay: -9.1s; }
+.t-floral .fx s:nth-child(9) { left: 90%; animation-duration: 6s; animation-delay: -10.4s; }
+.t-lux { --pb: var(--color-template-luxury-bg); --pt: var(--color-template-luxury-text); --pa: var(--color-template-luxury-accent); --po: var(--color-template-luxury-bg); --pf: var(--lp-sr); }
+.t-lux .fx::before { content: ''; position: absolute; inset: 0.6em; border: 1px solid color-mix(in srgb, var(--pa) 60%, transparent); border-radius: 1.5em; }
+.t-lux .fx::after {
+    content: ''; position: absolute; top: -10%; bottom: -10%; left: 0; width: 35%; transform: translateX(-150%) skewX(-18deg); animation: lp-sheen 4.2s ease-in-out infinite;
+    background: linear-gradient(100deg, transparent, color-mix(in srgb, var(--color-sheen) 40%, transparent), transparent);
+}
+.t-min { --pb: var(--color-template-minimal-bg); --pt: var(--color-template-minimal-text); --pa: var(--color-template-minimal-accent); --po: var(--color-brand-on); --pf: var(--lp-sf); --pw: 800; }
+.t-min .nm { color: var(--pt); letter-spacing: -0.03em; }
+.t-min .fx::before, .t-min .fx::after { content: ''; position: absolute; left: 1.4em; right: 1.4em; top: 3em; height: 2px; background: var(--pt); transform-origin: left; animation: lp-line 1.4s 0.3s cubic-bezier(0.7, 0, 0.2, 1) both; }
+.t-min .fx::after { top: auto; bottom: 3em; transform-origin: right; }
+.t-rus { --pb: var(--color-template-rustic-bg); --pt: var(--color-template-rustic-text); --pa: var(--color-template-rustic-accent); --po: var(--color-brand-on); --pf: var(--lp-sr); }
+.t-rus .fx { background: radial-gradient(color-mix(in srgb, var(--pt) 13%, transparent) 1px, transparent 1.3px) 0 0 / 5px 5px; }
+.t-rus .fx::after {
+    content: 'Simpan tanggalnya'; position: absolute; right: 1em; top: 20%; border: 2px solid var(--pa); color: var(--pa);
+    padding: 0.2em 0.6em; border-radius: 0.3em; font: 700 0.875em var(--lp-sf); transform: rotate(-12deg) scale(1.7); opacity: 0;
+}
+.lp-js .t-rus.op .fx::after { animation: lp-stamp 0.5s 1.6s both; }
+
+@keyframes lp-fade { from { opacity: 0; } }
+@keyframes lp-wave { to { transform: translateX(-2em); } }
+@keyframes lp-petal { to { transform: translate(2.5em, 38em) rotate(400deg); } }
+@keyframes lp-sheen { 60%, 100% { transform: translateX(420%) skewX(-18deg); } }
+@keyframes lp-line { from { transform: scaleX(0); } }
+@keyframes lp-stamp { to { opacity: 0.9; transform: rotate(-12deg) scale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+    .lp *, .lp *::before, .lp *::after { animation: none !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+    .t-rus .fx::after { opacity: 0.9; transform: rotate(-12deg); }
+}

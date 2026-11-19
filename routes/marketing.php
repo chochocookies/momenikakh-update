@@ -1,9 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Blade;
+use App\Http\Controllers\Marketing\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => Blade::render('<x-layouts.marketing>Marketing Surface</x-layouts.marketing>'))->name('marketing.home');
+/*
+|--------------------------------------------------------------------------
+| Marketing surface (momenikah.online): the indexed site
+|--------------------------------------------------------------------------
+| Auth and the dashboard live on the app surface; links to them use route('register'), route('login') and
+| route('dashboard'), which resolve to that host. New marketing pages (MKT-02..05) are added below in this order:
+| home, then catalogue, then per-event pages, then static pages.
+*/
+
+Route::get('/', HomeController::class)->name('marketing.home');
 
 // DS-03: component styleguide (view: resources/views/styleguide/styleguide.blade.php). Never in production.
 if (! app()->isProduction()) {

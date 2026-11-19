@@ -8,11 +8,16 @@ use App\Domain\Invitation\Enums\InvitationStatus;
 use App\Domain\Invitation\Models\Invitation;
 use App\Domain\Invitation\Services\InvalidTransition;
 use App\Domain\Invitation\Services\InvitationLifecycle;
+use App\Domain\Invitation\Services\PublishRequiresPlan;
+use Database\Seeders\PlanSeeder;
 
 beforeEach(function () {
     $this->lifecycle = app(InvitationLifecycle::class);
     $this->freeze = now()->setDate(2027, 1, 10)->setTime(12, 0);
     $this->travelTo($this->freeze);
+    $this->seed(PlanSeeder::class);
+    /** Gives an invitation the paid Paket Template (DEC-01: Rp 50.000, once, no expiry). */
+    $this->pay = fn (Invitation $i) => Subscription::factory()->forInvitation($i)->create(['plan_id' => Plan::query()->where('key', 'paket-template')->value('id'), 'ends_at' => null]);
 });
 
 it('describes the allowed transitions', function () {
@@ -27,9 +32,29 @@ it('describes the allowed transitions', function () {
 
 it('publishes a draft and records when', function () {
     $i = Invitation::factory()->create();
+    ($this->pay)($i);
     $this->lifecycle->publish($i);
     expect($i->fresh()->status)->toBe(InvitationStatus::Published);
     expect($i->fresh()->published_at->equalTo($this->freeze))->toBeTrue();
+});
+
+it('keeps a free sample unpublished until the Paket Template is bought (DEC-01)', function () {
+    $sample = Invitation::factory()->create();
+
+    expect(fn () => $this->lifecycle->publish($sample))->toThrow(PublishRequiresPlan::class);
+    expect($sample->fresh()->status)->toBe(InvitationStatus::Draft)->and($sample->fresh()->published_at)->toBeNull();
+
+    ($this->pay)($sample);
+    $this->lifecycle->publish($sample);
+    expect($sample->fresh()->status)->toBe(InvitationStatus::Published);
+});
+
+it('does not let the plan of one invitation publish another', function () {
+    $paid = Invitation::factory()->create();
+    $other = Invitation::factory()->for($paid->user)->create();
+    ($this->pay)($paid);
+
+    expect(fn () => $this->lifecycle->publish($other))->toThrow(PublishRequiresPlan::class);
 });
 
 it('refuses illegal transitions', function () {
@@ -52,14 +77,15 @@ it('supports unpublish, archive and restore', function () {
 
 it('sets expiry from the active subscription or the plan duration', function () {
     $i = Invitation::factory()->create();
-    Subscription::factory()->forInvitation($i)->create(['ends_at' => now()->addDays(10), 'plan_id' => Plan::factory()]);
+    Subscription::factory()->forInvitation($i)->create(['ends_at' => now()->addDays(10), 'plan_id' => Plan::factory()->withFeatures(['publish' => true])]);
     $this->lifecycle->publish($i);
     expect($i->fresh()->expires_at->equalTo(now()->addDays(10)))->toBeTrue();
 });
 
 it('has no expiry when the plan has none', function () {
     $i = Invitation::factory()->create();
-    $this->lifecycle->publish($i); // free fallback has duration_days = null (placeholder until DEC-01)
+    ($this->pay)($i);
+    $this->lifecycle->publish($i); // Paket Template has no duration (DEC-01)
     expect($i->fresh()->expires_at)->toBeNull();
 });
 
@@ -82,6 +108,7 @@ it('expires only published invitations that are due', function () {
 
 it('lets an expired invitation be renewed', function () {
     $i = Invitation::factory()->expired()->create();
+    ($this->pay)($i);
     $this->lifecycle->publish($i);
     expect($i->fresh()->status)->toBe(InvitationStatus::Published);
 });

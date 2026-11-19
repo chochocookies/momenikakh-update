@@ -1,18 +1,28 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\GuestController;
 use App\Http\Controllers\Dashboard\GuestExportController;
 use App\Http\Controllers\Dashboard\GuestImportController;
+use App\Http\Controllers\Dashboard\InvitationController;
 use App\Http\Controllers\Dashboard\MediaUploadController;
+use App\Http\Controllers\Dashboard\TemplateAssetController;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => Blade::render('<x-layouts.app>Application Surface</x-layouts.app>'))->name('app.home');
 
+// DSH-01/02: the owner's invitations and the create wizard. "create" is declared before "{invitation}" on purpose.
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/invitations/create', [InvitationController::class, 'create'])->name('dashboard.invitations.create');
+    Route::post('/dashboard/invitations', [InvitationController::class, 'store'])->middleware('throttle:20,1')->name('dashboard.invitations.store');
+    Route::get('/dashboard/invitations/{invitation}', [InvitationController::class, 'show'])->whereNumber('invitation')->name('dashboard.invitations.show');
+
+    // thumb.webp / preview.webp of a template, for the template cards (the CSP of this surface only allows its own images).
+    Route::get('/dashboard/templates/{template}/{file}', TemplateAssetController::class)
+        ->where(['template' => '[a-z0-9]+(?:-[a-z0-9]+)*', 'file' => 'thumb\.webp|preview\.webp'])
+        ->name('dashboard.template.image');
 });
 
 // GST-01..03: guest list, CSV import (preview -> confirm), per-guest links, RSVP/message exports.

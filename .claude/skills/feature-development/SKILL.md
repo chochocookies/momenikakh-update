@@ -6,7 +6,7 @@ description: Alur membangun fitur Momenikah dari rencana, tes, implementasi, sam
 ## Alur
 1. **Pahami tugas**: `task.mjs show ID`, baca kriteria "Selesai bila" dan dependensi. Masuk Plan Mode.
 2. **Rencana singkat**: berkas yang disentuh, model data, rute, komponen, tes, dampak ke dokumen. Cari kode yang sudah ada sebelum menulis baru (komponen UI, service, registry).
-3. **Kontrak dulu**: bila menyentuh data undangan, mulai dari `EventTypeDefinition` lalu form, model, `InvitationViewModel`, template. Satu perubahan di satu lapisan wajib tercermin di lapisan lain (tes kontrak F8-02).
+3. **Kontrak dulu**: bila menyentuh data undangan, mulai dari `EventTypeDefinition` lalu form, model, `InvitationViewModel`, template. Satu perubahan di satu lapisan wajib tercermin di lapisan lain (tes kontrak QA-06).
 4. **Tes dulu atau bersamaan**: feature test untuk perilaku, unit test untuk aturan. Tes keamanan bila ada input pengguna.
 5. **Implementasi kecil**: Form Request untuk validasi, Policy untuk akses, service untuk logika, controller tipis, komponen Blade untuk UI.
 6. **Verifikasi**: `composer check`, `npm run build`, periksa UI di 360/768/1280 px dan mode kurangi gerakan.

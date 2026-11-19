@@ -41,13 +41,13 @@ resources/js/{landing,app}.js
 3. Kerjakan kecil-kecil, tulis tes lebih dulu atau bersamaan.
 4. `/review-diff` memeriksa diff terhadap aturan emas. `/finish-task` menjalankan `composer check`, menandai tugas selesai, dan memperbarui `CHANGELOG.md`.
 5. `/handoff` menulis ringkasan pekerjaan untuk sesi berikutnya.
-Pelacak tugas: `node .claude/scripts/task.mjs next|show|list|status|start|done|estimate|check`.
+Pelacak tugas: `node .claude/scripts/task.mjs next|show|list|status|blocked|decisions|start|done|block|estimate|check`.
 
 ## Definition of Done
-Kode lolos `composer check` (Pint, Larastan, Pest) dan `npm run build`. Ada tes untuk perilaku baru. UI diperiksa di 360, 768, dan 1280 px dengan mode kurangi gerakan. Tidak ada rahasia di diff. Dokumen yang terdampak diperbarui. Kriteria "Selesai bila" di `docs/TODO.md` terpenuhi.
+Kode lolos `composer check` (Pint, Larastan, Pest) dan `npm run build`. Ada tes untuk perilaku baru. UI diperiksa di 360, 768, dan 1280 px dengan mode kurangi gerakan. Tidak ada rahasia di diff. Dokumen yang terdampak diperbarui. Kriteria "Selesai bila" di `.claude/TODO.md` terpenuhi.
 
 ## Bahasa
 Kode, nama variabel, commit, dan komentar teknis dalam bahasa Inggris. Teks yang dilihat pengguna dalam bahasa Indonesia (kamu/kalian, kalimat pendek, nada hangat dan tenang, tanpa kata hiperbola). Dokumen di `.claude/docs` dalam bahasa Indonesia.
 
 ## Dokumen (baca saat relevan, jangan dimuat semua sekaligus)
-`docs/PRODUCT.md` `TECH_STACK.md` `ARCHITECTURE.md` `TEMPLATE_SPEC.md` `DATA_MODEL.md` `EVENT_TYPES.md` `SEO.md` `BRAND.md` `LANDING.md` `DECISIONS.md` `ROADMAP.md` `TODO.md`
+`docs/PRODUCT.md` `TECH_STACK.md` `ARCHITECTURE.md` `TEMPLATE_SPEC.md` `DATA_MODEL.md` `EVENT_TYPES.md` `SEO.md` `BRAND.md` `LANDING.md` `DECISIONS.md` `ROADMAP.md`. Pelacak tugas: `.claude/TODO.md` (satu-satunya).

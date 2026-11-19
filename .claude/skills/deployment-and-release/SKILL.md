@@ -1,6 +1,6 @@
 ---
 name: deployment-and-release
-description: Rilis Momenikah ke staging dan produksi: checklist, migrasi aman, cache, antrian, DNS, rollback, dan pemantauan. Gunakan untuk F0-07, F8-06, F8-09.
+description: Rilis Momenikah ke staging dan produksi: checklist, migrasi aman, cache, antrian, DNS, rollback, dan pemantauan. Gunakan untuk FND-06, OPS-01, OPS-08.
 ---
 # Skill: deployment-and-release
 ## Sebelum rilis
@@ -14,4 +14,4 @@ CI hijau, `composer audit` dan `npm audit` bersih, `npm run build`, migrasi diti
 ## Rollback
 Kembali ke rilis sebelumnya, `migrate:rollback` hanya bila migrasi aman untuk dibalik, pulihkan cadangan bila data rusak. Rencana rollback ditulis sebelum rilis.
 ## Cutover DNS
-Turunkan TTL sehari sebelumnya, uji di staging, ganti DNS, awasi, pertahankan redirect `/u/{slug}` lama (F8-08).
+Turunkan TTL sehari sebelumnya, uji di staging, ganti DNS, awasi, pertahankan redirect `/u/{slug}` lama (OPS-07).

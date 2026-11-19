@@ -55,9 +55,16 @@ it('refuses to run in production', function () {
     expect(User::query()->where('email', 'demo@momenikah.test')->exists())->toBeFalse();
 });
 
-it('seeds the plans with undecided prices and an inactive premium placeholder', function () {
+it('seeds the plans of DEC-01: free sample and the Rp 50.000 Paket Template', function () {
     $this->seed(PlanSeeder::class);
-    expect(Plan::query()->where('key', 'free')->first()->price_idr)->toBeNull();
-    $premium = Plan::query()->where('key', 'premium')->first();
-    expect($premium->price_idr)->toBeNull()->and($premium->is_active)->toBeFalse();
+    $free = Plan::query()->where('key', 'free')->firstOrFail();
+    $paid = Plan::query()->where('key', 'paket-template')->firstOrFail();
+
+    expect($free->price_idr)->toBe(0)->and($free->features['publish'])->toBeFalse()
+        ->and($paid->price_idr)->toBe(50000)->and($paid->duration_days)->toBeNull()->and($paid->is_active)->toBeTrue()
+        ->and($paid->features['publish'])->toBeTrue()->and($paid->tier->value)->toBe('premium');
+    expect(Plan::query()->where('key', 'premium')->exists())->toBeFalse();
+
+    $this->seed(PlanSeeder::class); // idempotent
+    expect(Plan::query()->count())->toBe(2);
 });

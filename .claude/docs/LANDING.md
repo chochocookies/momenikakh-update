@@ -66,4 +66,4 @@ Headline "Satu link untuk semua momen nikahmu." Sub: "Buat undangan digital yang
 `resources/views/marketing/home.blade.php`, `resources/js/landing.js`, `resources/css/landing.css`, aset ilustrasi di `resources/images/landing/`. Logo dan ikon dari `.claude/brand/`.
 
 ## Prototipe
-Versi awal statis ada di artefak yang sudah dibuat. Versi GSAP dikerjakan di tugas F7-02 setelah logo final disetujui.
+Versi awal statis ada di artefak yang sudah dibuat. Versi GSAP dikerjakan di tugas MKT-01 setelah logo final disetujui.

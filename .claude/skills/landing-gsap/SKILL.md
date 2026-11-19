@@ -1,6 +1,6 @@
 ---
 name: landing-gsap
-description: Membangun landing page Momenikah dengan GSAP: narasi gulir, intro logo, pin, scrub, performa, aksesibilitas, dan fallback. Gunakan untuk tugas F7-02 dan F7-11.
+description: Membangun landing page Momenikah dengan GSAP: narasi gulir, intro logo, pin, scrub, performa, aksesibilitas, dan fallback. Gunakan untuk tugas MKT-01 dan MKT-07.
 ---
 # Skill: landing-gsap
 Acuan penuh: `docs/LANDING.md`.

@@ -106,8 +106,10 @@ it('is the only place that reads plan features', function () {
     $offenders = [];
     foreach (File::allFiles(base_path('app')) as $file) {
         $path = str_replace('\\', '/', str_replace(base_path().DIRECTORY_SEPARATOR, '', $file->getPathname()));
-        // EventTypeDefinition::$features are per-event-type switches, not plan features.
-        if (str_contains($path, 'Domain/Billing/') || str_contains($path, 'Domain/Invitation/EventTypes/') || str_contains($path, 'Factories')) {
+        // EventTypeDefinition::$features are per-event-type switches and TemplateManifest::$tier is the template's
+        // own label (free|premium); neither is a plan feature. Whether a plan may USE a premium template is
+        // decided by Entitlements (BIL-03), never by reading the manifest tier here.
+        if (str_contains($path, 'Domain/Billing/') || str_contains($path, 'Domain/Invitation/EventTypes/') || str_contains($path, 'Domain/Templates/') || str_contains($path, 'Factories')) {
             continue;
         }
         if (preg_match('/->features\b|->limits\b|->tier\b/', $file->getContents())) {

@@ -1,4 +1,4 @@
-/* DS-01: Design system tokens */
+/* DS-01: Design system tokens. Every token (font, size, radius, colour, template colour) is defined once in tokens.css. */
 @import './tokens.css';
 
 @import 'tailwindcss';
@@ -9,20 +9,8 @@
 @source '../**/*.js';
 
 @theme {
-    /* Override Tailwind defaults with brand tokens */
-    --color-gray-50: oklch(0.985 0.002 247.839);
-    --color-gray-100: oklch(0.967 0.003 264.542);
-    --color-gray-200: oklch(0.928 0.006 264.531);
-    --color-gray-300: oklch(0.872 0.01 258.338);
-    --color-gray-400: oklch(0.707 0.022 261.325);
-    --color-gray-500: oklch(0.551 0.027 264.364);
-    --color-gray-600: oklch(0.446 0.03 256.802);
-    --color-gray-700: oklch(0.373 0.034 259.733);
-    --color-gray-800: oklch(0.278 0.033 256.848);
-    --color-gray-900: oklch(0.21 0.034 264.665);
-    --color-gray-950: oklch(0.13 0.028 261.692);
-
-    /* Brand colors - light mode */
+    /* Semantic aliases of the brand tokens. Never redefine a token from tokens.css here: a self-reference
+       such as `--text-sm: var(--text-sm)` is invalid at computed-value time and silently drops the style. */
     --color-primary: var(--color-brand-rose);
     --color-primary-light: var(--color-brand-rose-light);
     --color-primary-dark: var(--color-brand-rose-dark);
@@ -44,104 +32,6 @@
 
     --color-accent-gold: var(--color-brand-gold);
     --color-accent-gold-alt: var(--color-brand-gold-alt);
-
-    /* Template colors */
-    --color-template-classic-bg: var(--color-template-classic-bg);
-    --color-template-classic-text: var(--color-template-classic-text);
-    --color-template-classic-accent: var(--color-template-classic-accent);
-
-    --color-template-beach-bg: var(--color-template-beach-bg);
-    --color-template-beach-text: var(--color-template-beach-text);
-    --color-template-beach-accent: var(--color-template-beach-accent);
-
-    --color-template-floral-bg: var(--color-template-floral-bg);
-    --color-template-floral-text: var(--color-template-floral-text);
-    --color-template-floral-accent: var(--color-template-floral-accent);
-
-    --color-template-luxury-bg: var(--color-template-luxury-bg);
-    --color-template-luxury-text: var(--color-template-luxury-text);
-    --color-template-luxury-accent: var(--color-template-luxury-accent);
-
-    --color-template-minimal-bg: var(--color-template-minimal-bg);
-    --color-template-minimal-text: var(--color-template-minimal-text);
-    --color-template-minimal-accent: var(--color-template-minimal-accent);
-
-    --color-template-rustic-bg: var(--color-template-rustic-bg);
-    --color-template-rustic-text: var(--color-template-rustic-text);
-    --color-template-rustic-accent: var(--color-template-rustic-accent);
-
-    /* Typography */
-    --font-sans: var(--font-family-sans), var(--font-fallback-sans);
-    --font-serif: var(--font-family-serif), var(--font-fallback-serif);
-
-    /* Font weights */
-    --font-weight-thin: 100;
-    --font-weight-extralight: 200;
-    --font-weight-light: 300;
-    --font-weight-normal: var(--font-weight-normal);
-    --font-weight-medium: var(--font-weight-medium);
-    --font-weight-semibold: var(--font-weight-semibold);
-    --font-weight-bold: var(--font-weight-bold);
-    --font-weight-extrabold: var(--font-weight-extrabold);
-    --font-weight-black: 900;
-
-    /* Font sizes */
-    --text-xs: var(--font-size-xs);
-    --text-sm: var(--font-size-sm);
-    --text-base: var(--font-size-base);
-    --text-lg: var(--font-size-lg);
-    --text-xl: var(--font-size-xl);
-    --text-2xl: var(--font-size-2xl);
-    --text-3xl: var(--font-size-3xl);
-    --text-4xl: var(--font-size-4xl);
-    --text-5xl: var(--font-size-5xl);
-    --text-6xl: var(--font-size-6xl);
-    --text-7xl: var(--font-size-7xl);
-
-    /* Line heights */
-    --leading-tight: var(--line-height-tight);
-    --leading-snug: var(--line-height-snug);
-    --leading-normal: var(--line-height-normal);
-    --leading-relaxed: var(--line-height-relaxed);
-    --leading-loose: var(--line-height-loose);
-
-    /* Letter spacing */
-    --tracking-tighter: var(--letter-spacing-tighter);
-    --tracking-tight: var(--letter-spacing-tight);
-    --tracking-normal: var(--letter-spacing-normal);
-    --tracking-wide: var(--letter-spacing-wide);
-    --tracking-wider: var(--letter-spacing-wider);
-    --tracking-widest: var(--letter-spacing-widest);
-
-    /* Border radius */
-    --radius-xs: var(--radius-xs);
-    --radius-sm: var(--radius-sm);
-    --radius-md: var(--radius-md);
-    --radius-lg: var(--radius-lg);
-    --radius-xl: var(--radius-xl);
-    --radius-2xl: var(--radius-2xl);
-    --radius-3xl: var(--radius-3xl);
-    --radius-4xl: var(--radius-4xl);
-    --radius-full: var(--radius-full);
-
-    /* Shadows */
-    --shadow-xs: var(--shadow-xs);
-    --shadow-sm: var(--shadow-sm);
-    --shadow-md: var(--shadow-md);
-    --shadow-lg: var(--shadow-lg);
-    --shadow-xl: var(--shadow-xl);
-    --shadow-2xl: var(--shadow-2xl);
-
-    /* Animation durations */
-    --duration-fast: var(--duration-fast);
-    --duration-normal: var(--duration-normal);
-    --duration-slow: var(--duration-slow);
-    --duration-slower: var(--duration-slower);
-
-    /* Animation easings */
-    --ease-in: var(--ease-in);
-    --ease-out: var(--ease-out);
-    --ease-in-out: var(--ease-in-out);
 }
 
 @layer base {

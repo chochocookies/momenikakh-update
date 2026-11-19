@@ -1,0 +1,20 @@
+/* Classic Elegant: ivory page, burgundy accent, gold ornaments, serif display. Tokens only reference tokens.css. */
+[data-theme='classic-elegant'] {
+    --t-bg: var(--color-template-classic-bg);
+    --t-surface: var(--color-brand-on);
+    --t-ink: var(--color-template-classic-text);
+    --t-muted: var(--color-brand-muted);
+    --t-accent: var(--color-template-classic-accent);
+    --t-accent-ink: var(--color-brand-on);
+    --t-orn: var(--color-brand-gold-alt);
+    --t-line: var(--color-brand-line);
+}
+
+/* What is really this template's own: wide-set titles and a thin gold rule under each heading. */
+[data-theme='classic-elegant'] .inv-title,
+[data-theme='classic-elegant'] .inv-heading {
+    letter-spacing: var(--tracking-wide);
+}
+[data-theme='classic-elegant'] .inv-cover__body {
+    padding: 4rem 1rem;
+}

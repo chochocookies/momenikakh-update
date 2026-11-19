@@ -1,6 +1,6 @@
 ---
 name: performance-optimization
-description: Mengoptimalkan kecepatan Momenikah: halaman undangan di jaringan seluler, landing GSAP, gambar, font, cache edge, query, dan anggaran bobot. Gunakan untuk F2-14, F3-13, F7-11, F8-05.
+description: Mengoptimalkan kecepatan Momenikah: halaman undangan di jaringan seluler, landing GSAP, gambar, font, cache edge, query, dan anggaran bobot. Gunakan untuk TPL-14, OPS-06, MKT-07, QA-03.
 ---
 # Skill: performance-optimization
 ## Prioritas
@@ -12,4 +12,4 @@ description: Mengoptimalkan kecepatan Momenikah: halaman undangan di jaringan se
 6. **Server**: eager loading, indeks, OPcache, antrian untuk kerja berat (konversi gambar, email).
 7. **Gerak**: hanya `transform` dan `opacity`, `will-change` seperlunya, kurangi elemen melayang di ponsel.
 ## Anggaran
-CSS tema ≤ 30 KB, JS tema ≤ 20 KB, aset template ≤ 400 KB, JS landing ≤ 90 KB, gambar layar pertama landing ≤ 250 KB. CI gagal bila terlampaui (F2-14).
+CSS tema ≤ 30 KB, JS tema ≤ 20 KB, aset template ≤ 400 KB, JS landing ≤ 90 KB, gambar layar pertama landing ≤ 250 KB. CI gagal bila terlampaui (TPL-14).

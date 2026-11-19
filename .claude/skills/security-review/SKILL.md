@@ -1,6 +1,6 @@
 ---
 name: security-review
-description: Tinjauan keamanan Momenikah: XSS, IDOR, unggah, CSRF, pembayaran, header, rate limit, privasi data tamu. Gunakan sebelum merge perubahan sensitif dan untuk F8-03.
+description: Tinjauan keamanan Momenikah: XSS, IDOR, unggah, CSRF, pembayaran, header, rate limit, privasi data tamu. Gunakan sebelum merge perubahan sensitif dan untuk QA-05.
 ---
 # Skill: security-review
 Acuan: `.claude/rules/30-security.md`.

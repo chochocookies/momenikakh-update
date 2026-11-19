@@ -57,6 +57,15 @@ jobs:
       - name: Run Larastan
         run: ./vendor/bin/phpstan analyse --memory-limit=1G
 
+      - name: Lint templates (manifest, weight, fonts, dependencies, tokens, contrast, ornaments)
+        run: php artisan template:lint
+        env:
+          APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+
   tests:
     name: Tests
     runs-on: ubuntu-latest

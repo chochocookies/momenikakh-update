@@ -27,6 +27,17 @@ enum InvitationStatus: string
         return in_array($to, $this->allowedTransitions(), true);
     }
 
+    /** Indonesian name shown to the owner. */
+    public function label(): string
+    {
+        return match ($this) {
+            self::Draft => 'Draf',
+            self::Published => 'Terbit',
+            self::Expired => 'Kedaluwarsa',
+            self::Archived => 'Diarsipkan',
+        };
+    }
+
     public function isPubliclyVisible(): bool
     {
         return $this === self::Published;
