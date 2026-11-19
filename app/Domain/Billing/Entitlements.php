@@ -23,7 +23,7 @@ final class Entitlements
             ? $this->resolver->forInvitation($subject, $at)
             : $this->resolver->forUser($subject, $at);
 
-        return $sub?->plan ?? Plan::free();
+        return $sub !== null ? $sub->plan : Plan::free();
     }
 
     /** True when a non-free subscription is active at the given moment. */
@@ -64,7 +64,7 @@ final class Entitlements
         if ($sub?->ends_at !== null) {
             return CarbonImmutable::instance($sub->ends_at);
         }
-        $days = ($sub?->plan ?? Plan::free())->duration_days;
+        $days = ($sub !== null ? $sub->plan : Plan::free())->duration_days;
 
         return $days === null ? null : $from->addDays($days);
     }

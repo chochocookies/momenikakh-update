@@ -24,7 +24,8 @@ final class GuestController extends Controller
 
         $q = trim((string) $request->query('q', ''));
         $guests = $invitation->guests()
-            ->when($q !== '', fn ($query) => $query->where('name', 'like', '%'.str_replace(['%', '_'], ['\\%', '\\_'], $q).'%'))
+            // "!" is the LIKE escape character because it behaves the same on MySQL and SQLite (tests).
+            ->when($q !== '', fn ($query) => $query->whereRaw("guests.name like ? escape '!'", ['%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $q).'%']))
             ->orderBy('name')
             ->paginate(50)
             ->withQueryString();

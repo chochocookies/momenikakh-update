@@ -17,13 +17,16 @@ final class RsvpExporter
     public function rows(Invitation $invitation): \Generator
     {
         $tz = $invitation->timezone ?: (string) config('guests.export.timezone_fallback', 'Asia/Jakarta');
-        $label = [Attendance::Yes->value => 'Hadir', Attendance::No->value => 'Tidak hadir', Attendance::Maybe->value => 'Mungkin'];
 
         $query = Rsvp::query()->where('invitation_id', $invitation->id)->with('guest:id,group')->orderBy('id');
         foreach ($query->lazyById(500) as $rsvp) {
             yield [
                 $rsvp->name,
-                $label[$rsvp->attendance->value] ?? $rsvp->attendance->value,
+                match ($rsvp->attendance) {
+                    Attendance::Yes => 'Hadir',
+                    Attendance::No => 'Tidak hadir',
+                    Attendance::Maybe => 'Mungkin',
+                },
                 $rsvp->pax,
                 $rsvp->note,
                 $rsvp->guest?->group,

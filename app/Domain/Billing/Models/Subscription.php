@@ -13,9 +13,21 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property int $plan_id
+ * @property int|null $invitation_id
+ * @property SubscriptionStatus $status
+ * @property Carbon|null $starts_at
+ * @property Carbon|null $ends_at
+ * @property-read Plan $plan
+ */
 class Subscription extends Model
 {
+    /** @use HasFactory<SubscriptionFactory> */
     use HasFactory;
 
     protected $table = 'subscriptions';
@@ -36,16 +48,19 @@ class Subscription extends Model
         ];
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Plan, $this> */
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
     }
 
+    /** @return BelongsTo<Invitation, $this> */
     public function invitation(): BelongsTo
     {
         return $this->belongsTo(Invitation::class);

@@ -21,13 +21,34 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property EventType $event_type
+ * @property string|null $template_slug
+ * @property string $slug
+ * @property string $title
+ * @property InvitationStatus $status
+ * @property string $locale
+ * @property string $timezone
+ * @property array<string, mixed>|null $content
+ * @property array<string, mixed>|null $settings
+ * @property Carbon|null $published_at
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ */
 class Invitation extends Model implements HasMedia
 {
+    /** @use HasFactory<InvitationFactory> */
     use HasFactory;
+
     use InteractsWithMedia;
     use RegistersInvitationMedia;
     use SoftDeletes;
@@ -75,6 +96,7 @@ class Invitation extends Model implements HasMedia
         $this->registerInvitationMediaConversions($media);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -92,41 +114,49 @@ class Invitation extends Model implements HasMedia
         return $this->hasMany(InvitationPerson::class);
     }
 
+    /** @return HasMany<InvitationEvent, $this> */
     public function events(): HasMany
     {
         return $this->hasMany(InvitationEvent::class)->orderBy('sort')->orderBy('starts_at');
     }
 
+    /** @return HasMany<InvitationStoryItem, $this> */
     public function storyItems(): HasMany
     {
         return $this->hasMany(InvitationStoryItem::class)->orderBy('sort')->orderBy('id');
     }
 
+    /** @return HasMany<InvitationGift, $this> */
     public function gifts(): HasMany
     {
         return $this->hasMany(InvitationGift::class)->orderBy('sort')->orderBy('id');
     }
 
+    /** @return HasMany<Guest, $this> */
     public function guests(): HasMany
     {
         return $this->hasMany(Guest::class);
     }
 
+    /** @return HasMany<Rsvp, $this> */
     public function rsvps(): HasMany
     {
         return $this->hasMany(Rsvp::class);
     }
 
+    /** @return HasMany<GuestMessage, $this> */
     public function messages(): HasMany
     {
         return $this->hasMany(GuestMessage::class);
     }
 
+    /** @return HasMany<InvitationDailyStat, $this> */
     public function dailyStats(): HasMany
     {
         return $this->hasMany(InvitationDailyStat::class);
     }
 
+    /** @return HasMany<Subscription, $this> */
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);

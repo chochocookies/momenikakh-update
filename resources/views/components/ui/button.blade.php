@@ -5,8 +5,8 @@
              disabled:pointer-events-none disabled:opacity-50';
     $variants = [
         'primary'   => 'bg-rose text-white hover:bg-rose/90',
-        'secondary' => 'text-ink ring-1 ring-inset ring-ink hover:bg-rose-soft',
-        'ghost'     => 'text-rose hover:bg-rose-soft',
+        'secondary' => 'text-ink ring-1 ring-inset ring-ink hover:bg-rose-light',
+        'ghost'     => 'text-rose hover:bg-rose-light',
         'danger'    => 'bg-danger text-white hover:bg-danger/90',
     ];
     $sizes = ['md' => 'px-6 text-base', 'lg' => 'min-h-12 px-8 text-lg'];

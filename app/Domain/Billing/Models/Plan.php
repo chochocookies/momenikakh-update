@@ -10,8 +10,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $key
+ * @property string $name
+ * @property PlanTier $tier
+ * @property int|null $price_idr
+ * @property int|null $duration_days
+ * @property array<string, bool>|null $features
+ * @property array<string, int|null>|null $limits
+ * @property bool $is_active
+ * @property int $sort
+ */
 class Plan extends Model
 {
+    /** @use HasFactory<PlanFactory> */
     use HasFactory;
 
     protected $table = 'plans';
@@ -35,6 +48,7 @@ class Plan extends Model
         ];
     }
 
+    /** @return HasMany<Subscription, $this> */
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);

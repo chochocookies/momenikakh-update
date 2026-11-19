@@ -6,6 +6,18 @@ document.addEventListener('click', (e) => {
   if (e.target instanceof HTMLDialogElement) e.target.close();           // klik backdrop
 });
 
+// Modal focus trap: a native modal <dialog> still lets Tab reach the document, so wrap Tab inside the open dialog.
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Tab') return;
+  const dialog = document.querySelector('dialog[open]'); if (!dialog) return;
+  const items = [...dialog.querySelectorAll(FOCUSABLE)].filter((el) => el.getClientRects().length > 0);
+  if (items.length === 0) return;
+  const first = items[0], last = items[items.length - 1], active = document.activeElement, inside = dialog.contains(active);
+  if (e.shiftKey && (!inside || active === first)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (!inside || active === last)) { e.preventDefault(); first.focus(); }
+});
+
 // Toast: window.dispatchEvent(new CustomEvent('toast', { detail: { message, tone } }))
 const TONES = { success: 'bg-ink text-ivory', error: 'bg-danger text-white', info: 'bg-rose text-white' };
 export function toast(message, tone = 'success') {

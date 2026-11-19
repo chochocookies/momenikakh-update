@@ -21,16 +21,19 @@ trait OwnsInvitations
         $this->mergeCasts(['role' => UserRole::class]);
     }
 
+    /** @return HasMany<Invitation, $this> */
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class);
     }
 
+    /** @return HasMany<Subscription, $this> */
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
     }
 
+    /** @return HasMany<Payment, $this> */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);

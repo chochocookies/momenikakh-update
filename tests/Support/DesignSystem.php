@@ -31,7 +31,8 @@ final class DesignSystem
                 foreach ($suffixes as $suffix) {
                     if (str_ends_with($file->getFilename(), $suffix)) {
                         $out[] = [
-                            'rel' => ltrim(str_replace(base_path(), '', $file->getPathname()), '/'),
+                            // Forward slashes on every OS, so the allow-lists and TOKENS compare equal on Windows too.
+                            'rel' => ltrim(str_replace('\\', '/', str_replace(base_path(), '', $file->getPathname())), '/'),
                             'content' => $file->getContents(),
                         ];
                         break;

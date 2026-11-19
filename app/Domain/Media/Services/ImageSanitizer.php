@@ -34,7 +34,7 @@ final class ImageSanitizer
         if ($info === false) {
             throw new SanitizeException('Gambar rusak atau tidak dapat dibaca.');
         }
-        $mime = (string) ($info['mime'] ?? '');
+        $mime = $info['mime'];
 
         $im = @imagecreatefromstring($bytes);
         if (! $im instanceof GdImage) {

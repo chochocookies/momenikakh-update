@@ -10,10 +10,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property int $invitation_id
+ * @property string $name
+ * @property string|null $group
+ * @property string|null $phone
+ * @property string $token
+ * @property Carbon|null $opened_at
+ */
 class Guest extends Model
 {
+    /** @use HasFactory<GuestFactory> */
     use HasFactory;
 
     protected $table = 'guests';
@@ -41,11 +52,13 @@ class Guest extends Model
         ];
     }
 
+    /** @return BelongsTo<Invitation, $this> */
     public function invitation(): BelongsTo
     {
         return $this->belongsTo(Invitation::class);
     }
 
+    /** @return HasMany<Rsvp, $this> */
     public function rsvps(): HasMany
     {
         return $this->hasMany(Rsvp::class);

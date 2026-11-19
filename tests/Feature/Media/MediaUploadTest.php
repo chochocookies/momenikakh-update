@@ -8,6 +8,7 @@ use App\Domain\Invitation\Models\InvitationPerson;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Tests\Support\WiringFixtures as Fx;
 
 require_once __DIR__.'/MediaTestCase.php';
 
@@ -31,10 +32,12 @@ it('stores a clean, uuid-named copy of a valid cover photo', function () {
 });
 
 it('strips EXIF and GPS from the stored original', function () {
-    ($this->upload)('gallery', fakeUpload('orient-6.jpg'))->assertCreated();
+    // orient-6.jpg is only 120x240, below the gallery minimum, so upload a large JPEG that carries EXIF + a comment.
+    $dirty = UploadedFile::fake()->createWithContent('foto.jpg', Fx::jpeg(1300, 700, 6));
+    ($this->upload)('gallery', $dirty)->assertCreated();
     $media = $this->invitation->media()->firstOrFail();
     $bytes = Storage::disk('media')->get($media->getPathRelativeToRoot());
-    expect($bytes)->not->toContain("Exif\0\0")->not->toContain('SECRET-LOCATION-MARKER')->not->toContain("\xFF\xE1");
+    expect($bytes)->not->toContain("Exif\0\0")->not->toContain(Fx::MARK_EXIF)->not->toContain(Fx::MARK_COMMENT)->not->toContain("\xFF\xE1");
 });
 
 it('stores a polyglot image without its trailing code', function () {
@@ -66,7 +69,11 @@ it('requires login and ownership', function () {
 });
 
 it('only accepts known collections', function () {
-    $this->actingAs($this->owner)->postJson('/dashboard/invitations/'.$this->invitation->id.'/media/evil', ['file' => fakeUpload('big.jpg')])->assertNotFound();
+    // {collection} is constrained in the route, so "evil" matches no POST route. The GET-only fallback then
+    // makes the router answer 405 instead of 404; either way the upload must be refused and nothing stored.
+    $res = $this->actingAs($this->owner)->postJson(route('dashboard.media.store', [$this->invitation, 'evil']), ['file' => fakeUpload('big.jpg')]);
+    expect($res->status())->toBeIn([404, 405]);
+    expect($this->invitation->media()->count())->toBe(0);
 });
 
 it('replaces the previous cover (single file collection)', function () {

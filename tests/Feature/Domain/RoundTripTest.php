@@ -119,9 +119,9 @@ it('derives every form request rule from the event type definition', function (s
 
     $request = $class::create('/x', 'PUT', []);
     $request->setUserResolver(fn () => $owner);
-    $request->setRouteResolver(function () use ($request, $invitation) {
-        return (new Route('PUT', '/x/{invitation}', []))->bind($request)->setParameter('invitation', $invitation);
-    });
+    $route = (new Route('PUT', '/x/{invitation}', []))->bind($request);
+    $route->setParameter('invitation', $invitation);
+    $request->setRouteResolver(fn () => $route);
 
     expect($request->authorize())->toBeTrue();
     expect(array_keys($request->rules()))->toEqual(array_keys(app(EventTypeRegistry::class)->for('birthday')->rules($step)));
@@ -132,6 +132,8 @@ it('refuses a form request from someone who does not own the invitation', functi
     $stranger = User::factory()->create();
     $request = UpdatePeopleRequest::create('/x', 'PUT', []);
     $request->setUserResolver(fn () => $stranger);
-    $request->setRouteResolver(fn () => (new Route('PUT', '/x/{invitation}', []))->bind($request)->setParameter('invitation', $invitation));
+    $route = (new Route('PUT', '/x/{invitation}', []))->bind($request);
+    $route->setParameter('invitation', $invitation);
+    $request->setRouteResolver(fn () => $route);
     expect($request->authorize())->toBeFalse();
 });

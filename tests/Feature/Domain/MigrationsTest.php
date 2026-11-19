@@ -50,7 +50,12 @@ it('cascades child rows when an invitation is force deleted', function () {
 });
 
 it('rolls back and migrates again cleanly', function () {
-    $this->artisan('migrate:rollback', ['--step' => 4, '--force' => true])->assertSuccessful();
+    // Roll back every migration from the invitations table onwards (later migrations such as music/media included).
+    $steps = count(array_filter(
+        array_map('basename', glob(database_path('migrations/*.php')) ?: []),
+        fn (string $file): bool => $file >= '2026_11_16_000110',
+    ));
+    $this->artisan('migrate:rollback', ['--step' => $steps, '--force' => true])->assertSuccessful();
     foreach (['payments', 'subscriptions', 'plans', 'guests', 'invitations'] as $t) {
         expect(Schema::hasTable($t))->toBeFalse("{$t} should be dropped");
     }

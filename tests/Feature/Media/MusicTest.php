@@ -63,7 +63,9 @@ it('renders no music when nothing is configured', function () {
 describe('licensed catalog (DEC-06)', function () {
     beforeEach(function () {
         $this->track = MusicTrack::factory()->create(['title' => 'Lagu Berlisensi', 'requires_attribution' => true, 'attribution_text' => 'Musik oleh Artis Contoh']);
-        app(MediaUploader::class)->attachAudio($this->track, MediaCollection::Audio, UploadedFile::fake()->createWithContent('t.mp3', "\xFF\xFB\x90\x64".str_repeat("\0", 2000))->getRealPath());
+        // Keep the fake upload alive: its temp file is deleted as soon as the object is garbage collected.
+        $this->audioFile = UploadedFile::fake()->createWithContent('t.mp3', "\xFF\xFB\x90\x64".str_repeat("\0", 2000));
+        app(MediaUploader::class)->attachAudio($this->track, MediaCollection::Audio, $this->audioFile->getRealPath());
         $this->invitation->update(['settings' => ['music' => ['source' => 'catalog', 'track_id' => $this->track->id]]]);
     });
 

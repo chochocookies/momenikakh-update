@@ -105,8 +105,9 @@ it('throws on unknown abilities and limits so typos cannot silently deny or allo
 it('is the only place that reads plan features', function () {
     $offenders = [];
     foreach (File::allFiles(base_path('app')) as $file) {
-        $path = str_replace(base_path().'/', '', $file->getPathname());
-        if (str_contains($path, 'Domain/Billing/') || str_contains($path, 'Factories')) {
+        $path = str_replace('\\', '/', str_replace(base_path().DIRECTORY_SEPARATOR, '', $file->getPathname()));
+        // EventTypeDefinition::$features are per-event-type switches, not plan features.
+        if (str_contains($path, 'Domain/Billing/') || str_contains($path, 'Domain/Invitation/EventTypes/') || str_contains($path, 'Factories')) {
             continue;
         }
         if (preg_match('/->features\b|->limits\b|->tier\b/', $file->getContents())) {

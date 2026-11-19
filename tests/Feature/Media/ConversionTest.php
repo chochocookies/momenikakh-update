@@ -9,6 +9,7 @@ use App\Domain\Media\MediaCollection;
 use App\Domain\Media\Services\MediaUploader;
 use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\Conversions\Jobs\PerformConversionsJob;
+use Tests\Support\WiringFixtures as Fx;
 
 require_once __DIR__.'/MediaTestCase.php';
 
@@ -50,10 +51,14 @@ it('never upscales a small original', function () {
 });
 
 it('keeps every generated file free of EXIF and GPS data', function () {
-    $media = $this->uploader->attachImage($this->invitation, MediaCollection::Gallery, mediaFixture('orient-6.jpg'));
+    // orient-6.jpg is only 120x240, below the gallery minimum, so build a large JPEG that carries EXIF + a comment.
+    $path = (string) tempnam(sys_get_temp_dir(), 'exif-');
+    file_put_contents($path, Fx::jpeg(1300, 700, 6));
+    $media = $this->uploader->attachImage($this->invitation, MediaCollection::Gallery, $path);
+    @unlink($path);
     foreach (['sm', 'md', 'lg', 'thumb'] as $c) {
         $bytes = Storage::disk('media')->get($media->getPathRelativeToRoot($c));
-        expect($bytes)->not->toContain("Exif\0\0")->not->toContain('SECRET-LOCATION-MARKER');
+        expect($bytes)->not->toContain("Exif\0\0")->not->toContain(Fx::MARK_EXIF)->not->toContain(Fx::MARK_COMMENT);
     }
 });
 

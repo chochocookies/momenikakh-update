@@ -7,6 +7,7 @@ namespace App\Domain\Media\Services;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -57,7 +58,7 @@ final class OrphanPruner
                     $probe = new $type;
                     $query = $type::query();
                     if (in_array(SoftDeletes::class, class_uses_recursive($type), true)) {
-                        $query = $query->withTrashed();
+                        $query = $query->withoutGlobalScope(SoftDeletingScope::class);
                     }
                     $existing = array_flip($query->whereIn($probe->getKeyName(), $items->pluck('model_id')->unique()->all())
                         ->pluck($probe->getKeyName())->map(fn ($v) => (string) $v)->all());

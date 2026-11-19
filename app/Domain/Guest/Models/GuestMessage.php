@@ -11,8 +11,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $invitation_id
+ * @property int|null $guest_id
+ * @property string $name
+ * @property string $message
+ * @property bool $is_visible
+ */
 class GuestMessage extends Model
 {
+    /** @use HasFactory<GuestMessageFactory> */
     use HasFactory;
 
     protected $table = 'guest_messages';
@@ -31,11 +40,13 @@ class GuestMessage extends Model
         ];
     }
 
+    /** @return BelongsTo<Invitation, $this> */
     public function invitation(): BelongsTo
     {
         return $this->belongsTo(Invitation::class);
     }
 
+    /** @return BelongsTo<Guest, $this> */
     public function guest(): BelongsTo
     {
         return $this->belongsTo(Guest::class);

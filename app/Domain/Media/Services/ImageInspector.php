@@ -32,7 +32,8 @@ final class ImageInspector
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = $finfo ? (string) finfo_file($finfo, $path) : '';
+        // finfo_file() can fail (false + warning) on hostile content; treat that as "unknown type" so it is rejected, not a 500.
+        $mime = $finfo ? (string) @finfo_file($finfo, $path) : '';
         if ($finfo) {
             finfo_close($finfo);
         }
@@ -53,7 +54,7 @@ final class ImageInspector
             return new InspectionResult(false, $errors, $mime, bytes: $bytes);
         }
         [$w, $h] = [(int) $size[0], (int) $size[1]];
-        if (($size['mime'] ?? '') !== $mime) {
+        if ($size['mime'] !== $mime) {
             $errors['mime_mismatch'] = 'Isi berkas tidak sesuai dengan formatnya.';
         }
         if ($w < 1 || $h < 1) {

@@ -43,12 +43,14 @@ it('uses only fictional contact data', function () {
     foreach ($phones as $phone) {
         expect($phone)->toStartWith('08120000');
     }
-    expect(DB::table('invitation_gifts')->pluck('number')->unique()->all())->each->toMatch('/^(1234567890|081200000001)$/');
+    // Address-type gifts have no number; only bank/e-wallet rows carry one.
+    expect(DB::table('invitation_gifts')->whereNotNull('number')->pluck('number')->unique()->values()->all())->each->toMatch('/^(1234567890|081200000001)$/');
 });
 
 it('refuses to run in production', function () {
     $this->app->detectEnvironment(fn () => 'production');
-    $this->seed(DemoSeeder::class);
+    // Run the seeder directly: `db:seed` would stop at its own production confirmation prompt first.
+    $this->app->make(DemoSeeder::class)->run();
     expect(Invitation::query()->count())->toBe(0);
     expect(User::query()->where('email', 'demo@momenikah.test')->exists())->toBeFalse();
 });

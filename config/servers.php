@@ -117,10 +117,10 @@ return [
             'key' => env('SSH_KEY', '~/.vagrant/machines/default/virtualbox/private_key'),
         ],
         'web_server' => [
-            'type' => 'apache' ?: 'nginx',
+            'type' => 'apache',
             'config_path' => null,
             'site_enabled' => null,
-            'service' => 'apache2' ?: 'nginx',
+            'service' => 'apache2',
         ],
         'php_fpm' => [
             'service' => 'php8.3-fpm',
