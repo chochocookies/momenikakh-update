@@ -1,7 +1,9 @@
 ---
 paths:
   - "resources/templates/**"
-  - "app/Services/Templates/**"
+  - "app/Domain/Templates/**"
+  - "resources/css/invitation-core.css"
+  - "resources/js/invitation/**"
 ---
 # Aturan template
 - Satu template = satu folder `resources/templates/{slug}/` yang berdiri sendiri. Isi minimal: `manifest.json`, `index.blade.php`, `cover.blade.php`, `theme.css`. Opsional: `theme.js`, `sections/` (hanya override), `assets/`.

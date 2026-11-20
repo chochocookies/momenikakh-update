@@ -7,7 +7,7 @@ Paket kerja Claude Code untuk membangun Momenikah dari nol. Berdiri sendiri: tid
 | `CLAUDE.md` | Aturan emas yang selalu aktif |
 | `TODO.md` | **Satu-satunya** pelacak tugas (status, dependensi, kriteria "Selesai bila", milestone) |
 | `docs/` | PRODUCT, TECH_STACK, ARCHITECTURE, TEMPLATE_SPEC, DATA_MODEL, EVENT_TYPES, SEO, BRAND, LANDING, DECISIONS, ROADMAP |
-| `skills/` | 14 skill (onboarding, fitur, template, jenis acara, brand, landing GSAP, SEO, database, keamanan, tes, performa, rilis, kualitas, bug) |
+| `skills/` | 14 skill proyek (onboarding, fitur, template, jenis acara, brand, landing GSAP, SEO, database, keamanan, tes, performa, rilis, kualitas, bug) + 8 skill eksternal (`frontend-design`, `impeccable`, `ui-ux-pro-max`, `animate`, `review-animations`, `improve-animations`, `animejs`, `ponytail`). Aturan prioritasnya ada di `CLAUDE.md` |
 | `rules/` | 7 aturan per folder (template, database, keamanan, frontend, tes, SEO, jenis acara) |
 | `commands/` | `/next-task` `/start-task` `/finish-task` `/review-diff` `/handoff` `/new-template` `/new-event-type` `/release-check` |
 | `scripts/task.mjs` | Pelacak tugas untuk `TODO.md` dan keputusan DEC di `docs/DECISIONS.md` |

@@ -40,3 +40,16 @@ jQuery dan Bootstrap (berat dan membuat gaya tidak konsisten), Tailwind Play CDN
 
 ## Kapasitas awal (pedoman, ukur sebelum percaya)
 Satu VPS dengan LiteSpeed atau Nginx + PHP-FPM, OPcache aktif, Cloudflare di depan, halaman undangan di-cache penuh di edge, antrian satu worker. Naik ke Redis dan worker tambahan bila antrian gambar menumpuk atau waktu respons dashboard memburuk (tugas QA-03).
+
+## Versi terpasang (dicek 2026-11-20 dari `composer.lock` dan `package-lock.json`)
+| Komponen | Versi | Komponen | Versi |
+|---|---|---|---|
+| PHP (lokal) | 8.3.36 | Vite | 7.3.8 |
+| Laravel | 13.42.0 | Tailwind CSS | 4.3.5 |
+| Livewire | 4.4.8 | laravel-vite-plugin | 2.1.0 |
+| Fortify | 1.42.0 | Playwright + axe | 1.65.1 + 4.14.0 |
+| Pest | 4.7.8 | Larastan / Pint | 3.15.0 / 1.32.3 |
+| spatie/laravel-medialibrary | 11.23.13 | Sentry Laravel | 4.30.0 |
+| predis | 3.7.1 | Node (lokal) | 24.13.0 |
+
+Belum dipasang: Filament (ADM-01), GSAP (MKT-01), Alpine, klien Duitku (BIL-01). Tabel di atas tetap berlaku sebagai rencana untuk komponen itu.

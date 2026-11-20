@@ -5,7 +5,7 @@ Platform undangan digital Indonesia. Pemilik acara memilih template, mengisi dat
 
 ## Referensi pasar (diamati dari linkundangan.com, hanya sebagai pembelajaran)
 - Tumpukan teknologi terbaca: Laravel (cookie `*_session` dan `XSRF-TOKEN`), LiteSpeed, Hostinger, GA4, jQuery + Bootstrap 5 di halaman undangan.
-- Pola produk: undangan di subdomain terpisah (`share.`), pratinjau template terpisah (`/inv-preview/{kode}`, noindex), nama tamu lewat `?to=`, data undangan dimuat lewat JSON, galeri PhotoSwipe, salin rekening dengan toast, buku tamu dan RSVP, jumlah RSVP, pengunjung langsung lewat WebSocket, banyak jenis acara, kustom CSS/JS/HTML, reseller dan hapus brand, kustom domain.
+- Pola produk: undangan di subdomain terpisah (`undangan.`), pratinjau template terpisah (`/inv-preview/{kode}`, noindex), nama tamu lewat `?to=`, data undangan dimuat lewat JSON, galeri PhotoSwipe, salin rekening dengan toast, buku tamu dan RSVP, jumlah RSVP, pengunjung langsung lewat WebSocket, banyak jenis acara, kustom CSS/JS/HTML, reseller dan hapus brand, kustom domain.
 - Pembeda mereka ada di fitur, katalog, dan model bisnis, bukan di teknologi. Kita tidak menyalin aset, template, atau teks mereka.
 - Angka klaim mereka (jumlah pengguna dan undangan) tidak diverifikasi dan tidak dipakai.
 

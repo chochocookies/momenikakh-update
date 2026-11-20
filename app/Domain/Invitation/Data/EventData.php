@@ -23,16 +23,20 @@ final readonly class EventData
         public ?float $longitude,
         public ?string $dressCode,
         public ?string $notes,
+        public string $timezone = 'Asia/Jakarta', // the zone startsAt and endsAt are shown in
     ) {}
 
     public static function fromModel(InvitationEvent $m, string $timezone): self
     {
+        // An event may sit in another zone than its invitation; without its own zone it follows the invitation.
+        $zone = $m->timezone ?? $timezone;
+
         return new self(
             $m->id,
             $m->kind,
             $m->label,
-            CarbonImmutable::instance($m->starts_at)->setTimezone($timezone),
-            $m->ends_at ? CarbonImmutable::instance($m->ends_at)->setTimezone($timezone) : null,
+            CarbonImmutable::instance($m->starts_at)->setTimezone($zone),
+            $m->ends_at ? CarbonImmutable::instance($m->ends_at)->setTimezone($zone) : null,
             $m->venue_name,
             $m->address,
             $m->maps_url,
@@ -40,6 +44,7 @@ final readonly class EventData
             $m->longitude,
             $m->dress_code,
             $m->notes,
+            $zone,
         );
     }
 
@@ -52,7 +57,7 @@ final readonly class EventData
             'ends_at' => $this->endsAt?->format('Y-m-d H:i'),
             'venue_name' => $this->venueName, 'address' => $this->address, 'maps_url' => $this->mapsUrl,
             'latitude' => $this->latitude, 'longitude' => $this->longitude,
-            'dress_code' => $this->dressCode, 'notes' => $this->notes,
+            'dress_code' => $this->dressCode, 'notes' => $this->notes, 'timezone' => $this->timezone,
         ];
     }
 }

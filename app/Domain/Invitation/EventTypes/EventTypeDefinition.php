@@ -16,6 +16,9 @@ final readonly class EventTypeDefinition
 {
     public const STEPS = ['basics', 'people', 'events', 'story', 'gifts', 'content', 'settings'];
 
+    /** WIB, WITA, WIT. The only zones an invitation or an event may use. */
+    public const TIMEZONES = ['Asia/Jakarta', 'Asia/Makassar', 'Asia/Jayapura'];
+
     /**
      * @param  array<string, array{label:string,min:int,max:int}>  $roles
      * @param  array{min:int,max:int,kinds:list<string>}  $events
@@ -124,7 +127,7 @@ final readonly class EventTypeDefinition
             'title' => ['required', 'string', 'max:120'],
             'template_slug' => ['nullable', 'string', 'max:80', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'locale' => ['nullable', 'in:id'],
-            'timezone' => ['nullable', 'in:Asia/Jakarta,Asia/Makassar,Asia/Jayapura'],
+            'timezone' => ['nullable', 'in:'.implode(',', self::TIMEZONES)],
         ];
     }
 
@@ -179,6 +182,7 @@ final readonly class EventTypeDefinition
             'events.*.label' => ['nullable', 'string', 'max:60'],
             'events.*.starts_at' => ['required', 'date_format:Y-m-d H:i'],
             'events.*.ends_at' => ['nullable', 'date_format:Y-m-d H:i', 'after:events.*.starts_at'],
+            'events.*.timezone' => ['nullable', 'in:'.implode(',', self::TIMEZONES)],
             'events.*.venue_name' => ['required', 'string', 'max:120'],
             'events.*.address' => ['required', 'string', 'max:300'],
             'events.*.maps_url' => ['nullable', 'url:https', 'max:500'],

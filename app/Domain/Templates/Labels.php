@@ -51,11 +51,12 @@ final class Labels
     }
 
     /** "09.00 – 10.30 WIB", or "09.00 WIB" without an end time. */
-    public static function time(EventData $event, string $timezone): string
+    public static function time(EventData $event): string
     {
         $range = $event->startsAt->format('H.i').($event->endsAt !== null ? ' – '.$event->endsAt->format('H.i') : '');
 
-        return $range.' '.self::zone($timezone);
+        // The zone of the event itself, which can differ from the zone of the invitation.
+        return $range.' '.self::zone($event->timezone);
     }
 
     public static function zone(string $timezone): string

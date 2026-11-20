@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Domain\Audit\AuditLogger;
+use App\Domain\Audit\Enums\AuditAction;
 use App\Domain\Guest\Exceptions\GuestLimitReached;
 use App\Domain\Guest\Export\CsvExporter;
 use App\Domain\Guest\Services\GuestImporter;
@@ -41,7 +43,7 @@ final class GuestImportController extends Controller
         return view('dashboard.guests.import-preview', ['invitation' => $invitation, 'report' => $report, 'importId' => $id]);
     }
 
-    public function commit(Request $request, Invitation $invitation, string $import, GuestImporter $importer): RedirectResponse
+    public function commit(Request $request, Invitation $invitation, string $import, GuestImporter $importer, AuditLogger $audit): RedirectResponse
     {
         $this->authorize('manageGuests', $invitation);
         $meta = Str::isUuid($import) ? session("guest_import.{$import}") : null;
@@ -57,6 +59,7 @@ final class GuestImportController extends Controller
         try {
             $report = $importer->preview($invitation, Storage::disk('local')->path($path));
             $count = $importer->commit($invitation, $report);
+            $audit->record(AuditAction::GuestsImported, $request->user(), null, $invitation->id, ['count' => $count]);
         } catch (GuestLimitReached $e) {
             return back()->withErrors(['file' => $e->getMessage()]);
         } finally {

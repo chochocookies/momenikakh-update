@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Marketing\HomeController;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,5 +17,8 @@ Route::get('/', HomeController::class)->name('marketing.home');
 
 // DS-03: component styleguide (view: resources/views/styleguide/styleguide.blade.php). Never in production.
 if (! app()->isProduction()) {
-    Route::get('/styleguide', fn () => view('styleguide.styleguide'))->name('styleguide');
+    Route::get('/styleguide', fn () => view('styleguide.styleguide', [
+        // Page 4 of 12: shows the previous and next links, the first and last page and the gaps.
+        'demoPaginator' => new LengthAwarePaginator([], 120, 10, 4, ['path' => url('/styleguide')]),
+    ]))->name('styleguide');
 }

@@ -39,7 +39,7 @@ Sampul amplop dan musik, nama tamu lewat `?to=`, hitung mundur, kegiatan lebih d
 - Fitur khas: sambutan "mohon doa restu", cerita singkat perkenalan, penjelasan adat setempat (kolom teks bebas), tautan ke undangan pernikahan menyusul (CTA "simpan tanggal"), tanpa amplop digital sebagai bawaan.
 
 ## Mekanisme penambahan
-Setiap jenis acara adalah satu class di `app/EventTypes/`. Rinciannya: peran, kegiatan, section dan urutan, field, aturan validasi, teks bawaan, data contoh, palet saran. Template menyatakan `event_types` yang didukungnya. Tugas EVT-01…05 per jenis acara membuat class, teks bawaan, dua template, dan tes.
+Setiap jenis acara adalah satu entri di `config/event-types.php` (satu case di enum `EventType`), dibaca `EventTypeRegistry` menjadi `EventTypeDefinition`. Rinciannya: peran, kegiatan, section dan urutan, field, aturan validasi, teks bawaan, data contoh, palet saran. Template menyatakan `event_types` yang didukungnya. Tugas EVT-01…05 per jenis acara membuat class, teks bawaan, dua template, dan tes.
 
 ## Fitur lintas-acara untuk tahap lanjut (Fase 10)
-QR tiket dan check-in, livestream (embed YouTube), kustom domain, WhatsApp resmi untuk pengiriman massal, pustaka musik lebih besar, reseller dan hapus brand, bantuan penulisan teks, kustom CSS/JS khusus (hanya di host `share` dan dengan sandbox).
+QR tiket dan check-in, livestream (embed YouTube), kustom domain, WhatsApp resmi untuk pengiriman massal, pustaka musik lebih besar, reseller dan hapus brand, bantuan penulisan teks, kustom CSS/JS khusus (hanya di host `undangan.` dan dengan sandbox).

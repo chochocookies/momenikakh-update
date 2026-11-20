@@ -7,7 +7,7 @@ Status: **Accepted** (sudah diputuskan pemilik), **Proposed** (usulan, belum fin
 | D-01 | Membangun ulang dari nol (greenfield), bukan memperbaiki versi lama | Accepted | Diputuskan pemilik: UI lama tidak konsisten dan banyak yang perlu diperbaiki | Seluruh dokumen berdiri sendiri di `.claude` |
 | D-02 | Model paket, harga, dan ada atau tidaknya paket gratis | Accepted (lihat DEC-01, 2026-11-19) | Belum ada data. Menentukan klaim "gratis" di SEO dan landing | DEC-01, MKT-05 |
 | D-03 | Satu panel admin: Filament 5 | Proposed | Menghindari dua admin seperti proyek lama | ADM-02 |
-| D-04 | Undangan tamu di host terpisah `share.momenikah.online` | Proposed | Isolasi cookie, cache, dan keamanan; pola yang sama dipakai pesaing | OPS-05, PUB-01 |
+| D-04 | Undangan tamu di host terpisah `undangan.momenikah.online` | Accepted (DEC-03, 2026-11-19) | Isolasi cookie, cache, dan keamanan; pola yang sama dipakai pesaing | OPS-05, PUB-01 |
 | D-05 | Nama tamu dirender di klien dari `?to=` | Proposed | Memungkinkan cache penuh di edge | TPL-06, PUB-12, OPS-06 |
 | D-06 | Identitas brand (logo, warna, nada) | Proposed | Nada dan warna disetujui pemilik. Logo dan ikon masih rancangan pertama | Semua UI |
 | D-07 | Penyedia pembayaran: Duitku | Proposed | Metode lokal lengkap. Cek ketersediaan akun dan biaya sebelum final | BIL-02 |

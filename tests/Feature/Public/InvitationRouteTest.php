@@ -55,11 +55,22 @@ it('keeps the other surfaces stateful', function () {
     expect(($this->get(Surfaces::url('marketing', '/')))->headers->has('Set-Cookie'))->toBeTrue();
 });
 
-it('answers 404 for a draft, an archived, an expired and an unknown slug', function (string $state) {
+it('answers 404 for a draft and an archived invitation', function (string $state) {
     Invitation::factory()->wedding()->{$state}()->create(['slug' => "slug-{$state}"]);
 
     ($this->page)("slug-{$state}")->assertNotFound();
-})->with(['draft', 'archived', 'expired']);
+})->with(['draft', 'archived']);
+
+it('answers 410 with a friendly page for an expired invitation, and 404 with one for an unknown slug', function () {
+    Invitation::factory()->wedding()->expired()->create(['slug' => 'slug-expired']);
+
+    $gone = ($this->page)('slug-expired')->assertStatus(410);
+    $missing = ($this->page)('does-not-exist')->assertNotFound();
+
+    expect($gone->getContent())->toContain('Undangan ini sudah berakhir')->toContain('noindex')
+        ->and($missing->getContent())->toContain('Undangan tidak ditemukan')->toContain('noindex')->not->toContain('Tidak ada');
+    expectNoCookies($gone);
+});
 
 it('answers 404 for an unknown slug and never reveals which slugs exist', function () {
     ($this->page)('does-not-exist')->assertNotFound();
@@ -90,4 +101,15 @@ it('serves a published invitation to the second template without changing the ro
     $this->invitation->update(['template_slug' => 'does-not-exist-anymore']);
 
     ($this->page)('raka-sinta-abcd')->assertOk()->assertSee('data-theme="classic-elegant"', false); // falls back to the default template
+});
+
+it('marks the invitation noindex twice (header and meta) and carries title, og tags and theme colour, never a guest name', function () {
+    $res = ($this->page)('raka-sinta-abcd', '?to='.urlencode('Budi Santoso'))->assertOk();
+    $html = $res->getContent();
+
+    expect($res->headers->get('X-Robots-Tag'))->toBe('noindex, nofollow')
+        ->and($html)->toContain('<meta name="robots" content="noindex')
+        ->toContain('<title>Raka &amp; Sinta')->toContain('property="og:title"')->toContain('property="og:image"')->toContain('name="theme-color"')
+        ->toContain('rel="canonical" href="'.Surfaces::url('public', 'raka-sinta-abcd').'"')
+        ->not->toContain('Budi');
 });

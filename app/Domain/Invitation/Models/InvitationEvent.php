@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $label
  * @property Carbon $starts_at
  * @property Carbon|null $ends_at
+ * @property string|null $timezone null = the zone of the invitation
  * @property string $venue_name
  * @property string $address
  * @property string|null $maps_url
@@ -34,7 +35,7 @@ class InvitationEvent extends Model
 
     protected $table = 'invitation_events';
 
-    protected $fillable = ['kind', 'label', 'starts_at', 'ends_at', 'venue_name', 'address', 'maps_url', 'latitude', 'longitude', 'dress_code', 'notes', 'sort'];
+    protected $fillable = ['kind', 'label', 'starts_at', 'ends_at', 'timezone', 'venue_name', 'address', 'maps_url', 'latitude', 'longitude', 'dress_code', 'notes', 'sort'];
 
     protected static function newFactory(): InvitationEventFactory
     {

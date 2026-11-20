@@ -144,6 +144,20 @@
             </div>
 
             <div class="space-y-4">
+                <h3 class="font-serif text-xl font-semibold text-ink">Pesan (alert)</h3>
+                <div class="grid gap-3 md:grid-cols-2">
+                    <x-ui.alert title="Informasi">Undangan sample bisa diisi dan dipratinjau.</x-ui.alert>
+                    <x-ui.alert tone="success" title="Tersimpan">Perubahan sudah disimpan.</x-ui.alert>
+                    <x-ui.alert tone="warning" title="Periksa lagi">Tanggal acara belum diisi.</x-ui.alert>
+                    <x-ui.alert tone="danger" title="Belum bisa diterbitkan">Lengkapi data wajib terlebih dahulu.</x-ui.alert>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="font-serif text-xl font-semibold text-ink">Pagination</h3>
+                <x-ui.pagination :paginator="$demoPaginator" />
+            </div>
+            <div class="space-y-4">
                 <h3 class="font-serif text-xl font-semibold text-ink">Dialog</h3>
                 <x-ui.button variant="secondary" data-modal-open="sg-dialog">Buka dialog</x-ui.button>
             </div>

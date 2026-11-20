@@ -98,7 +98,8 @@ final class InvitationViewModelBuilder
             content: $content,
             sections: $this->sections($data, $manifest, $media, $rsvp, $wishes),
             settings: $data->settings,
-            urls: ['canonical' => $canonical, 'opened' => $canonical.'/opened', 'rsvp' => $canonical.'/rsvp', 'wishes' => $canonical.'/wishes'],
+            // The page talks to its own host, whatever APP_URL says: guest actions use paths, only the canonical link is absolute.
+            urls: ['canonical' => $canonical, 'opened' => "/{$data->slug}/opened", 'rsvp' => "/{$data->slug}/rsvp", 'wishes' => "/{$data->slug}/wishes"],
             rsvpEnabled: $rsvp,
             wishesEnabled: $wishes,
             isPreview: $preview,

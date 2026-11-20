@@ -42,7 +42,7 @@ Sprint dua minggu. Awal sprint: `task.mjs next 5`, `task.mjs blocked`, pilih tug
 Daftar lengkap dan status ada di `docs/DECISIONS.md` (bagian `DEC-nn`); lihat dengan `task.mjs decisions`.
 | Sebelum tugas | Keputusan |
 |---|---|
-| PUB-01, FND-12 | DEC-03: host undangan publik (`undangan.` atau `share.`) |
+| PUB-01, FND-12 | DEC-03 diputuskan 2026-11-19: host undangan publik `undangan.` |
 | OPS-05 | DEC-02: hosting, email, anggaran |
 | MED-01 | DEC-04: penyimpanan objek + CDN |
 | TPL-15 | DEC-05: sumber aset ilustrasi |

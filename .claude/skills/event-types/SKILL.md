@@ -5,8 +5,8 @@ description: Menambah atau mengubah jenis acara (pernikahan, walimatul urs, khit
 # Skill: event-types
 Acuan fitur: `docs/EVENT_TYPES.md`. Aturan: `.claude/rules/70-event-types.md`.
 ## Menambah jenis acara
-1. Buat class di `app/EventTypes/{Nama}.php` yang mengimplementasikan `EventTypeDefinition`: `key()`, `label()`, `parties()` (peran), `events()` (jenis kegiatan), `sections()` (urutan bawaan), `fields()` (kelompok dan field), `rules()`, `defaults()` (teks pembuka, doa, penutup), `sample()`, `suggestedPalettes()`.
-2. Daftarkan di `EventTypeRegistry` dan `EventType` enum.
+1. Tambahkan satu case di enum `App\Domain\Invitation\Enums\EventType` dan satu entri di `config/event-types.php`: `label`, `description`, `roles` (min dan maks), `events` (jumlah dan jenis kegiatan), `sections` (urutan bawaan), `content` (kunci teks dan panjang maksimum), `features`, `defaults` (teks pembuka, doa, penutup).
+2. `EventTypeRegistry` membaca config itu dan gagal saat boot bila ada jenis acara tanpa entri. Tambahkan data contoh di `SamplePayload` dan label di `Labels`.
 3. Tambahkan label dan teks di berkas bahasa `lang/id`.
 4. Perbarui `manifest.json` template yang mendukungnya (`event_types`) atau buat template baru.
 5. Tambahkan data contoh agar pratinjau semua section terisi.

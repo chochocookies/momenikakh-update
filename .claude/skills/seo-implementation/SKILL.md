@@ -11,6 +11,6 @@ Acuan: `docs/SEO.md`, aturan: `.claude/rules/60-seo.md`.
 4. Favicon dan manifest dari `.claude/brand/favicon` ke `public/`. `theme-color #BE185D`.
 5. JSON-LD: Organization, WebSite, BreadcrumbList. Tanpa AggregateRating, Review, atau Offer sebelum ada data nyata.
 6. `sitemap.xml` hanya halaman pemasaran, template, panduan. `robots.txt` melarang `/dashboard`, `/admin`, `/api`, mencantumkan sitemap.
-7. Undangan dan pratinjau di `share.`: `X-Robots-Tag: noindex, nofollow` dan meta noindex, tanpa memblokir lewat robots.txt supaya pratinjau tautan tetap bekerja. OG undangan tidak memuat nama tamu.
+7. Undangan dan pratinjau di `undangan.`: `X-Robots-Tag: noindex, nofollow` dan meta noindex, tanpa memblokir lewat robots.txt supaya pratinjau tautan tetap bekerja. OG undangan tidak memuat nama tamu.
 ## Verifikasi
 Rich Results Test, validator Open Graph (Facebook Sharing Debugger), tempel tautan ke WhatsApp, Lighthouse SEO, cek `view-source` untuk meta ganda.

@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\GuestActionController;
 use App\Http\Controllers\Api\GuestOpenedController;
+use App\Http\Controllers\Api\VisitController;
 use App\Http\Controllers\Share\InvitationController;
 use App\Http\Controllers\Share\PreviewController;
+use App\Http\Middleware\ForceJson;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +24,19 @@ Route::post('{slug}/opened', GuestOpenedController::class)
     ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
     ->middleware('throttle:60,1')
     ->name('public.guest.opened');
+
+// PUB-06: "seen" beacon (view, open). Always 204. Declared before the catch-all like the opened beacon.
+Route::post('{slug}/seen', VisitController::class)
+    ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->middleware('throttle:60,1')
+    ->name('public.seen');
+
+// PUB-09 / PUB-10: RSVP and wishes. JSON only, no CSRF (stateless surface); protected by throttle, honeypot and Turnstile.
+Route::prefix('{slug}')->where(['slug' => '[a-z0-9]+(?:-[a-z0-9]+)*'])->middleware(ForceJson::class)->group(function () {
+    Route::post('rsvp', [GuestActionController::class, 'rsvp'])->middleware('throttle:10,1')->name('public.rsvp');
+    Route::get('wishes', [GuestActionController::class, 'wishes'])->middleware('throttle:60,1')->name('public.wishes');
+    Route::post('wishes', [GuestActionController::class, 'storeWish'])->middleware('throttle:10,1')->name('public.wishes.store');
+});
 
 // PUB-01: the invitation itself. This is the catch-all of the surface, so it stays LAST. Reserved slugs (preview, health,
 // up, admin ...) never match it, which keeps /health and /up answering on this host too.

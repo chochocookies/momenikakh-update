@@ -23,7 +23,7 @@ resources/templates/classic-elegant/
   "event_types": ["wedding", "walimatul_urs", "engagement"],
   "tags": ["klasik", "formal", "serif"],
   "mood": "formal, hangat, bingkai ganda",
-  "sections": ["cover", "opening", "couple", "story", "events", "countdown", "gallery", "gift", "rsvp", "wishes", "closing"],
+  "sections": ["cover", "opening", "people", "events", "countdown", "story", "gallery", "gift", "map", "rsvp", "guestbook", "closing", "music"],
   "palettes": [
     { "key": "burgundy", "name": "Burgundy", "tokens": { "--t-bg": "#FBF5EC", "--t-ink": "#4A1F2B", "--t-accent": "#7B1E3A", "--t-orn": "#B8893B" } },
     { "key": "sage", "name": "Sage", "tokens": { "--t-bg": "#F4F6EF", "--t-ink": "#2F3B2C", "--t-accent": "#5C7A4F", "--t-orn": "#A58B4A" } }
@@ -35,7 +35,9 @@ resources/templates/classic-elegant/
 Satu template dengan beberapa palet melipatgandakan pilihan tanpa menambah kode. Pengguna memilih palet di dashboard, disimpan di `invitations.settings.palette`.
 
 ## Kontrak data (`$invitation`, `InvitationViewModel`)
-`title`, `slug`, `eventType`, `locale`, `parties[]` (role, name, nickname, photo, parents, social), `events[]` (kind, label, startsAt, endsAt, venue, address, mapsUrl, notes), `sections.{key}` (isi teks per section), `media.{collection}[]` (url, thumb, width, height, alt), `gifts[]`, `music` (url, title), `rsvp` (aktif, batas tamu), `wishes` (aktif, jumlah), `settings` (palette, animasi). Nama tamu tidak ada di sini (lihat ARCHITECTURE).
+`slug`, `title`, `eventType`, `eventLabel`, `locale`, `timezone`, `templateSlug`, `palette`, `motion` (`full` atau `none`), `people[]` (role, name, nickname, parentsText, bio, birthDate, instagram; foto lewat `photoFor()`), `schedule[]` (kind, label, startsAt, endsAt, timezone, venueName, address, mapsUrl, latitude, longitude, dressCode, notes), `story[]`, `gifts[]` (QR lewat `qrFor()`), `cover`, `gallery[]` (url, srcset, thumb, width, height, alt), `music` (url, title, attribution), `content` (teks per kunci jenis acara, `text('opening')`), `sections` (bagian aktif, berurutan), `settings`, `urls` (canonical, opened, rsvp, wishes), `rsvpEnabled`, `wishesEnabled`, `isPreview`, `guestPlaceholder`. Nama tamu tidak ada di sini (lihat ARCHITECTURE). Sumber: `app/Domain/Templates/InvitationViewModel.php`.
+
+Kunci section yang sah: `cover, opening, people, events, story, gallery, gift, rsvp, guestbook, countdown, map, music, closing`. Nama lama `couple`, `person`, `wishes`, dan `gifts` dibaca sebagai `people`, `guestbook`, dan `gift`.
 
 ## Token (`theme.css`)
 Wajib: `--t-bg`, `--t-surface`, `--t-ink`, `--t-muted`, `--t-accent`, `--t-accent-ink`, `--t-orn`, `--t-font-display`, `--t-font-body`, `--t-radius`, `--t-shadow`. Opsional: `--t-bg-image`, `--t-texture`, `--t-frame`.
@@ -54,7 +56,7 @@ Wajib: `--t-bg`, `--t-surface`, `--t-ink`, `--t-muted`, `--t-accent`, `--t-accen
 `pointer-events: none` untuk semua lapisan dekoratif.
 
 ## Modul JS template
-`theme.js` mengekspor `export default function init(root, ctx)`. `ctx` memuat `invitation`, `reducedMotion`, dan event `momenikah:open` (dikirim `core.js` setelah sampul dibuka). Template yang tidak butuh efek khusus tidak memiliki `theme.js`.
+`theme.js` mengekspor `export function init({ root, reducedMotion })`. `root` adalah elemen `.inv` dengan `data-theme`; `core.js` (`resources/js/invitation/core.js`) memuatnya lewat import dinamis sehingga menjadi chunk sendiri. Event `momenikah:open` dikirim `core.js` setelah sampul dibuka. Template yang tidak butuh efek khusus tidak memiliki `theme.js`.
 
 ## Aksesibilitas dan bobot
 `lang="id"`, urutan fokus logis, tombol musik berlabel, ornamen `alt=""`, kontras diperiksa pada setiap palet, mode kurangi gerakan menonaktifkan semua animasi kecuali perubahan opasitas singkat. Anggaran bobot ada di `manifest.json` dan diperiksa `template:lint`.

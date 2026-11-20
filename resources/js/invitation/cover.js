@@ -1,4 +1,5 @@
 import { reportOpened } from '../public/guest-name';
+import { reportSeen } from '../public/stats';
 
 // Cover (envelope): an overlay that the guest opens with a tap. While it is closed the page behind it is inert,
 // so keyboard and screen reader users cannot wander into content they cannot see. Music starts from the same click
@@ -22,6 +23,7 @@ export function initCover(root = document) {
     document.documentElement.dataset.opened = '';
     rest.forEach((el) => { el.inert = false; });
     reportOpened();
+    reportSeen('open');
     window.dispatchEvent(new CustomEvent('momenikah:open'));
 
     const finish = () => { cover.hidden = true; };

@@ -39,9 +39,9 @@ Status `[x]` dibawa dari TODO sebelumnya; bukti tiap tugas tidak diverifikasi sa
 | [x] | FND-07 | Autentikasi (daftar, masuk, reset, verifikasi email) dengan starter kit Livewire resmi + throttle | FND-02 | tes auth hijau; throttle login terbukti | M | M0 |
 | [x] | FND-08 | Middleware header keamanan + CSP per permukaan | FND-05 | tidak ada temuan merah di scanner header (staging) | M | M0 |
 | [x] | FND-09 | `THIRD_PARTY.md`: lisensi GSAP (cek gsap.com), font OFL, paket, versi terpasang | FND-02 | file ada; GSAP dinyatakan boleh untuk produk komersial atau diganti | S | M0 |
-| [ ] | FND-10 | `.env.example` lengkap + `config/momenikah.php` (domain publik, batas paket, saklar fitur) | FND-02 | aplikasi boot dari `.env.example`; tanpa rahasia di repo | S | M0 |
-| [ ] | FND-11 | Dependabot/Renovate + `composer audit` dan `npm audit` di CI + pemeriksaan lisensi dependensi | FND-03 | PR pembaruan otomatis aktif; temuan audit membuat CI merah; lisensi tercatat di `THIRD_PARTY.md` | S | M0 |
-| [ ] | FND-12 | Selaraskan `.claude` (CLAUDE.md, skill, aturan, dokumen) dengan keputusan DEC dan kode/versi yang benar-benar terpasang | FND-09, DEC-03 | tidak ada isi `.claude` yang bertentangan dengan kode nyata (host publik, struktur folder, nama perintah, versi) | S | M0 |
+| [~] | FND-10 | `.env.example` lengkap + `config/momenikah.php` (domain publik, batas paket, saklar fitur) | FND-02 | aplikasi boot dari `.env.example`; tanpa rahasia di repo | S | M0 |
+| [~] | FND-11 | Dependabot/Renovate + `composer audit` dan `npm audit` di CI + pemeriksaan lisensi dependensi | FND-03 | PR pembaruan otomatis aktif; temuan audit membuat CI merah; lisensi tercatat di `THIRD_PARTY.md` | S | M0 |
+| [x] | FND-12 | Selaraskan `.claude` (CLAUDE.md, skill, aturan, dokumen) dengan keputusan DEC dan kode/versi yang benar-benar terpasang | FND-09, DEC-03 | tidak ada isi `.claude` yang bertentangan dengan kode nyata (host publik, struktur folder, nama perintah, versi) | S | M0 |
 | [ ] | FND-13 | Turnstile + throttle di login, daftar, dan reset sandi | FND-07, PUB-09 | percobaan berlebih ditolak; tes throttle + Turnstile hijau | S | M3 |
 
 ## DS — Design system (M0/M4)
@@ -54,7 +54,7 @@ Status `[x]` dibawa dari TODO sebelumnya; bukti tiap tugas tidak diverifikasi sa
 | [x] | DS-05 | Pasang `brand/` ke `public/` + `<x-seo.head>` (favicon, manifest, theme-color) | DS-01, DEC-10 | favicon tampil; manifest valid | S | M0 |
 | [x] | DS-06 | Tiga layout (pemasaran, aplikasi, publik) | DS-03 | tiap permukaan memakai layout sendiri | M | M0 |
 | [x] | DS-07 | Baseline aksesibilitas: fokus, skip link, axe di Playwright | DS-03 | axe 0 pelanggaran serius di `/styleguide` | M | M4 |
-| [ ] | DS-08 | Komponen tambahan: alert, pagination; ukuran sentuh ≥ 44 px; kontras lulus | DS-03 | tampil di `/styleguide` pada 360/768/1280; axe 0 pelanggaran serius | S | M0 |
+| [x] | DS-08 | Komponen tambahan: alert, pagination; ukuran sentuh ≥ 44 px; kontras lulus | DS-03 | tampil di `/styleguide` pada 360/768/1280; axe 0 pelanggaran serius | S | M0 |
 
 ## DOM — Domain (M1)
 | St | ID | Tugas | Dep | Selesai bila | Uk | M |
@@ -70,8 +70,8 @@ Status `[x]` dibawa dari TODO sebelumnya; bukti tiap tugas tidak diverifikasi sa
 | [x] | DOM-09 | Siklus status draft→published→expired/archived + scheduler kedaluwarsa | DOM-05, DEC-01 | tes transisi sah dan ilegal (ilegal ditolak) + tes kedaluwarsa terjadwal | M | M1 |
 | [x] | DOM-10 | `hasActivePlan()` + `Entitlements::can()` | DOM-04, DEC-01 | tes per paket | M | M1 |
 | [x] | DOM-11 | Seeder demo fiktif untuk tiap jenis acara | DOM-05 | `db:seed --class=DemoSeeder` jalan | S | M1 |
-| [ ] | DOM-12 | Audit log aksi penting (publish, hapus, moderasi, bayar) | DOM-05 | aksi tercatat dengan pengguna dan waktu; tanpa PII berlebih | S | M1 |
-| [ ] | DOM-13 | Locale `id`, Carbon `id`, zona waktu acara (WIB/WITA/WIT) di `invitation_events.timezone` | DOM-02 | tanggal tampil berbahasa Indonesia; tes lintas zona waktu | S | M1 |
+| [x] | DOM-12 | Audit log aksi penting (publish, hapus, moderasi, bayar) | DOM-05 | aksi tercatat dengan pengguna dan waktu; tanpa PII berlebih | S | M1 |
+| [x] | DOM-13 | Locale `id`, Carbon `id`, zona waktu acara (WIB/WITA/WIT) di `invitation_events.timezone` | DOM-02 | tanggal tampil berbahasa Indonesia; tes lintas zona waktu | S | M1 |
 | [ ] | DOM-14 | Retensi data tamu: hapus/anonimkan otomatis setelah masa tenggang | DOM-09, DEC-13 | tes: data tamu hilang setelah masa tenggang; undangan lain aman | M | M6 |
 
 ## GST — Tamu
@@ -117,16 +117,16 @@ Status `[x]` dibawa dari TODO sebelumnya; bukti tiap tugas tidak diverifikasi sa
 | St | ID | Tugas | Dep | Selesai bila | Uk | M |
 |---|---|---|---|---|---|---|
 | [x] | PUB-01 | Rute `undangan.` `/{slug}`, tanpa sesi/cookie | FND-05, DOM-07, DEC-03 | respons tanpa `Set-Cookie` | M | M2 |
-| [ ] | PUB-02 | Controller undangan + halaman 404/410 ramah | PUB-01, TPL-03 | tes 200/404/410 | M | M2 |
+| [x] | PUB-02 | Controller undangan + halaman 404/410 ramah | PUB-01, TPL-03 | tes 200/404/410 | M | M2 |
 | [ ] | PUB-03 | Cache halaman penuh Redis + invalidasi saat update | PUB-02 | hit cache terbukti; edit membuang cache | M | M2 |
 | [x] | PUB-04 | `/preview/{template}` (pembungkus noindex + iframe frame, mode ponsel/desktop) | TPL-03 | header `X-Robots-Tag: noindex`; `frame-ancestors` benar | M | M2 |
 | [ ] | PUB-05 | Alias slug lama → 301 | PUB-02 | tes redirect | S | M3 |
-| [ ] | PUB-06 | Statistik harian unik; abaikan bot dan preview | PUB-02 | tes hitung sekali per pengunjung/hari; bot dan preview tidak terhitung | M | M3 |
+| [x] | PUB-06 | Statistik harian unik; abaikan bot dan preview | PUB-02 | tes hitung sekali per pengunjung/hari; bot dan preview tidak terhitung | M | M3 |
 | [ ] | PUB-07 | OG image per undangan (queue) + fallback `og-default` | MED-01 | pratinjau WhatsApp tampil benar; tanpa nama tamu di OG | L | M3 |
-| [ ] | PUB-08 | Meta undangan: noindex, judul, og:*, theme-color | PUB-02 | tes meta; noindex ganda (meta + `X-Robots-Tag`) | S | M3 |
-| [ ] | PUB-09 | Endpoint RSVP (throttle, honeypot, Turnstile) | DOM-03 | tes spam/valid | M | M3 |
-| [ ] | PUB-10 | Buku tamu: kirim + muat bertahap (cursor) | DOM-03 | tes paginasi + throttle; HTML ucapan di-escape | M | M3 |
-| [ ] | PUB-11 | Moderasi ucapan dan RSVP (sembunyikan/hapus) di dasbor | DSH-01, PUB-10, DOM-12 | tes policy; aksi tercatat di audit log | S | M3 |
+| [x] | PUB-08 | Meta undangan: noindex, judul, og:*, theme-color | PUB-02 | tes meta; noindex ganda (meta + `X-Robots-Tag`) | S | M3 |
+| [x] | PUB-09 | Endpoint RSVP (throttle, honeypot, Turnstile) | DOM-03 | tes spam/valid | M | M3 |
+| [x] | PUB-10 | Buku tamu: kirim + muat bertahap (cursor) | DOM-03 | tes paginasi + throttle; HTML ucapan di-escape | M | M3 |
+| [x] | PUB-11 | Moderasi ucapan dan RSVP (sembunyikan/hapus) di dasbor | DSH-01, PUB-10, DOM-12 | tes policy; aksi tercatat di audit log | S | M3 |
 | [x] | PUB-12 | Nama tamu dari `?to=`/`?g=` aman | GST-02, TPL-06 | tes XSS: payload tampil sebagai teks; dipotong 60 karakter; tanpa `?to=` tampil "Tamu Undangan" | S | M3 |
 | [ ] | PUB-13 | Tombol "Tambah ke Kalender" (`.ics`) per acara + tautan peta | PUB-02, DOM-13 | `.ics` valid di Google dan Apple Kalender; zona waktu benar; tautan peta terbuka | M | M3 |
 | [ ] | PUB-14 | Amplop digital: rekening, e-wallet, alamat, QR, salin + toast | TPL-04, TPL-06 | salin bekerja di iOS dan Android; QR dimuat lazy | M | M3 |
@@ -139,18 +139,18 @@ Status `[x]` dibawa dari TODO sebelumnya; bukti tiap tugas tidak diverifikasi sa
 |---|---|---|---|---|---|---|
 | [x] | DSH-01 | Shell dasbor: navigasi, daftar undangan, empty-state | DS-06, DOM-08 | pengguna hanya melihat miliknya | M | M3 |
 | [x] | DSH-02 | Wizard buat: pilih jenis acara → pilih template (kartu + preview) | DOM-01, TPL-16 | undangan draf terbentuk | M | M3 |
-| [ ] | DSH-03 | Editor Livewire per langkah (dasar, orang, acara+lokasi, cerita, galeri, amplop, musik, bagian) dengan autosave dan validasi inline | DOM-06, MED-02 | tes: tidak ada field hilang | L | M3 |
-| [ ] | DSH-04 | Pratinjau langsung di editor (iframe draf) | PUB-04, DSH-03 | perubahan terlihat < 2 dtk | M | M3 |
-| [ ] | DSH-05 | Publikasi dan unpublish: cek kelengkapan, slug, bagikan WhatsApp | DSH-03, DOM-09 | publish gagal bila data wajib kosong; undangan terbit dan terbuka; unpublish kembali ke draf | M | M3 |
-| [ ] | DSH-06 | Manajemen tamu (impor, tautan, status buka) | GST-02 | impor 200 baris berhasil; tautan `?to=` ter-URL-encode; tampil dan bisa disalin | M | M3 |
-| [ ] | DSH-07 | Statistik: tampilan, RSVP, ucapan | PUB-06 | angka sesuai data uji | M | M3 |
-| [ ] | DSH-08 | Ganti template tanpa kehilangan data | TPL-02 | tes: data identik sebelum/sesudah | M | M3 |
-| [ ] | DSH-09 | Duplikasi undangan | DSH-03 | salinan mandiri; media ikut tersalin | S | M3 |
-| [ ] | DSH-10 | Pengaturan akun + ekspor/hapus data (UU PDP) | FND-07 | hapus menghapus media & tamu | M | M3 |
+| [~] | DSH-03 | Editor Livewire per langkah (dasar, orang, acara+lokasi, cerita, galeri, amplop, musik, bagian) dengan autosave dan validasi inline | DOM-06, MED-02 | tes: tidak ada field hilang | L | M3 |
+| [~] | DSH-04 | Pratinjau langsung di editor (iframe draf) | PUB-04, DSH-03 | perubahan terlihat < 2 dtk | M | M3 |
+| [~] | DSH-05 | Publikasi dan unpublish: cek kelengkapan, slug, bagikan WhatsApp | DSH-03, DOM-09 | publish gagal bila data wajib kosong; undangan terbit dan terbuka; unpublish kembali ke draf | M | M3 |
+| [x] | DSH-06 | Manajemen tamu (impor, tautan, status buka) | GST-02 | impor 200 baris berhasil; tautan `?to=` ter-URL-encode; tampil dan bisa disalin | M | M3 |
+| [x] | DSH-07 | Statistik: tampilan, RSVP, ucapan | PUB-06 | angka sesuai data uji | M | M3 |
+| [x] | DSH-08 | Ganti template tanpa kehilangan data | TPL-02 | tes: data identik sebelum/sesudah | M | M3 |
+| [~] | DSH-09 | Duplikasi undangan | DSH-03 | salinan mandiri; media ikut tersalin | S | M3 |
+| [x] | DSH-10 | Pengaturan akun + ekspor/hapus data (UU PDP) | FND-07 | hapus menghapus media & tamu | M | M3 |
 | [ ] | DSH-11 | Notifikasi email pemilik: RSVP baru, publish berhasil, masa aktif hampir habis | PUB-09, OPS-03 | email bermerek terkirim di staging | M | M3 |
 | [ ] | DSH-12 | Unggah media di editor: seret-lepas, progres, urutan, batas ukuran | MED-03, DSH-03 | foto bisa diurutkan; berkas terlalu besar ditolak dengan pesan jelas | M | M3 |
 | [ ] | DSH-13 | Pengaturan undangan: slug (cek unik langsung), judul, musik, palet, tingkat gerak, bahasa | DSH-03, DOM-07 | slug unik dicek langsung; palet berubah di pratinjau | M | M3 |
-| [ ] | DSH-14 | Onboarding pengguna baru: daftar tugas awal + tips | DSH-01 | tampil untuk pengguna baru; bisa ditutup | S | M3 |
+| [x] | DSH-14 | Onboarding pengguna baru: daftar tugas awal + tips | DSH-01 | tampil untuk pengguna baru; bisa ditutup | S | M3 |
 
 ## BIL — Pembayaran (M6)
 | St | ID | Tugas | Dep | Selesai bila | Uk | M |

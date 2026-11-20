@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Audit\AuditLogger;
 use App\Domain\Billing\Entitlements;
 use App\Domain\Billing\SubscriptionResolver;
 use App\Domain\Guest\Models\Guest;
@@ -28,6 +29,7 @@ final class DomainServiceProvider extends ServiceProvider
         $this->app->singleton(EventTypeRegistry::class, fn () => EventTypeRegistry::fromConfig((array) config('event-types')));
         $this->app->singleton(SubscriptionResolver::class);
         $this->app->singleton(Entitlements::class);
+        $this->app->singleton(AuditLogger::class);
         $this->app->singleton(InvitationLifecycle::class);
         $this->app->singleton(InvitationWriter::class);
         $this->app->singleton(SlugGenerator::class);

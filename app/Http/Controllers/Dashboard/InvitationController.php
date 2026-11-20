@@ -7,11 +7,14 @@ namespace App\Http\Controllers\Dashboard;
 use App\Domain\Billing\Entitlements;
 use App\Domain\Billing\PlanCatalog;
 use App\Domain\Guest\Services\GuestLinkBuilder;
+use App\Domain\Guest\Services\StatsSummary;
 use App\Domain\Invitation\Enums\EventType;
 use App\Domain\Invitation\EventTypes\EventTypeDefinition;
 use App\Domain\Invitation\EventTypes\EventTypeRegistry;
 use App\Domain\Invitation\Models\Invitation;
 use App\Domain\Invitation\Services\InvitationCreator;
+use App\Domain\Invitation\Services\InvitationDuplicator;
+use App\Domain\Invitation\Services\InvitationReadiness;
 use App\Domain\Templates\TemplateRegistry;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Editor\StoreInvitationRequest;
@@ -65,17 +68,33 @@ final class InvitationController extends Controller
         return redirect()->route('dashboard.invitations.show', $invitation)->with('toast', 'Undangan dibuat. Isi datanya, lalu lihat pratinjaunya.');
     }
 
-    public function show(Invitation $invitation, EventTypeRegistry $events, TemplateRegistry $templates, Entitlements $entitlements, PlanCatalog $plans, GuestLinkBuilder $links): View
+    public function show(Invitation $invitation, EventTypeRegistry $events, TemplateRegistry $templates, Entitlements $entitlements, PlanCatalog $plans, GuestLinkBuilder $links, InvitationReadiness $readiness, StatsSummary $stats): View
     {
         $this->authorize('view', $invitation);
 
+        $publicUrl = $invitation->isPublished() ? $links->plain($invitation->slug) : null;
+
         return view('dashboard.invitations.show', [
             'invitation' => $invitation,
+            'readiness' => $readiness->check($invitation),
+            'stats' => $invitation->published_at !== null ? $stats->for($invitation) : null,
+            'guestCount' => $invitation->guests()->count(),
+            'shareUrl' => $publicUrl === null ? null : $links->whatsapp(null, "Halo, ini undangan {$invitation->title}:\n{$publicUrl}"),
             'eventLabel' => $events->for($invitation->event_type)->label,
             'template' => $templates->find((string) $invitation->template_slug),
             'canPublish' => $entitlements->can($invitation, 'publish'),
             'plans' => $plans->summary(),
-            'publicUrl' => $invitation->isPublished() ? $links->plain($invitation->slug) : null,
+            'publicUrl' => $publicUrl,
         ]);
+    }
+
+    /** DSH-09: a standalone copy (draft, new link, own files). The original is untouched. */
+    public function duplicate(Request $request, Invitation $invitation, InvitationDuplicator $duplicator): RedirectResponse
+    {
+        $this->authorize('update', $invitation);
+
+        $copy = $duplicator->duplicate($invitation, $request->user());
+
+        return redirect()->route('dashboard.invitations.show', $copy)->with('toast', 'Salinan dibuat sebagai draf dengan tautan baru.');
     }
 }

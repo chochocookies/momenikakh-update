@@ -30,7 +30,7 @@ it('invites a new user to create the first invitation', function () {
     $res = $this->actingAs($this->owner)->get(route('dashboard'))->assertOk();
     $xp = DesignSystem::xpath($res->getContent());
 
-    expect($res->getContent())->toContain('Belum ada undangan')->toContain('Halo, Rina Contoh.')
+    expect($res->getContent())->toContain('Mulai dari sini')->toContain('Halo, Rina Contoh.')
         ->and($xp->query('//h1')->length)->toBe(1)
         ->and($xp->query('//a[@href="'.route('dashboard.invitations.create').'"]')->length)->toBeGreaterThanOrEqual(2);
 });

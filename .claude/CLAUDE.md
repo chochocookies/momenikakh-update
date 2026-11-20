@@ -49,5 +49,14 @@ Kode lolos `composer check` (Pint, Larastan, Pest) dan `npm run build`. Ada tes 
 ## Bahasa
 Kode, nama variabel, commit, dan komentar teknis dalam bahasa Inggris. Teks yang dilihat pengguna dalam bahasa Indonesia (kamu/kalian, kalimat pendek, nada hangat dan tenang, tanpa kata hiperbola). Dokumen di `.claude/docs` dalam bahasa Indonesia.
 
+## Skill eksternal (dipasang lewat `npx skills`, tercatat di `skills-lock.json`)
+Desain UI: `frontend-design`, `impeccable`, `ui-ux-pro-max`. Gerak: `animate`, `review-animations`, `improve-animations` (Emil Kowalski), `animejs`. Gaya kerja: `ponytail`. Bila bertentangan, **aturan emas, `rules/`, dan `docs/BRAND.md` menang**:
+- Dua font saja (Cormorant Garamond dan Plus Jakarta Sans) dan token dari `tokens.css`. Abaikan saran font, palet, atau gaya lain dari skill desain.
+- Tanpa CDN saat runtime. Abaikan contoh `<script src=cdn...>` di skill `animejs`.
+- GSAP satu-satunya pustaka animasi (D-17). `animejs` hanya rujukan sintaks; menambah anime.js sebagai dependensi butuh ADR baru. Prinsip dari skill gerak tetap dipakai (kurva, durasi, hanya `transform` dan `opacity`, `prefers-reduced-motion`).
+- `impeccable` membaca `PRODUCT.md` dan `DESIGN.md`. Di proyek ini rujukannya `docs/PRODUCT.md` dan `docs/BRAND.md`; jangan membuat `PRODUCT.md`/`DESIGN.md` baru di root repo tanpa persetujuan.
+- `ponytail` tidak boleh memangkas yang diwajibkan Definition of Done (tes, keamanan, aksesibilitas, tes kontrak). Matikan dengan `/ponytail off`.
+- `review-animations` hanya dijalankan manual.
+
 ## Dokumen (baca saat relevan, jangan dimuat semua sekaligus)
 `docs/PRODUCT.md` `TECH_STACK.md` `ARCHITECTURE.md` `TEMPLATE_SPEC.md` `DATA_MODEL.md` `EVENT_TYPES.md` `SEO.md` `BRAND.md` `LANDING.md` `DECISIONS.md` `ROADMAP.md`. Pelacak tugas: `.claude/TODO.md` (satu-satunya).

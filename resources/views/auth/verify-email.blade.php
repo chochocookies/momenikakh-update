@@ -1,34 +1,18 @@
-<x-layouts.auth :title="__('Verify your email')">
-    <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">
-        {{ __("Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.") }}
-    </p>
+<x-layouts.auth title="Verifikasi email">
+    <p class="mb-5 text-muted">Kami sudah mengirim tautan verifikasi ke emailmu. Buka tautan itu untuk mulai. Belum menerima? Kami kirim lagi.</p>
 
-    <!-- Session Status -->
     @if (session('status') === 'verification-link-sent')
-        <div class="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
-            {{ __('A new verification link has been sent to your email address.') }}
-        </div>
+        <x-ui.alert tone="success" class="mb-5">Tautan verifikasi baru sudah dikirim ke emailmu.</x-ui.alert>
     @endif
 
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-center gap-3">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
-            <button
-                type="submit"
-                class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition"
-            >
-                {{ __('Resend verification email') }}
-            </button>
+            <x-ui.button type="submit">Kirim ulang email verifikasi</x-ui.button>
         </form>
-
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button
-                type="submit"
-                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition"
-            >
-                {{ __('Log out') }}
-            </button>
+            <x-ui.button variant="ghost" type="submit">Keluar</x-ui.button>
         </form>
     </div>
 </x-layouts.auth>

@@ -9,7 +9,16 @@ use Database\Factories\InvitationDailyStatFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $invitation_id
+ * @property Carbon $date
+ * @property int $views
+ * @property int $unique_visitors
+ * @property int $opens
+ */
 class InvitationDailyStat extends Model
 {
     use HasFactory;

@@ -78,11 +78,12 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    // Fixed on purpose, not read from .env: Momenikah speaks Indonesian only (a leftover APP_LOCALE=en would put English validation messages on screen).
+    'locale' => 'id',
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => 'id',
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'id_ID'),
 
     /*
     |--------------------------------------------------------------------------

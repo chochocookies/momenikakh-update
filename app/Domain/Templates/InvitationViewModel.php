@@ -150,7 +150,7 @@ final readonly class InvitationViewModel
     /** "09.00 – 10.30 WIB" */
     public function timeLabel(EventData $event): string
     {
-        return Labels::time($event, $this->timezone);
+        return Labels::time($event);
     }
 
     /** Whether the template should ask guests to open a map. */

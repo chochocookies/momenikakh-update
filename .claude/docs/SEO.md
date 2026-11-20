@@ -18,7 +18,7 @@ Judul beranda memuat kata kunci utama dan manfaat ("buat undangan digital online
 | `/panduan` dan `/panduan/{slug}` | Artikel cara membuat dan membagikan undangan | ya |
 | `/syarat-ketentuan`, `/kebijakan-privasi` | Legal | ya |
 | `/dashboard/*`, `/admin/*`, `/login`, `/daftar` | Aplikasi | tidak (`noindex`) |
-| `share.…/{slug}`, `share.…/preview/*` | Undangan dan pratinjau | tidak (header `X-Robots-Tag`) |
+| `undangan.…/{slug}`, `undangan.…/preview/*` | Undangan dan pratinjau | tidak (header `X-Robots-Tag`) |
 
 ## Pola judul dan deskripsi
 | Halaman | Title (≤ 60) | Description (120–155) |
@@ -49,7 +49,7 @@ Berkas dari `.claude/brand/favicon/` dan `.claude/brand/social/` disalin ke `pub
 - Validasi dengan Rich Results Test sebelum rilis.
 
 ## Berkas teknis
-`/sitemap.xml` (halaman pemasaran, template, panduan; `lastmod` jujur), `/robots.txt` (izinkan pemasaran, larang `/dashboard`, `/admin`, `/api`; cantumkan sitemap). Domain `share.` tidak diblokir di robots.txt, tetapi memakai `noindex`.
+`/sitemap.xml` (halaman pemasaran, template, panduan; `lastmod` jujur), `/robots.txt` (izinkan pemasaran, larang `/dashboard`, `/admin`, `/api`; cantumkan sitemap). Domain `undangan.` tidak diblokir di robots.txt, tetapi memakai `noindex`.
 
 ## Performa sebagai SEO
 Target ponsel: LCP baik, CLS mendekati 0, INP baik. Font di-host sendiri dan di-preload, gambar WebP dengan `width`/`height`, GSAP dimuat sebagai chunk terpisah setelah konten terlihat, teks hero ada di HTML (tidak disembunyikan sampai JS jalan). Anggaran di CI (TPL-14, MKT-07).

@@ -26,6 +26,11 @@ class SecurityHeaders
         $surface = $this->resolveSurface($request, $response);
         $surfaceConfig = config("security.surfaces.{$surface}", config('security.surfaces.marketing'));
 
+        // PUB-08: invitations are for people holding the link, never for search engines. The page also carries <meta name=robots>.
+        if ($surface === 'public' && ! $response->headers->has('X-Robots-Tag')) {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+        }
+
         // 4. Surface-specific X-Frame-Options (Task 9.2)
         // A route may set its own value first (the preview frame uses SAMEORIGIN); never overwrite that.
         if (! $response->headers->has('X-Frame-Options')) {

@@ -35,6 +35,12 @@
 }
 
 @layer base {
+  /* Browser surfaces carry the brand too: selection, form accents, scrollbars and table digits. */
+  ::selection { background: var(--color-rose-light); color: var(--color-ink); }
+  :root { accent-color: var(--color-rose); scrollbar-color: var(--color-muted) transparent; }
+  /* A grid item never grows past its column because of a wide child (a table, a row of tabs): those scroll inside themselves. */
+  [data-surface='app'] .grid > * { min-width: 0; }
+  table, .tabular { font-variant-numeric: tabular-nums; }
   :focus-visible { outline: 3px solid var(--color-rose); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) {
     *, ::before, ::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Domain\Audit\AuditLogger;
+use App\Domain\Audit\Enums\AuditAction;
 use App\Domain\Guest\Exceptions\GuestLimitReached;
 use App\Domain\Guest\Models\Guest;
 use App\Domain\Guest\Services\GuestLinkBuilder;
@@ -54,9 +56,11 @@ final class GuestController extends Controller
         return back()->with('toast', 'Tamu ditambahkan.');
     }
 
-    public function destroy(Invitation $invitation, Guest $guest): RedirectResponse
+    public function destroy(Request $request, Invitation $invitation, Guest $guest, AuditLogger $audit): RedirectResponse
     {
         $this->authorize('delete', $guest);
+        // The log keeps ids only, never the guest's name or phone number.
+        $audit->record(AuditAction::GuestDeleted, $request->user(), $guest, $invitation->id);
         $guest->delete();
 
         return back()->with('toast', 'Tamu dihapus.');

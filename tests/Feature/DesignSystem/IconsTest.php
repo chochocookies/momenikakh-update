@@ -56,6 +56,10 @@ it('ships only clean, sizeable, recolourable svg icons', function () {
         if (@simplexml_load_string($svg) === false) {
             $problems[] = "{$name}: malformed XML";
         }
+        // Only the root svg may lose its width and height. A <rect> without them draws nothing (the copy icon once lost its box).
+        if (preg_match('/<rect(?![^>]*\swidth=)[^>]*>|<rect(?![^>]*\sheight=)[^>]*>/', $svg)) {
+            $problems[] = "{$name}: <rect> without width or height";
+        }
     }
     expect($problems)->toBe([]);
 });

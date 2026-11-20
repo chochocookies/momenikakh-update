@@ -1,6 +1,6 @@
 # Third-Party Licenses
 
-**Last Updated:** 2024-12-23
+**Last Updated:** 2026-11-20
 
 This document provides an overview of third-party libraries, frameworks, fonts, and JavaScript packages used in this Laravel 13 application, along with their respective licenses.
 
@@ -109,6 +109,22 @@ This would ensure the date is always current without manual intervention.
 
 ---
 
+## Pemeriksaan otomatis dan ringkasan lisensi (FND-11)
+
+Setiap PR menjalankan tiga pemeriksaan, dan temuan apa pun membuat CI merah:
+
+- **Kerentanan:** `composer audit --locked` dan `npm audit --audit-level=high` (job `Dependency audit` di `.github/workflows/ci.yml`). Keadaan 2026-11-20: tidak ada temuan.
+- **Lisensi:** `tests/Unit/DependencyLicensesTest.php` membaca `vendor/composer/installed.json` dan `package-lock.json`. Lisensi yang boleh dikirim: MIT, MIT-0, BSD-2-Clause, BSD-3-Clause, Apache-2.0, ISC, 0BSD, BlueOak-1.0.0, CC0-1.0, MPL-2.0 (hanya alat build) dan OFL-1.1 (font). Untuk lisensi ganda (`A OR B`) cukup satu pilihan yang diizinkan. GPL, AGPL, atau paket tanpa lisensi membuat tes gagal sampai ditinjau dan daftar di tes diubah.
+- **Pembaruan:** `.github/dependabot.yml` membuka PR mingguan untuk Composer dan npm, bulanan untuk GitHub Actions.
+
+Ringkasan lisensi paket terpasang (2026-11-20):
+
+| Sumber | Lisensi (jumlah paket) |
+|---|---|
+| Composer | MIT (130), BSD-3-Clause (29), Apache-2.0 (3), BSD-2-Clause (2), BSD-3-Clause atau GPL (2, dipakai sebagai BSD-3-Clause) |
+| npm | MIT (170), MPL-2.0 (14), ISC (6), Apache-2.0 (6), 0BSD (2), BSD-2-Clause (2), BSD-3-Clause (2), BlueOak-1.0.0 (2), MIT-0 (2), OFL-1.1 (2, font), CC0-1.0 (1) |
+
+---
 ## GSAP (GreenSock Animation Platform)
 
 - **License Type:** Commercial/Free Dual License

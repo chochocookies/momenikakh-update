@@ -22,7 +22,7 @@ final class InvitationWriter
 {
     private const PEOPLE = ['role', 'name', 'nickname', 'parents_text', 'bio', 'birth_date', 'instagram'];
 
-    private const EVENTS = ['kind', 'label', 'starts_at', 'ends_at', 'venue_name', 'address', 'maps_url', 'latitude', 'longitude', 'dress_code', 'notes'];
+    private const EVENTS = ['kind', 'label', 'starts_at', 'ends_at', 'timezone', 'venue_name', 'address', 'maps_url', 'latitude', 'longitude', 'dress_code', 'notes'];
 
     private const STORY = ['title', 'body', 'happened_on'];
 
@@ -71,10 +71,12 @@ final class InvitationWriter
     {
         $tz = $invitation->timezone;
         $rows = array_map(function (array $row) use ($tz): array {
+            $zone = ! empty($row['timezone']) ? $row['timezone'] : $tz;
+            $row['timezone'] = ! empty($row['timezone']) ? $row['timezone'] : null;
             foreach (['starts_at', 'ends_at'] as $key) {
                 if (! empty($row[$key])) {
-                    // Editor sends local wall-clock time; the database stores UTC.
-                    $row[$key] = CarbonImmutable::createFromFormat('Y-m-d H:i', $row[$key], $tz)->utc();
+                    // Editor sends local wall-clock time of the event's zone; the database stores UTC.
+                    $row[$key] = CarbonImmutable::createFromFormat('Y-m-d H:i', $row[$key], $zone)->utc();
                 }
             }
 

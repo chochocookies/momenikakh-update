@@ -95,7 +95,9 @@
                             <li>Undangan terbit dan siap dibagikan lewat satu tautan</li>
                             <li>Tanpa masa kedaluwarsa</li>
                         </ul>
-                        <p class="lp-note">Pembayaran online segera dibuka.</p>
+                        @unless (config('momenikah.features.payments'))
+                            <p class="lp-note">Pembayaran online segera dibuka.</p>
+                        @endunless
                     </article>
                 </div>
             </div>

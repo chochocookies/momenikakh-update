@@ -270,6 +270,9 @@
     .inv-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
     .inv-wishes { display: grid; gap: 0.75rem; list-style: none; max-width: 28rem; margin: 1.5rem auto 0; text-align: left; }
     .inv-wishes:not(:empty) + [data-wishes-empty] { display: none; }
+    .inv-wish { padding: 0.75rem 1rem; border: 1px solid var(--t-line); border-radius: var(--radius-xl); background: var(--t-surface); overflow-wrap: anywhere; }
+    .inv-wish strong { display: block; margin-bottom: 0.25rem; }
+    .inv-wish p { margin: 0; white-space: pre-line; }
 
     /* ---- countdown: needs JS, so the date line below it is the no-JS fallback ---- */
     .inv-countdown { display: none; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 1rem; }

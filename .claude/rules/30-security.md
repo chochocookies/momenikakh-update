@@ -1,10 +1,10 @@
 ---
 paths:
   - "app/Http/**"
-  - "app/Policies/**"
+  - "app/Domain/**/Policies/**"
   - "routes/**"
   - "config/**"
-  - "app/Services/Billing/**"
+  - "app/Domain/Billing/**"
 ---
 # Aturan keamanan
 - Setiap rute dashboard memakai `auth` + Policy (kepemilikan). Tidak ada akses lewat `id` tanpa `authorize()`.
