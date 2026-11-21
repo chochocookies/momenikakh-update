@@ -26,8 +26,11 @@
             <div class="inv-hp" aria-hidden="true">
                 <label>Jangan diisi<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
             </div>
-            <button type="submit" class="inv-button">Kirim Konfirmasi</button>
         </fieldset>
+        @if (config('services.turnstile.site_key'))
+            <div class="inv-turnstile" data-cf-turnstile-site-key="{{ config('services.turnstile.site_key') }}" data-rsvp-form></div>
+        @endif
+        <button type="submit" class="inv-button">Kirim Konfirmasi</button>
         @if ($invitation->isPreview)
             <p class="inv-note">Ini pratinjau. Formulir aktif setelah undangan terbit.</p>
         @endif

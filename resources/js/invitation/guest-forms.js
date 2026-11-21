@@ -65,6 +65,67 @@ function initWishes(list) {
   return () => load(true).catch(() => {});
 }
 
+/**
+ * Initialize Cloudflare Turnstile widgets (PUB-09).
+ * The widget renders into .inv-turnstile containers that have a data-cf-turnstile-site-key attribute.
+ * We need to ensure the Turnstile script is loaded and render the widget in each container.
+ */
+function initTurnstileWidgets() {
+  const siteKey = document.querySelector('[data-cf-turnstile-site-key]')?.dataset.cfTurnstileSiteKey;
+  if (!siteKey) return;
+
+  // Load Turnstile script if not already loaded
+  if (!document.querySelector('script[src*="challenges.cloudflare.com"]')) {
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
+  // Render widgets in all .inv-turnstile containers
+  document.querySelectorAll('.inv-turnstile[data-cf-turnstile-site-key]').forEach((container) => {
+    // Only render once
+    if (container.dataset.turnstileRendered === 'true') return;
+    container.dataset.turnstileRendered = 'true';
+
+    // Turnstile uses a callback to provide the token
+    window.turnstile?.render(container, {
+      sitekey: siteKey,
+      callback: (token) => {
+        // Add the token as a hidden input to the associated form
+        const form = container.closest('form');
+        if (form) {
+          let input = form.querySelector('input[name="cf-turnstile-response"]');
+          if (!input) {
+            input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'cf-turnstile-response';
+            form.appendChild(input);
+          }
+          input.value = token;
+        }
+      },
+      'expired-callback': () => {
+        // Clear expired token
+        const form = container.closest('form');
+        if (form) {
+          const input = form.querySelector('input[name="cf-turnstile-response"]');
+          if (input) input.value = '';
+        }
+      },
+      'error-callback': () => {
+        // Clear on error
+        const form = container.closest('form');
+        if (form) {
+          const input = form.querySelector('input[name="cf-turnstile-response"]');
+          if (input) input.value = '';
+        }
+      },
+    });
+  });
+}
+
 export function initGuestForms() {
   const rsvp = document.querySelector('[data-rsvp-form]');
   if (rsvp) wire(rsvp);
@@ -75,4 +136,7 @@ export function initGuestForms() {
   const reload = list ? initWishes(list) : null;
   const wishes = document.querySelector('[data-wishes-form]');
   if (wishes) wire(wishes, reload);
+
+  // Initialize Cloudflare Turnstile widgets (PUB-09)
+  initTurnstileWidgets();
 }

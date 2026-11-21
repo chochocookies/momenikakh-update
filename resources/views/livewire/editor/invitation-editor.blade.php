@@ -40,7 +40,11 @@
                 </p>
             </div>
 
-            @if ($isList)
+            @if ($isMedia && $step === 'gallery')
+                @include('livewire.editor.gallery-step')
+            @elseif ($isMedia && $step === 'music')
+                @include('livewire.editor.music-step')
+            @elseif ($isList)
                 @if ($errors->has('form.'.$step))
                     <x-ui.alert tone="danger">{{ $errors->first('form.'.$step) }}</x-ui.alert>
                 @endif

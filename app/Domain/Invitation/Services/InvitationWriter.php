@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Domain\Invitation\Services;
 
 use App\Domain\Invitation\EventTypes\EventTypeDefinition;
@@ -10,6 +8,7 @@ use App\Domain\Invitation\Models\Invitation;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -41,7 +40,7 @@ final class InvitationWriter
 
         return DB::transaction(function () use ($invitation, $step, $data) {
             match ($step) {
-                'basics' => $invitation->fill(Arr::only($data, ['title', 'template_slug', 'locale', 'timezone']))->save(),
+                'basics' => $this->writeBasics($invitation, $data),
                 'people' => $this->sync($invitation->people(), $data['people'] ?? [], self::PEOPLE),
                 'events' => $this->syncEvents($invitation, $data['events'] ?? []),
                 'story' => $this->sync($invitation->storyItems(), $data['story'] ?? [], self::STORY),
@@ -128,5 +127,35 @@ final class InvitationWriter
     {
         $invitation->settings = array_replace($invitation->settings ?? [], Arr::only($settings, self::SETTINGS));
         $invitation->save();
+    }
+
+    /**
+     * Handle the basics step including slug changes with alias creation (PUB-05).
+     */
+    private function writeBasics(Invitation $invitation, array $data): void
+    {
+        $oldSlug = $invitation->slug;
+        $newSlug = $data['slug'] ?? $oldSlug;
+
+        $invitation->fill(Arr::only($data, ['title', 'slug', 'template_slug', 'locale', 'timezone']))->save();
+
+        // Create slug alias if slug changed (PUB-05)
+        if ($newSlug !== $oldSlug) {
+            $invitation->createSlugAlias($oldSlug);
+        }
+
+        // Invalidate cache for both old and new slugs (PUB-03)
+        $this->invalidateInvitationCache($oldSlug);
+        if ($newSlug !== $oldSlug) {
+            $this->invalidateInvitationCache($newSlug);
+        }
+    }
+
+    /**
+     * Invalidate the invitation cache (PUB-03).
+     */
+    private function invalidateInvitationCache(string $slug): void
+    {
+        Cache::store('redis')->forget("invitation:{$slug}");
     }
 }

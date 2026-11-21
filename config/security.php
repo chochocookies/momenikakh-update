@@ -30,11 +30,12 @@ return [
             'frame_options' => 'DENY',
             'csp' => [
                 'default-src' => "'self'",
-                'script-src' => "'self'",
+                'script-src' => "'self' https://challenges.cloudflare.com",
                 'style-src' => "'self' 'unsafe-inline'",
                 'img-src' => "'self' data:",
                 'font-src' => "'self'",
                 'frame-ancestors' => "'none'",
+                'frame-src' => 'https://challenges.cloudflare.com',
             ],
         ],
     ],

@@ -7,11 +7,36 @@
 
         <section aria-labelledby="identity-title" class="grid gap-3 rounded-2xl border border-ink/10 bg-white p-6">
             <h2 id="identity-title" class="font-serif text-2xl font-semibold text-ink">Dirimu</h2>
-            <dl class="grid gap-3 sm:grid-cols-[10rem_1fr]">
-                <dt class="text-muted">Nama</dt><dd class="font-semibold text-ink">{{ $user->name }}</dd>
-                <dt class="text-muted">Email</dt><dd class="font-semibold text-ink [overflow-wrap:anywhere]">{{ $user->email }}</dd>
-                <dt class="text-muted">Undangan</dt><dd class="tabular font-semibold text-ink">{{ $invitations }}</dd>
-            </dl>
+
+            <form method="POST" action="{{ route('dashboard.account.profile') }}" class="grid gap-4">
+                @csrf
+                @method('PUT')
+                <x-ui.field name="name" label="Nama" required>
+                    <x-ui.input value="{{ $user->name }}" autocomplete="name" />
+                </x-ui.field>
+                <x-ui.field name="email" label="Email" required>
+                    <x-ui.input type="email" value="{{ $user->email }}" autocomplete="email" />
+                </x-ui.field>
+                <div><x-ui.button type="submit">Simpan perubahan</x-ui.button></div>
+            </form>
+        </section>
+
+        <section aria-labelledby="password-title" class="grid gap-4 rounded-2xl border border-ink/10 bg-white p-6">
+            <h2 id="password-title" class="font-serif text-2xl font-semibold text-ink">Kata sandi</h2>
+            <form method="POST" action="{{ route('dashboard.account.password') }}" class="grid gap-4">
+                @csrf
+                @method('PUT')
+                <x-ui.field name="current_password" label="Kata sandi saat ini" required>
+                    <x-ui.input type="password" autocomplete="current-password" />
+                </x-ui.field>
+                <x-ui.field name="password" label="Kata sandi baru" required hint="Minimal 8 karakter">
+                    <x-ui.input type="password" autocomplete="new-password" />
+                </x-ui.field>
+                <x-ui.field name="password_confirmation" label="Konfirmasi kata sandi baru" required>
+                    <x-ui.input type="password" autocomplete="new-password" />
+                </x-ui.field>
+                <div><x-ui.button type="submit">Ubah kata sandi</x-ui.button></div>
+            </form>
         </section>
 
         <section aria-labelledby="export-title" class="grid gap-3 rounded-2xl border border-ink/10 bg-white p-6">

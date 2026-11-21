@@ -118,9 +118,9 @@ Status `[x]` dibawa dari TODO sebelumnya; bukti tiap tugas tidak diverifikasi sa
 |---|---|---|---|---|---|---|
 | [x] | PUB-01 | Rute `undangan.` `/{slug}`, tanpa sesi/cookie | FND-05, DOM-07, DEC-03 | respons tanpa `Set-Cookie` | M | M2 |
 | [x] | PUB-02 | Controller undangan + halaman 404/410 ramah | PUB-01, TPL-03 | tes 200/404/410 | M | M2 |
-| [ ] | PUB-03 | Cache halaman penuh Redis + invalidasi saat update | PUB-02 | hit cache terbukti; edit membuang cache | M | M2 |
+| [x] | PUB-03 | Cache halaman penuh Redis + invalidasi saat update | PUB-02 | hit cache terbukti; edit membuang cache | M | M2 |
 | [x] | PUB-04 | `/preview/{template}` (pembungkus noindex + iframe frame, mode ponsel/desktop) | TPL-03 | header `X-Robots-Tag: noindex`; `frame-ancestors` benar | M | M2 |
-| [ ] | PUB-05 | Alias slug lama → 301 | PUB-02 | tes redirect | S | M3 |
+| [x] | PUB-05 | Alias slug lama → 301 | PUB-02 | tes redirect | S | M3 |
 | [x] | PUB-06 | Statistik harian unik; abaikan bot dan preview | PUB-02 | tes hitung sekali per pengunjung/hari; bot dan preview tidak terhitung | M | M3 |
 | [ ] | PUB-07 | OG image per undangan (queue) + fallback `og-default` | MED-01 | pratinjau WhatsApp tampil benar; tanpa nama tamu di OG | L | M3 |
 | [x] | PUB-08 | Meta undangan: noindex, judul, og:*, theme-color | PUB-02 | tes meta; noindex ganda (meta + `X-Robots-Tag`) | S | M3 |
@@ -148,8 +148,8 @@ Status `[x]` dibawa dari TODO sebelumnya; bukti tiap tugas tidak diverifikasi sa
 | [~] | DSH-09 | Duplikasi undangan | DSH-03 | salinan mandiri; media ikut tersalin | S | M3 |
 | [x] | DSH-10 | Pengaturan akun + ekspor/hapus data (UU PDP) | FND-07 | hapus menghapus media & tamu | M | M3 |
 | [ ] | DSH-11 | Notifikasi email pemilik: RSVP baru, publish berhasil, masa aktif hampir habis | PUB-09, OPS-03 | email bermerek terkirim di staging | M | M3 |
-| [ ] | DSH-12 | Unggah media di editor: seret-lepas, progres, urutan, batas ukuran | MED-03, DSH-03 | foto bisa diurutkan; berkas terlalu besar ditolak dengan pesan jelas | M | M3 |
-| [ ] | DSH-13 | Pengaturan undangan: slug (cek unik langsung), judul, musik, palet, tingkat gerak, bahasa | DSH-03, DOM-07 | slug unik dicek langsung; palet berubah di pratinjau | M | M3 |
+| [x] | DSH-12 | Unggah media di editor: seret-lepas, progres, urutan, batas ukuran | MED-03, DSH-03 | foto bisa diurutkan; berkas terlalu besar ditolak dengan pesan jelas | M | M3 |
+| [x] | DSH-13 | Pengaturan undangan: slug (cek unik langsung), judul, musik, palet, tingkat gerak, bahasa | DSH-03, DOM-07 | slug unik dicek langsung; palet berubah di pratinjau | M | M3 |
 | [x] | DSH-14 | Onboarding pengguna baru: daftar tugas awal + tips | DSH-01 | tampil untuk pengguna baru; bisa ditutup | S | M3 |
 
 ## BIL — Pembayaran (M6)

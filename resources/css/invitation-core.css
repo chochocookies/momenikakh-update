@@ -299,6 +299,18 @@
     .inv-music__toggle:disabled { opacity: 0.5; }
     @keyframes inv-pulse { 50% { opacity: 0.7; } }
 
+    /* ---- Cloudflare Turnstile (PUB-09) ---- */
+    .inv-turnstile {
+        margin: 1.5rem 0;
+        display: flex;
+        align-items: flex-start;
+    }
+    .inv-turnstile > * {
+        display: block;
+        width: 300px;
+        max-width: 100%;
+    }
+
     /* ---- reveal on scroll (core.js adds .inv-js and .is-visible) ---- */
     @media (prefers-reduced-motion: no-preference) {
         .inv-js .inv:not([data-motion='none']) [data-reveal] {

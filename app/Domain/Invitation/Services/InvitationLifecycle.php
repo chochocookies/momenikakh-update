@@ -11,6 +11,7 @@ use App\Domain\Invitation\Enums\InvitationStatus;
 use App\Domain\Invitation\Models\Invitation;
 use App\Models\User;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Facades\Cache;
 
 /** DOM-09: draft -> published -> expired/archived. Completeness checks (F4-10) are added in front of publish(). */
 final class InvitationLifecycle
@@ -32,37 +33,64 @@ final class InvitationLifecycle
         ])->save();
         $this->audit->record(AuditAction::InvitationPublished, $by, $invitation, $invitation->id, ['template' => $invitation->template_slug]);
 
+        // Invalidate cache (PUB-03)
+        $this->invalidateInvitationCache($invitation->slug);
+
         return $invitation;
     }
 
     public function unpublish(Invitation $invitation, ?User $by = null): Invitation
     {
-        return $this->move($invitation, InvitationStatus::Draft, AuditAction::InvitationUnpublished, $by);
+        $result = $this->move($invitation, InvitationStatus::Draft, AuditAction::InvitationUnpublished, $by);
+        $this->invalidateInvitationCache($invitation->slug);
+
+        return $result;
     }
 
     public function archive(Invitation $invitation, ?User $by = null): Invitation
     {
-        return $this->move($invitation, InvitationStatus::Archived, AuditAction::InvitationArchived, $by);
+        $result = $this->move($invitation, InvitationStatus::Archived, AuditAction::InvitationArchived, $by);
+        $this->invalidateInvitationCache($invitation->slug);
+
+        return $result;
     }
 
     public function restore(Invitation $invitation, ?User $by = null): Invitation
     {
-        return $this->move($invitation, InvitationStatus::Draft, AuditAction::InvitationRestored, $by);
+        $result = $this->move($invitation, InvitationStatus::Draft, AuditAction::InvitationRestored, $by);
+        $this->invalidateInvitationCache($invitation->slug);
+
+        return $result;
     }
 
     public function expire(Invitation $invitation, ?User $by = null): Invitation
     {
-        return $this->move($invitation, InvitationStatus::Expired, AuditAction::InvitationExpired, $by);
+        $result = $this->move($invitation, InvitationStatus::Expired, AuditAction::InvitationExpired, $by);
+        $this->invalidateInvitationCache($invitation->slug);
+
+        return $result;
     }
 
     /** Scheduler entry point. Returns how many invitations were expired. */
     public function expireDue(?CarbonInterface $now = null): int
     {
+        $slugs = Invitation::query()
+            ->where('status', InvitationStatus::Published->value)
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', $now ?? now())
+            ->pluck('slug')
+            ->all();
+
         $count = Invitation::query()
             ->where('status', InvitationStatus::Published->value)
             ->whereNotNull('expires_at')
             ->where('expires_at', '<=', $now ?? now())
             ->update(['status' => InvitationStatus::Expired->value]);
+
+        // Invalidate cache for all expired invitations (PUB-03)
+        foreach ($slugs as $slug) {
+            $this->invalidateInvitationCache($slug);
+        }
 
         // One row for the whole sweep: the scheduler is the actor (no user).
         if ($count > 0) {
@@ -87,5 +115,13 @@ final class InvitationLifecycle
         if (! $invitation->status->canTransitionTo($to)) {
             throw InvalidTransition::between($invitation->status, $to);
         }
+    }
+
+    /**
+     * Invalidate the invitation cache (PUB-03).
+     */
+    private function invalidateInvitationCache(string $slug): void
+    {
+        Cache::store('redis')->forget("invitation:{$slug}");
     }
 }

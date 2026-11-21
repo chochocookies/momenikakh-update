@@ -162,6 +162,26 @@ class Invitation extends Model implements HasMedia
         return $this->hasMany(Subscription::class);
     }
 
+    /** @return HasMany<InvitationSlugAlias, $this> */
+    public function slugAliases(): HasMany
+    {
+        return $this->hasMany(InvitationSlugAlias::class);
+    }
+
+    /**
+     * Create an alias for the old slug when the slug changes (PUB-05).
+     * Call this after updating the slug to ensure old links redirect.
+     */
+    public function createSlugAlias(string $oldSlug): void
+    {
+        if ($oldSlug !== $this->slug) {
+            InvitationSlugAlias::firstOrCreate([
+                'invitation_id' => $this->id,
+                'slug' => $oldSlug,
+            ]);
+        }
+    }
+
     /** Only invitations owned by the given user (DOM-08). */
     public function scopeOwnedBy(Builder $query, User|int $user): Builder
     {

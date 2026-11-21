@@ -11,6 +11,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** DSH-10: the owner's account page, with the two rights the UU PDP gives: a copy of the data and its deletion. */
@@ -19,6 +21,35 @@ final class AccountController extends Controller
     public function show(Request $request): View
     {
         return view('dashboard.account', ['user' => $request->user(), 'invitations' => $request->user()->invitations()->count()]);
+    }
+
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($request->user()->id)],
+        ]);
+
+        $request->user()->update([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        return redirect()->route('dashboard.account')->with('toast', 'Profil diperbarui.');
+    }
+
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'string', 'current_password:web'],
+            'password' => ['required', 'confirmed', 'min:8'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('dashboard.account')->with('toast', 'Kata sandi diperbarui.');
     }
 
     public function export(Request $request, AccountDataExporter $exporter): StreamedResponse

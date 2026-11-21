@@ -38,6 +38,12 @@ Route::prefix('{slug}')->where(['slug' => '[a-z0-9]+(?:-[a-z0-9]+)*'])->middlewa
     Route::post('wishes', [GuestActionController::class, 'storeWish'])->middleware('throttle:10,1')->name('public.wishes.store');
 });
 
+// PUB-05: slug alias redirect — keep BEFORE the main invitation route so old slugs redirect to the canonical one.
+Route::get('{slug}', [InvitationController::class, 'redirectAlias'])
+    ->where('slug', '(?!(?:'.implode('|', array_map('preg_quote', (array) config('reserved-slugs'))).')$)[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->middleware('throttle:240,1')
+    ->name('public.invitation.alias');
+
 // PUB-01: the invitation itself. This is the catch-all of the surface, so it stays LAST. Reserved slugs (preview, health,
 // up, admin ...) never match it, which keeps /health and /up answering on this host too.
 Route::get('{slug}', [InvitationController::class, 'show'])

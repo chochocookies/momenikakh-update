@@ -31,8 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // DSH-09: duplicate.
     Route::post('/dashboard/invitations/{invitation}/duplicate', [InvitationController::class, 'duplicate'])->whereNumber('invitation')->middleware('throttle:10,1')->name('dashboard.invitations.duplicate');
 
-    // DSH-10: account page, data export, account deletion.
+    // DSH-10: account page, data export, account deletion, profile/password updates.
     Route::get('/dashboard/account', [AccountController::class, 'show'])->name('dashboard.account');
+    Route::put('/dashboard/account/profile', [AccountController::class, 'updateProfile'])->middleware('throttle:20,1')->name('dashboard.account.profile');
+    Route::put('/dashboard/account/password', [AccountController::class, 'updatePassword'])->middleware('throttle:10,1')->name('dashboard.account.password');
     Route::get('/dashboard/account/export', [AccountController::class, 'export'])->middleware('throttle:5,1')->name('dashboard.account.export');
     Route::delete('/dashboard/account', [AccountController::class, 'destroy'])->middleware('throttle:5,1')->name('dashboard.account.destroy');
 

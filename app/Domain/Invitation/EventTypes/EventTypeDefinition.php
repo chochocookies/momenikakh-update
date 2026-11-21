@@ -125,6 +125,7 @@ final readonly class EventTypeDefinition
     {
         return [
             'title' => ['required', 'string', 'max:120'],
+            'slug' => ['nullable', 'string', 'max:60', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'template_slug' => ['nullable', 'string', 'max:80', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'locale' => ['nullable', 'in:id'],
             'timezone' => ['nullable', 'in:'.implode(',', self::TIMEZONES)],

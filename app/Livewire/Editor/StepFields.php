@@ -23,6 +23,9 @@ final class StepFields
     /** Steps that edit a list of rows, each row being an array under form[step]. */
     public const LISTS = ['people', 'events', 'story', 'gifts'];
 
+    /** Media steps (DSH-12/13): uploads go through MediaUploader, not InvitationWriter. */
+    public const MEDIA = ['gallery', 'music'];
+
     public const ZONES = ['Asia/Jakarta' => 'WIB (Jakarta)', 'Asia/Makassar' => 'WITA (Makassar)', 'Asia/Jayapura' => 'WIT (Jayapura)'];
 
     public const CONTENT_LABELS = [
@@ -38,13 +41,20 @@ final class StepFields
         if ($definition->hasFeature('story')) {
             $steps['story'] = 'Cerita';
         }
+        $steps['gallery'] = 'Galeri';
         if ($definition->hasFeature('gifts')) {
             $steps['gifts'] = 'Amplop digital';
         }
+        $steps['music'] = 'Musik';
         $steps['content'] = 'Teks';
         $steps['settings'] = 'Bagian dan tampilan';
 
         return $steps;
+    }
+
+    public static function isMedia(string $step): bool
+    {
+        return in_array($step, self::MEDIA, true);
     }
 
     /**
@@ -105,6 +115,7 @@ final class StepFields
         return match ($step) {
             'basics' => [
                 ['key' => 'title', 'label' => 'Judul undangan', 'type' => 'text', 'hint' => 'Tampil di sampul, contoh: Raka & Sinta.'],
+                ['key' => 'slug', 'label' => 'Tautan (slug)', 'type' => 'text', 'hint' => 'Bagian akhir tautan undangan. Contoh: raka-sinta-abcd. Hanya huruf kecil, angka, dan tanda hubung.'],
                 ['key' => 'template_slug', 'label' => 'Template', 'type' => 'select', 'options' => array_map(fn ($m) => $m->name, $templates->forEvent($definition->type))],
                 ['key' => 'timezone', 'label' => 'Zona waktu', 'type' => 'select', 'options' => self::ZONES],
             ],

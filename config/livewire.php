@@ -11,4 +11,10 @@ declare(strict_types=1);
 */
 return [
     'csp_safe' => true,
+
+    // Temporary ceiling is above media-limits so HandlesEditorMedia can reject with a clear Indonesian message.
+    'temporary_file_upload' => [
+        'rules' => ['required', 'file', 'max:12288'],
+        'middleware' => ['throttle:30,1'],
+    ],
 ];

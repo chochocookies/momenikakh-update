@@ -62,6 +62,9 @@ it('has no field missing: every rule of every step has a field, and every field 
     $invitation = Invitation::factory()->for($this->owner)->forType($type)->complete()->create();
 
     foreach (StepFields::steps($definition) as $step => $label) {
+        if (StepFields::isMedia($step)) {
+            continue; // gallery/music are MediaUploader steps, not EventTypeDefinition fields
+        }
         $fields = array_keys(StepFields::labels($step, $definition, $invitation, $templates));
         sort($fields);
 
@@ -81,6 +84,9 @@ it('renders every field of every step in the page', function (EventType $type) {
     $component = ($this->editor)($invitation);
 
     foreach (array_keys(StepFields::steps($definition)) as $step) {
+        if (StepFields::isMedia($step)) {
+            continue;
+        }
         $component->call('selectStep', $step);
         $html = $component->html();
         $paths = in_array($step, StepFields::LISTS, true)
@@ -213,6 +219,9 @@ it('saves every step unchanged without altering anything: the form and the write
     $component = ($this->editor)($invitation);
 
     foreach (array_keys(StepFields::steps(app(EventTypeRegistry::class)->for($type))) as $step) {
+        if (StepFields::isMedia($step)) {
+            continue;
+        }
         // Event types without a template cannot pick one: the basics step is refused for them on purpose.
         if ($step === 'basics' && app(TemplateRegistry::class)->forEvent($type) === []) {
             continue;

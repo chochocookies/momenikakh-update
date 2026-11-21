@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Editor;
 
+use App\Domain\Billing\Entitlements;
 use App\Domain\Invitation\Data\InvitationData;
 use App\Domain\Invitation\EventTypes\EventTypeDefinition;
 use App\Domain\Invitation\EventTypes\EventTypeRegistry;
 use App\Domain\Invitation\Models\Invitation;
+use App\Domain\Invitation\Rules\AvailableSlug;
 use App\Domain\Invitation\Services\InvitationWriter;
+use App\Domain\Media\Models\MusicTrack;
 use App\Domain\Templates\TemplateRegistry;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -18,6 +21,7 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * DSH-03: the invitation editor. One step at a time; every field saves by itself when it loses focus.
@@ -26,16 +30,18 @@ use Livewire\Component;
  *   so the editor, the validation and the writer cannot drift apart.
  * - A step is saved only when the whole step is valid. Errors show inline under the field; the data stays on screen
  *   (marked "belum tersimpan") until it is fixed.
- * - Media (photos, gallery, music) is uploaded through the MED routes, not through this component.
+ * - Gallery and music (DSH-12/13) use MediaUploader (same rules as the MED routes) via HandlesEditorMedia.
  */
 #[Layout('components.layouts.app', ['title' => 'Isi data undangan'])]
 final class InvitationEditor extends Component
 {
     use AuthorizesRequests;
+    use HandlesEditorMedia;
+    use WithFileUploads;
 
     /** First segment of a form path => the step that saves it. */
     private const STEP_OF = [
-        'title' => 'basics', 'template_slug' => 'basics', 'timezone' => 'basics',
+        'title' => 'basics', 'slug' => 'basics', 'template_slug' => 'basics', 'timezone' => 'basics',
         'people' => 'people', 'events' => 'events', 'story' => 'story', 'gifts' => 'gifts',
         'content' => 'content', 'settings' => 'settings',
     ];
@@ -60,6 +66,7 @@ final class InvitationEditor extends Component
         $this->invitation = $invitation;
         $this->authorize('update', $invitation);
         $this->loadForm();
+        $this->bootMediaState();
     }
 
     public function hydrate(): void
@@ -120,10 +127,14 @@ final class InvitationEditor extends Component
         }
     }
 
-    /** Validate one step and write it. Returns whether it was saved. */
+    /** Validate one step and write it. Returns whether it was saved. Media steps are handled separately. */
     public function save(string $step): bool
     {
         $this->authorize('update', $this->invitation);
+
+        if (StepFields::isMedia($step)) {
+            return true;
+        }
 
         $definition = $this->definition();
         $payload = $this->payload($step);
@@ -154,18 +165,41 @@ final class InvitationEditor extends Component
         $definition = $this->definition();
         $templates = app(TemplateRegistry::class);
         $steps = StepFields::steps($definition);
+        $isMedia = StepFields::isMedia($this->step);
+        $entitlements = app(Entitlements::class);
 
-        $fields = in_array($this->step, StepFields::LISTS, true)
-            ? StepFields::row($this->step, $definition)
-            : StepFields::single($this->step, $definition, $this->invitation, $templates);
+        $fields = $isMedia
+            ? []
+            : (in_array($this->step, StepFields::LISTS, true)
+                ? StepFields::row($this->step, $definition)
+                : StepFields::single($this->step, $definition, $this->invitation, $templates));
+
+        $catalogTracks = [];
+        if ($this->step === 'music' && config('media-limits.audio.catalog_enabled')) {
+            $catalogTracks = MusicTrack::query()->selectable()->orderBy('sort')->orderBy('title')
+                ->get(['id', 'title', 'artist', 'requires_attribution', 'attribution_text'])
+                ->map(fn (MusicTrack $t): array => [
+                    'id' => $t->id,
+                    'title' => $t->title,
+                    'artist' => $t->artist,
+                    'attribution' => $t->requires_attribution ? (string) $t->attribution_text : null,
+                ])->all();
+        }
 
         return view('livewire.editor.invitation-editor', [
             'definition' => $definition,
             'steps' => $steps,
             'fields' => $fields,
             'isList' => in_array($this->step, StepFields::LISTS, true),
+            'isMedia' => $isMedia,
             'maxRows' => in_array($this->step, StepFields::LISTS, true) ? $this->maxRows($this->step) : 0,
             'template' => $templates->find((string) $this->invitation->template_slug),
+            'maxPhotos' => $entitlements->limit($this->invitation, 'max_photos'),
+            'canUploadMusic' => $entitlements->can($this->invitation, 'custom_music'),
+            'catalogEnabled' => (bool) config('media-limits.audio.catalog_enabled'),
+            'catalogTracks' => $catalogTracks,
+            'imageMaxBytes' => (int) config('media-limits.image.max_bytes'),
+            'audioMaxBytes' => (int) config('media-limits.audio.max_bytes'),
         ]);
     }
 
@@ -183,6 +217,8 @@ final class InvitationEditor extends Component
             $templates = array_keys(app(TemplateRegistry::class)->forEvent($definition->type));
             $rules['template_slug'] = ['required', 'string', Rule::in($templates)];
             $rules['timezone'] = ['required', 'in:'.implode(',', EventTypeDefinition::TIMEZONES)];
+            // DSH-13: live uniqueness (AvailableSlug also blocks reserved words).
+            $rules['slug'] = ['nullable', 'string', 'max:60', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', new AvailableSlug($this->invitation->id)];
         }
         if ($step === 'settings') {
             $manifest = app(TemplateRegistry::class)->find((string) $this->invitation->template_slug);
@@ -306,6 +342,7 @@ final class InvitationEditor extends Component
         $settings = $data['settings'];
         $this->form = [
             'title' => $data['title'],
+            'slug' => $data['slug'],
             'template_slug' => (string) $data['template_slug'],
             'timezone' => $data['timezone'],
             'people' => $data['people'],
