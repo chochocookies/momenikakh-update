@@ -1,5 +1,8 @@
 <?php
 
+$appUrl = rtrim((string) env('APP_URL', 'http://momenikah.test:8080'), '/');
+$mediaSources = "'self' data: blob: {$appUrl} http://*.momenikah.test:8080 https://*.momenikah.test";
+
 return [
     'surfaces' => [
         'marketing' => [
@@ -8,7 +11,8 @@ return [
                 'default-src' => "'self'",
                 'script-src' => "'self' 'unsafe-inline'",
                 'style-src' => "'self' 'unsafe-inline'",
-                'img-src' => "'self' data:",
+                'img-src' => $mediaSources,
+                'media-src' => $mediaSources,
                 'font-src' => "'self'",
             ],
         ],
@@ -19,23 +23,22 @@ return [
                 'default-src' => "'self'",
                 'script-src' => "'self'",
                 'style-src' => "'self' 'unsafe-inline'",
-                'img-src' => "'self' data:",
+                'img-src' => $mediaSources,
+                'media-src' => $mediaSources,
                 'font-src' => "'self'",
             ],
         ],
 
-        // Invitations may not be framed. Only the template preview frame (/preview/{template}/frame) is allowed to be
-        // embedded by its own wrapper page; App\Http\Middleware\PreviewHeaders sets that exception on those routes.
         'public' => [
-            'frame_options' => 'DENY',
+            'frame_options' => 'SAMEORIGIN',
             'csp' => [
                 'default-src' => "'self'",
-                'script-src' => "'self' https://challenges.cloudflare.com",
+                'script-src' => "'self' https://cloudflare.com",
                 'style-src' => "'self' 'unsafe-inline'",
-                'img-src' => "'self' data:",
+                'img-src' => $mediaSources,
+                'media-src' => $mediaSources,
                 'font-src' => "'self'",
-                'frame-ancestors' => "'none'",
-                'frame-src' => 'https://challenges.cloudflare.com',
+                'frame-src' => "'self' https://cloudflare.com",
             ],
         ],
     ],

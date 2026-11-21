@@ -1,53 +1,59 @@
-[Momenikah](#top) [Buat undangan](https://momenikah.online/register)
+[Momenikah](#top)[Buat undangan](https://momenikah.online/register)
 
-# Satu link untuk semua momen nikahmu.
+# Satu link untuksemua momennikahmu.
 
-Buat undangan digital yang indah, bagikan lewat WhatsApp, dan biarkan tamu membuka cerita kalian dari ponsel masing-masing.
+Ganti nama dan tanggal di bawah, lihat undangannya berubah di ponsel. Lalu bagikan lewat WhatsApp, satu tautan untuk tiap tamu.
 
-[Buat undangan](https://momenikah.online/register)[Lihat semua template](#gaya)
+[Buat undangan](https://momenikah.online/register)[Cara kerjanya](#langkah)
 
-Tanpa unduh aplikasi. Cukup satu tautan.
+## Coba langsung
 
-## Enam gaya, satu cerita yang sama.
+Mempelai pertama Mempelai kedua Tanggal acara Nama tamu
 
-Setiap template punya suasana dan gerak sendiri. Pilih yang paling mirip dengan hari bahagiamu, isi datanya, selesai.
+Data hanya tampil di halaman ini dan tidak dikirim ke mana pun.
+
+Undangan pernikahan
+
+### Raka & Sinta
+
+**0**hari**0**jam**0**menit
+
+Kepada Yth. **Budi Santoso**
+
+The Wedding of
+
+### Raka & Sinta
+
+**Contoh tautan untuk tamu**
+
+Kirim lewat WhatsApp
+
+Pernikahan*sekarang*~~Walimatul urs~~~~Tunangan~~~~Aqiqah~~~~Khitanan~~~~Ulang tahun~~*menyusul*
 
 ## Dari ide sampai terkirim, tiga langkah.
 
 1. **Pilih template**Coba semua gaya dengan data contoh sebelum memutuskan.
 2. **Isi cerita kalian**Nama, tanggal, lokasi, foto, kisah cinta, dan musik latar.
-3. **Bagikan lewat WhatsApp**Kirim satu tautan. Tamu langsung membuka undangan di ponselnya.
+3. **Bagikan lewat WhatsApp**Setiap tamu mendapat tautan dengan namanya sendiri.
 
 ## Yang ada di dalam undanganmu.
 
-**Kisah cinta**Ceritakan pertemuan sampai lamaran dalam garis waktu.
+**Kisah cinta**Pertemuan sampai lamaran dalam garis waktu.
 
-**Galeri foto**Tampilkan foto prewedding yang tetap ringan dibuka di ponsel.
+**Galeri foto**Foto prewedding yang tetap ringan di ponsel.
 
-**Musik latar**Pasang lagu pilihan sebagai pengiring undangan.
+**Musik latar**Mulai setelah tamu mengetuk buka, tombolnya selalu terlihat.
 
-**Lokasi acara**Tamu membuka peta menuju tempat akad dan resepsi.
+**Lokasi acara**Tamu membuka peta menuju akad dan resepsi.
 
-**Amplop digital**Cantumkan rekening atau e-wallet, tamu menyalinnya dengan satu ketukan.
+**Amplop digital**Rekening atau e-wallet, disalin dengan satu ketukan.
 
-**Hitung mundur**Hitungan menuju hari bahagia, tampil langsung di halaman utama.
+**Hitung mundur**Menuju hari bahagia, langsung di halaman utama.
 
-Momenikah
-
-## Satu link untuk semua momen nikahmu.
-
-Momen dan nikah, disatukan seperti dua cincin yang saling mengait. Panduan identitas ini masih usulan dan menunggu persetujuan pemilik.
-
-- Hangat, bukan formal yang kaku.
-- Jelas: satu tombol, satu tujuan.
-- Romantis tanpa berlebihan.
-
-Cormorant Garamond
-
-Plus Jakarta Sans untuk teks dan tombol.
+**RSVP dan ucapan**Tamu konfirmasi hadir dan menulis doa.
 
 ## Mulai dari satu template.
 
 [Buat undangan](https://momenikah.online/register)
 
-Momenikah© 2026 Momenikah. Semua data di halaman ini hanya contoh.
+Momenikah© 2026 Momenikah. Nama, tanggal, dan rekening di halaman ini hanya contoh.
